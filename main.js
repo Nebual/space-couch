@@ -2,17 +2,35 @@ const electron = require('electron');
 const os = require('os');
 const app = electron.app;
 const WebSocketServer = require('websocket').server;
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow;
+const path = require('path');
+const window = require('electron-window');
 
 let mainWindow; // reference kept for GC
 
+var host_url;
 let PORT = 8000;
 
 app.on('ready', function() {
-	mainWindow = new BrowserWindow({width: 800, height: 600});
-	mainWindow.loadURL(`file://${__dirname}/index.html`);
-	//mainWindow.webContents.openDevTools();
+
+	var ifaces = os.networkInterfaces();
+	Object.keys(ifaces).forEach(function (ifname) {
+		ifaces[ifname].forEach(function (iface) {
+			if ('IPv4' !== iface.family || iface.internal !== false) {
+				// skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+				return;
+			}
+			host_url = "http://"+iface.address+":"+PORT+"/";
+		});
+	});
+
+	mainWindow = window.createWindow({width: 800, height: 600});
+	const indexPath = path.resolve(__dirname, 'index.html');
+	mainWindow.showUrl(indexPath, {
+		'role_url': host_url + 'role/'
+	}, () => {
+		console.log('window is now visible!');
+		mainWindow.webContents.openDevTools();
+	});
 
 	mainWindow.on('closed', function () {
 		mainWindow = null; // let GC run its course
@@ -118,16 +136,7 @@ app.on('ready', function() {
 	});
 
 	// Print out our actual IP Address so they know what to tell their friends :D
-	var ifaces = os.networkInterfaces();
-	Object.keys(ifaces).forEach(function (ifname) {
-		ifaces[ifname].forEach(function (iface) {
-			if ('IPv4' !== iface.family || iface.internal !== false) {
-				// skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-				return;
-			}
-			console.log("Listening on http://"+iface.address+":"+PORT+"/");
-		});
-	});
+	console.log("Listening on "+host_url);
 });
 
 // Quit when all windows are closed.

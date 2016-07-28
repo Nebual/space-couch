@@ -25,6 +25,8 @@
   },
   "dependencies": {
     "electron": "latest",
+    "electron-window": "^0.8.1",
+    "qrcode-npm": "0.0.3",
     "websocket": "^1.0.23"
   }
 }
