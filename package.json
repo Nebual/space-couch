@@ -1,0 +1,30 @@
+{
+  "name": "space-couch",
+  "version": "0.0.1",
+  "description": "Project Space Couch",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nebual/space-couch.git"
+  },
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial"
+  ],
+  "bugs": {
+    "url": "https://github.com/Nebual/space-couch/issues"
+  },
+  "homepage": "https://github.com/Nebual/space-couch#readme",
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.0"
+  },
+  "dependencies": {
+    "electron": "latest",
+    "websocket": "^1.0.23"
+  }
+}

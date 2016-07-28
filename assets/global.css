@@ -1,0 +1,25 @@
+
+.btn-danger:active,
+.btn-danger:hover,
+.btn-danger:focus {
+    background-color: #d9534f;
+    border-color: #d9534f;
+}
+.btn:focus {
+    outline: 0 !important;
+}
+.btn-danger.active,
+.btn-danger.active:active,
+.btn-danger.active:hover,
+.btn-danger.active:focus {
+    background-color: #ac2925;
+    border-color: #8b211e;
+}
+
+.active-green.active,
+.active-green.active:active,
+.active-green.active:hover,
+.active-green.active:focus {
+    background-color: #398439;
+    border-color: #2d672d;
+}
