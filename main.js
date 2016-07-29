@@ -116,8 +116,13 @@ app.on('ready', function() {
 					case 'state':
 						console.log("They set " + msg.id + " to " + msg.value);
 						broadcast({'event': 'state', 'id': msg.id, 'value': msg.value});
-						if(msg.id == 'main_power_system') {
-							broadcast({'event': 'main_power_system', 'value': msg.value});
+						switch(msg.id) {
+							case 'main_power_system':
+								broadcast({'event': 'main_power_system', 'value': msg.value});
+								break;
+							case 'flush_gravity':
+								broadcast({'event': 'vibrate', 'value': 300});
+								break;
 						}
 						break;
 					default:
