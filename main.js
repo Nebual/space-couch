@@ -51,6 +51,7 @@ app.on('ready', function() {
 	//Staic file server
 	var server = express();
 	server.use(express.static(path.join(__dirname + '/assets')));
+	server.use(express.static(path.join(__dirname + '/generated')));
 	server.set('view engine', 'ejs');
 
 	server.get('/', function(req, res){

@@ -1,0 +1,59 @@
+.btn:focus {
+	outline: 0 !important;
+}
+
+.btn-danger {
+	&:active,
+	&:hover,
+	&:focus {
+		background-color: #d9534f;
+		border-color: #d9534f;
+	}
+	&.active {
+		&,
+		&:active,
+		&:hover,
+		&:focus {
+			background-color: #ac2925;
+			border-color: #8b211e;
+		}
+	}
+}
+
+.active-green.active {
+	&,
+	&:active,
+	&:hover,
+	&:focus {
+		background-color: #398439;
+		border-color: #2d672d;
+	}
+}
+
+$pause_width: 164px;
+.dropshadow {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-left: -($pause_width / 2);
+	margin-top: -($pause_width / 2);
+	background-color: rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+	z-index: 10000;
+
+	.dropshadow-background {
+		background-color: white;
+		z-index: 10005;
+		width: $pause_width - 8px;
+		height: $pause_width - 8px;
+		position: absolute;
+		border-radius: 500px;
+		top: $pause_width / 10;
+		left: 1px;
+	}
+	.fa {
+		z-index: 10010;
+		position: absolute;
+		font-size: 12em;
+	}
+}
