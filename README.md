@@ -5,9 +5,10 @@
 ```
 git clone git@github.com:Nebual/space-couch.git
 cd space-couch
+npm install
 npm start
 ```
-Then connect to http://[lan-ip-here]:8000/role/ from your phones
+Then connect to http://[lan-ip-here]:8000/ from your phones
 
 ## Troubleshooting
 

@@ -5,6 +5,8 @@
     <meta name="description" content="">
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, minimal-ui' />
 
     <meta http-equiv="cleartype" content="on">
@@ -14,14 +16,20 @@
           rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/css/bootstrap.min.css"
           rel="stylesheet" crossorigin="anonymous">
-    <link href="/assets/global.css" rel="stylesheet">
+    <link href="/styles/range-slider.css" rel="stylesheet">
+    <link href="/styles/global.css" rel="stylesheet">
 
     <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js"
             integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/js/bootstrap.min.js"
             crossorigin="anonymous"></script>
-    <script src="/assets/global.js"></script>
+    <script src="/js/range-slider.js"></script>
+    <script src="/js/global.js"></script>
 </head>
 <body>
 <div class="container-fluid">
+    <div id="pause-dialog" class="dropshadow" style="display: none;">
+        <div class="dropshadow-background"></div>
+        <i class="fa fa-pause-circle"></i>
+    </div>

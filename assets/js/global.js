@@ -1,6 +1,13 @@
 $(function() {
 	'use strict';
 
+	var role;
+	if(window.location.host == '') {  // electron
+		role = 'captain';
+	} else {
+		role = window.location.pathname.match(/([A-Za-z]+)/)[1];
+	}
+
 	navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;// || function() {};
 	function vibrate(ms) {
 		if (!navigator.vibrate) return; // unsupported
@@ -10,16 +17,16 @@ $(function() {
 
 	var sock = null;
 	function startWebSocket() {
-		sock = new WebSocket("ws://" + window.location.host + "/ws");
+		sock = new WebSocket("ws://" + (window.location.host ? window.location.host : '127.0.0.1:8000') + "/ws");
 		sock.onopen = function (e) {
 			console.log("we opened a WS!");
-			sock.send('{"event": "init"}');
+			sock.send(JSON.stringify({'event': 'init', 'role': role}));
 		};
 		sock.onmessage = function (e) {
 			var data = JSON.parse(e.data);
 			console.log("Got", data);
 			switch (data.event) {
-				case 'main_power_system':
+				case 'lights_on':
 					if (data.value) {
 						$('body').css({'background-color': 'white'});
 					} else {
@@ -32,6 +39,9 @@ $(function() {
 					break;
 				case 'vibrate':
 					vibrate(data.value);
+					break;
+				case 'pause':
+					$('#pause-dialog').toggle(data.value);
 					break;
 			}
 		};
@@ -50,4 +60,13 @@ $(function() {
 		console.log($(this).data('sync'), !$(this).hasClass('active'), 'was clicked');
 		sock.send(JSON.stringify({'event': 'state', 'id': $(this).data('sync'), 'value': !$(this).hasClass('active')}));
 	});
+
+	$('.range-slider').each(function(i) {
+		rangeSlider(this, {
+			vertical: $(this).data('vertical') ? true : false,
+			drag: function(v) {
+				console.log("Power", v);
+			}
+		});
+	})
 });

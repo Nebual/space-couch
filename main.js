@@ -5,7 +5,7 @@ const WebSocketServer = require('websocket').server;
 const path = require('path');
 const window = require('electron-window');
 const express = require('express');
-const exphbs = require('express-handlebars');
+const http = require('http');
 
 let mainWindow; // reference kept for GC
 
@@ -38,7 +38,7 @@ app.on('ready', function() {
 	mainWindow = window.createWindow({width: 800, height: 600});
 	const indexPath = path.resolve(__dirname, 'index.html');
 	mainWindow.showUrl(indexPath, {
-		'role_url': host_url + 'role/'
+		'role_url': host_url
 	}, () => {
 		console.log('window is now visible!');
 		//mainWindow.webContents.openDevTools();
@@ -63,19 +63,46 @@ app.on('ready', function() {
 	});
 
 	//Start server
-	server.listen(8000, function(){
+	server.server = http.createServer(server);
+	server.server.listen(PORT, function(){
 		// Print out our actual IP Address so they know what to tell their friends :D
 		console.log("Listening on "+host_url);
 	});
 
-	//Websocket server
+
+	class Game {
+		constructor() {
+			this.lights_on = true;
+			this.paused = false;
+			this.state = {
+				'captain': {},
+				'engineer': {},
+				'navigation': {},
+				'robotics': {},
+				'weapons': {},
+			};
+		}
+		setRoleState(role, id, value) {
+			this.state[role][id] = value;
+			broadcast({'event': 'state', 'id': id, 'value': value}, role);
+		}
+		getRoleState(role, id) {
+			return this.state[role][id];
+		}
+		getRoleStates(role) {
+			return this.state[role] || {};
+		}
+	}
+	var game = new Game();
+
 	var wsServer = new WebSocketServer({
-		httpServer: server
+		httpServer: server.server
 	});
 	var activeSocks = [];
-	function broadcast(data) {
+	function broadcast(data, role) {
 		'use strict';
 		activeSocks.forEach(function(connection) {
+			if(role && connection.role != role) return;
 			connection.send(JSON.stringify(data));
 		});
 	}
@@ -91,17 +118,30 @@ app.on('ready', function() {
 
 				switch(msg.event) {
 					case 'init':
+						connection.role = msg.role;
+
+						connection.send(JSON.stringify({'event': 'lights_on', 'value': game.lights_on}));
+						connection.send(JSON.stringify({'event': 'pause', 'value': game.paused}));
+						var role_state = game.getRoleStates(connection.role);
+						for(let index of Object.keys(role_state)) {
+							connection.send(JSON.stringify({'event': 'state', 'id': index, 'value': role_state[index]}));
+						}
 						activeSocks.push(connection);
 						break;
 					case 'state':
 						console.log("They set " + msg.id + " to " + msg.value);
-						broadcast({'event': 'state', 'id': msg.id, 'value': msg.value});
+						game.setRoleState(connection.role, msg.id, msg.value);
 						switch(msg.id) {
 							case 'main_power_system':
-								broadcast({'event': 'main_power_system', 'value': msg.value});
+								game.lights_on = msg.value;
+								broadcast({'event': 'lights_on', 'value': game.lights_on});
 								break;
 							case 'flush_gravity':
 								broadcast({'event': 'vibrate', 'value': 300});
+								break;
+							case 'pause':
+								game.paused = msg.value;
+								broadcast({'event': 'pause', 'value': game.paused});
 								break;
 						}
 						break;

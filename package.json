@@ -25,11 +25,15 @@
   },
   "dependencies": {
     "async": "^2.0.1",
+    "bootstrap": "^3.3.7",
     "ejs": "^2.5.1",
     "electron": "latest",
     "electron-window": "^0.8.1",
     "express": "^4.14.0",
+    "ico": "^0.3.3",
+    "jQuery": "^1.7.4",
     "qrcode-npm": "0.0.3",
+    "tether": "latest",
     "websocket": "^1.0.23"
   }
 }

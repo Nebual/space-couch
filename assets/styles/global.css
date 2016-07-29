@@ -23,3 +23,28 @@
     background-color: #398439;
     border-color: #2d672d;
 }
+
+.dropshadow {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -82px;
+    margin-top: -82px;
+    background-color: rgba(0,0,0,0.5);
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+    z-index: 10000;
+}
+.dropshadow .dropshadow-background {
+    background-color: white;
+    z-index: 10005;
+    width: 160px;
+    height: 160px;
+    position: absolute;
+    border-radius: 500px;
+    top: 15px;
+}
+.dropshadow .fa {
+    z-index: 10010;
+    position: absolute;
+    font-size: 12em;
+}

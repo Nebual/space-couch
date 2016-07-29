@@ -3,11 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Project Space Couch</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"
+          rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/css/bootstrap.min.css"
+          rel="stylesheet" crossorigin="anonymous">
+    <link href="./assets/styles/global.css" rel="stylesheet">
+
+    <script>
+        $ = require('jQuery');
+        tether = require('tether');
+        require('bootstrap');
+        require('./assets/js/global.js');
+    </script>
 </head>
 <body>
 <h1>Project Space Couch</h1>
 <h2>Overview</h2>
 <div id="qr_container"></div>
+
+<button id="pause-button" type="button" class="btn btn-warning" data-toggle="button" data-sync="pause"><i class="fa fa-pause fa-4x"></i></button>
+
 </body>
 
 <script>
