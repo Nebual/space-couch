@@ -24,8 +24,11 @@
     "electron-prebuilt": "^1.2.0"
   },
   "dependencies": {
+    "async": "^2.0.1",
+    "ejs": "^2.5.1",
     "electron": "latest",
     "electron-window": "^0.8.1",
+    "express": "^4.14.0",
     "qrcode-npm": "0.0.3",
     "websocket": "^1.0.23"
   }

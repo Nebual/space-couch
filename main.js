@@ -4,11 +4,23 @@ const app = electron.app;
 const WebSocketServer = require('websocket').server;
 const path = require('path');
 const window = require('electron-window');
+const express = require('express');
+const exphbs = require('express-handlebars');
 
 let mainWindow; // reference kept for GC
 
 var host_url;
 let PORT = 8000;
+
+function echoSingleFile(response, name) {
+		'use strict';
+		var content_type = 'text/plain';
+		if(name.indexOf('.css') !== -1) {
+			content_type = 'text/css';
+		}
+		response.writeHead(200, {'content-type' : content_type});
+		response.end(fs.readFileSync(name, 'utf8'));
+}
 
 app.on('ready', function() {
 
@@ -29,66 +41,34 @@ app.on('ready', function() {
 		'role_url': host_url + 'role/'
 	}, () => {
 		console.log('window is now visible!');
-		mainWindow.webContents.openDevTools();
+		//mainWindow.webContents.openDevTools();
 	});
 
 	mainWindow.on('closed', function () {
 		mainWindow = null; // let GC run its course
 	});
 
-	function echoSingleFile(response, name) {
-		'use strict';
-		var content_type = 'text/plain';
-		if(name.indexOf('.css') !== -1) {
-			content_type = 'text/css';
-		}
-		response.writeHead(200, {'content-type' : content_type});
-		response.end(fs.readFileSync(name, 'utf8'));
-	}
-	var http = require("http");
-	var url = require('url');
-	var fs = require("fs");
-	var server = http.createServer(function (request, response) {
-		var parsed_url = url.parse(request.url, true);
-		var path = parsed_url.path.split('/');
-		var $_GET = parsed_url.query;
-		console.log("Someone hit us up with", parsed_url);
-		switch(path[1]) {
-			case 'role':
-				switch (path[2]) {
-					case 'engineer':
-					case 'robotics':
-					case 'weapons':
-					case 'navigation':
-						response.writeHead(200);
-						response.write(fs.readFileSync('role/_header.html', 'utf8'));
-						response.write(fs.readFileSync('role/' + path[2] + '.html', 'utf8'));
-						response.write(fs.readFileSync('role/_footer.html', 'utf8'));
-						response.end();
-						break;
-					default:
-						response.writeHead(200);
-						response.write(fs.readFileSync('role/_header.html', 'utf8'));
-						response.write(fs.readFileSync('role/index.html', 'utf8'));
-						response.write(fs.readFileSync('role/_footer.html', 'utf8'));
-						response.end();
-				}
-				break;
-			case 'assets':
-				if(path[2] == 'font-awesome.css') {
-					echoSingleFile(response, 'node_modules/font-awesome/css/font-awesome.css');
-				}
-				else if(path[2].indexOf('.css') !== -1 || path[2].indexOf('.js') !== -1) {
-					// we good
-					echoSingleFile(response, 'assets/' + path[2]);
-				}
-				break;
-			default:
-				response.writeHead(404);
-				response.end("404");
-		}
+	//Staic file server
+	var server = express();
+	server.use(express.static(path.join(__dirname + '/assets')));
+	server.set('view engine', 'ejs');
+
+	server.get('/', function(req, res){
+		res.render('index', {title: 'Title data'});
 	});
-	server.listen(PORT);
+
+	server.get('/:role', function(req, res){
+		var role = req.params.role;
+		res.render(role);
+	});
+
+	//Start server
+	server.listen(8000, function(){
+		// Print out our actual IP Address so they know what to tell their friends :D
+		console.log("Listening on "+host_url);
+	});
+
+	//Websocket server
 	var wsServer = new WebSocketServer({
 		httpServer: server
 	});
@@ -139,9 +119,6 @@ app.on('ready', function() {
 			}
 		});
 	});
-
-	// Print out our actual IP Address so they know what to tell their friends :D
-	console.log("Listening on "+host_url);
 });
 
 // Quit when all windows are closed.
