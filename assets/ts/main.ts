@@ -3,24 +3,17 @@ const os = require('os');
 const app = electron.app;
 const WebSocketServer = require('websocket').server;
 const path = require('path');
-const window = require('electron-window');
+const electronWindow = require('electron-window');
 const express = require('express');
 const http = require('http');
 
+let server;
 let mainWindow; // reference kept for GC
 
 var host_url;
 let PORT = 8000;
 
-function echoSingleFile(response, name) {
-		'use strict';
-		var content_type = 'text/plain';
-		if(name.indexOf('.css') !== -1) {
-			content_type = 'text/css';
-		}
-		response.writeHead(200, {'content-type' : content_type});
-		response.end(fs.readFileSync(name, 'utf8'));
-}
+var path_to_root = path.resolve(__dirname, '..', '..');
 
 app.on('ready', function() {
 
@@ -35,9 +28,8 @@ app.on('ready', function() {
 		});
 	});
 
-	mainWindow = window.createWindow({width: 800, height: 600});
-	const indexPath = path.resolve(__dirname, 'index.html');
-	mainWindow.showUrl(indexPath, {
+	mainWindow = electronWindow.createWindow({width: 800, height: 600});
+	mainWindow.showUrl(path.resolve(path_to_root, 'index.html'), {
 		'role_url': host_url
 	}, () => {
 		console.log('window is now visible!');
@@ -49,9 +41,9 @@ app.on('ready', function() {
 	});
 
 	//Staic file server
-	var server = express();
-	server.use(express.static(path.join(__dirname + '/assets')));
-	server.use(express.static(path.join(__dirname + '/generated')));
+	server = express();
+	server.use(express.static(path.join(path_to_root, 'assets')));
+	server.use(express.static(path.join(path_to_root, 'generated')));
 	server.set('view engine', 'ejs');
 
 	server.get('/', function(req, res){
@@ -72,6 +64,9 @@ app.on('ready', function() {
 
 
 	class Game {
+		public lights_on;
+		public paused;
+		private state;
 		constructor() {
 			this.lights_on = true;
 			this.paused = false;
@@ -100,7 +95,7 @@ app.on('ready', function() {
 		httpServer: server.server
 	});
 	var activeSocks = [];
-	function broadcast(data, role) {
+	function broadcast(data, role='') {
 		'use strict';
 		activeSocks.forEach(function(connection) {
 			if(role && connection.role != role) return;

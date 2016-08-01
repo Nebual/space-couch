@@ -3,10 +3,23 @@
   "version": "0.0.1",
   "description": "Project Space Couch",
   "license": "MIT",
-  "main": "main.js",
+  "main": "generated/js/main.js",
   "scripts": {
-    "start": "./bin/build-scss & electron .",
-    "build-scss": "./bin/build-scss"
+    "postinstall": "node node_modules/typings/dist/bin.js install",
+
+    "build:js": "node node_modules/typescript/bin/tsc",
+    "build:css": "node node_modules/node-sass/bin/node-sass --include-path assets/scss assets/scss/ --output generated/styles/ --output-style expanded",
+    "build": "npm run build:js && npm run build:css",
+    "clean": "rm -r generated/ dist/",
+
+    "watch:js": "node node_modules/typescript/bin/tsc -w",
+    "watch:css": "node node_modules/node-sass/bin/node-sass -w --include-path assets/scss assets/scss/ --output generated/styles/ --output-style expanded",
+    "watch": "npm run watch:js & npm run watch:css && fg",
+
+    "dist": "npm run build && node node_modules/electron-packager/cli.js . space-couch --out dist/ --prune --ignore \\.idea --ignore typings --ignore .*\\.7z --ignore node_modules/electron/dist --platform=win32 --arch=x64",
+    "7z": "./node_modules/7zip-bin-linux/x64/7za a space-couch-win32-x64.7z dist/space-couch-win32-x64",
+    
+    "start": "electron ."
   },
   "repository": {
     "type": "git",
@@ -23,8 +36,12 @@
   },
   "homepage": "https://github.com/Nebual/space-couch#readme",
   "devDependencies": {
+    "7zip-bin": "^1.0.5",
+    "electron-packager": "^7.4.0",
     "electron-prebuilt": "^1.2.0",
-    "node-sass": "^3.8.0"
+    "node-sass": "^3.8.0",
+    "typescript": "^1.8.10",
+    "typings": "^1.3.2"
   },
   "dependencies": {
     "async": "^2.0.1",
@@ -35,9 +52,12 @@
     "express": "^4.14.0",
     "ico": "^0.3.3",
     "jquery": "^3.1.0",
-    "node-sass": "^3.8.0",
     "qrcode-npm": "0.0.3",
     "tether": "latest",
     "websocket": "^1.0.23"
-  }
+  },
+  "contributors": [
+    {"name": "Nebual", "url": "https://github.com/Nebual"},
+    {"name": "Rob Williams", "url": "https://github.com/Robert-Williams"}
+  ]
 }

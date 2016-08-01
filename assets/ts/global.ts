@@ -8,7 +8,7 @@ $(function() {
 		role = window.location.pathname.match(/([A-Za-z]+)/)[1];
 	}
 
-	navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;// || function() {};
+	navigator.vibrate = navigator.vibrate || (navigator as any).webkitVibrate || (navigator as any).mozVibrate || (navigator as any).msVibrate;
 	function vibrate(ms) {
 		if (!navigator.vibrate) return; // unsupported
 		if (ms === undefined || ms === true || ms === false) ms = 200;
