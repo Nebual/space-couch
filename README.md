@@ -19,9 +19,6 @@ Then connect to http://[lan-ip-here]:8000/ from your phones
 ###Game isn't fun
 * Yeah its kinda early
 
-###Node warns me that the project doesn't have a license yet
-* Yeah we haven't picked one yet
-
 
 ## Todo
 * Engineer
