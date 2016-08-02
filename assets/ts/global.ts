@@ -69,4 +69,34 @@ $(function() {
 			}
 		});
 	})
+
+	var $cards = $('.card');
+	var hammertime = new Hammer(document.body);
+	hammertime.on("swipeleft", function(event) {
+		var $target = $(event.target);
+		if(!$target.hasClass('card')) {
+			$target = $target.parent('.card');
+		}
+
+		var rightIndex = $cards.index($target)+1;
+		if(rightIndex >= $cards.length) return; //rightIndex = 0;
+		$target.hide();
+		$($cards[rightIndex]).show();
+	});
+	hammertime.on("swiperight", function(event) {
+		var $target = $(event.target);
+		if(!$target.hasClass('card')) {
+			$target = $target.parent('.card');
+		}
+
+		var leftIndex = $cards.index($target)-1;
+		if(leftIndex < 0) return; //leftIndex = $cards.length - 1;
+		$target.hide();
+		$($cards[leftIndex]).show();
+	});
 });
+window.addEventListener('load', function(e) {
+	// Vague attempts to hide the address bar... doesn't work in most browsers anymore
+	window.scrollTo(0, 1);
+	setTimeout(function() { window.scrollTo(0, 1); }, 1);
+}, false);

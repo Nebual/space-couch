@@ -26,7 +26,6 @@ app.on('ready', function() {
 			if(host_url){
 				return true;
 			}
-			console.log(iface);
 			if ('IPv4' !== iface.family || iface.internal !== false) {
 				// skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
 				return;
@@ -56,12 +55,19 @@ app.on('ready', function() {
 	server.set('view engine', 'ejs');
 
 	server.get('/', function(req, res){
-		res.render('index', {title: 'Title data'});
+		res.render('index', {title: 'Title data', role: 'list'});
 	});
 
-	server.get('/:role', function(req, res){
-		var role = req.params.role;
-		res.render(role);
+	server.get('/:role', function(req, res, next){
+		req.role = req.params.role;
+		res.render(req.role, {role: req.role}, function(err, html) {
+			if (!err) {
+				return res.send(html);
+			} else {
+				// Not a view, skip this resolver
+				next();
+			}
+		});
 	});
 
 	//Start server
