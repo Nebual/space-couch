@@ -71,11 +71,6 @@ body, html {
 			-moz-transform: rotate(90deg);
 			transform: rotate(90deg);
 		}
-		@media only screen and (orientation:landscape){
-			-webkit-transform: rotate(0deg);
-			-moz-transform: rotate(0deg);
-			transform: rotate(0deg);
-		}
 	}
 	&.container-engineer {
 		@extend .container-fluid.container-landscape;
@@ -90,6 +85,8 @@ body, html {
 		.card {
 			margin-bottom: 0;
 			height: 100%;
+			border: 0;
+			background-color: inherit;
 			&:not(:first-child)::before,
 			&:not(:last-child)::after {
 				display: block;
@@ -109,4 +106,19 @@ body, html {
 			}
 		}
 	}
+}
+
+.console {
+	background-color: black;
+	color: #BEBEBE;
+	font-weight: bold;
+	font-family: monospace;
+	font-size: 14px;
+	border: 0;
+	padding: 10px;
+	padding-bottom: 0;
+	height: 100%;
+	width: 100%;
+	white-space: pre;
+	overflow-y: scroll;
 }

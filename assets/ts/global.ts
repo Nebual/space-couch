@@ -25,6 +25,7 @@ $(function() {
 		sock.onmessage = function (e) {
 			var data = JSON.parse(e.data);
 			console.log("Got", data);
+			$(document).trigger('sock-message', [data]);
 			switch (data.event) {
 				case 'lights_on':
 					if (data.value) {
@@ -59,40 +60,6 @@ $(function() {
 	$('[data-sync]').click(function() {
 		console.log($(this).data('sync'), !$(this).hasClass('active'), 'was clicked');
 		sock.send(JSON.stringify({'event': 'state', 'id': $(this).data('sync'), 'value': !$(this).hasClass('active')}));
-	});
-
-	$('.range-slider').each(function(i) {
-		rangeSlider(this, {
-			vertical: $(this).data('vertical') ? true : false,
-			drag: function(v) {
-				console.log("Power", v);
-			}
-		});
-	})
-
-	var $cards = $('.card');
-	var hammertime = new Hammer(document.body);
-	hammertime.on("swipeleft", function(event) {
-		var $target = $(event.target);
-		if(!$target.hasClass('card')) {
-			$target = $target.parent('.card');
-		}
-
-		var rightIndex = $cards.index($target)+1;
-		if(rightIndex >= $cards.length) return; //rightIndex = 0;
-		$target.hide();
-		$($cards[rightIndex]).show();
-	});
-	hammertime.on("swiperight", function(event) {
-		var $target = $(event.target);
-		if(!$target.hasClass('card')) {
-			$target = $target.parent('.card');
-		}
-
-		var leftIndex = $cards.index($target)-1;
-		if(leftIndex < 0) return; //leftIndex = $cards.length - 1;
-		$target.hide();
-		$($cards[leftIndex]).show();
 	});
 });
 window.addEventListener('load', function(e) {
