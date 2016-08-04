@@ -1,3 +1,4 @@
+var sock = null;
 $(function() {
 	'use strict';
 
@@ -15,7 +16,6 @@ $(function() {
 		navigator.vibrate(ms);
 	}
 
-	var sock = null;
 	function startWebSocket() {
 		sock = new WebSocket("ws://" + (window.location.host ? window.location.host : '127.0.0.1:8000') + "/ws");
 		sock.onopen = function (e) {
@@ -35,8 +35,13 @@ $(function() {
 					}
 					break;
 				case 'state':
-					var $button = $('[data-sync="' + data.id + '"]');
-					$button.toggleClass('active', data.value);
+					var $elem = $('[data-sync="' + data.id + '"]');
+
+					if($elem.data('toggle') == 'button') {
+						$elem.toggleClass('active', data.value);
+					} else if($elem.data('rangeSlider')) {
+						$elem.data('rangeSlider').setValue(data.value);
+					}
 					break;
 				case 'vibrate':
 					vibrate(data.value);
@@ -57,7 +62,7 @@ $(function() {
 	startWebSocket();
 	setInterval(checkWebSocket, 5000);
 
-	$('[data-sync]').click(function() {
+	$('[data-sync][data-toggle="button"]').click(function() {
 		console.log($(this).data('sync'), !$(this).hasClass('active'), 'was clicked');
 		sock.send(JSON.stringify({'event': 'state', 'id': $(this).data('sync'), 'value': !$(this).hasClass('active')}));
 	});
@@ -67,3 +72,12 @@ window.addEventListener('load', function(e) {
 	window.scrollTo(0, 1);
 	setTimeout(function() { window.scrollTo(0, 1); }, 1);
 }, false);
+
+var throttleTimers = {};
+function throttle(func : {(): void;}, delay_ms : number) : void {
+	var now = (new Date()).getTime();
+	if(now > (throttleTimers[func.toString()] || 0))  {
+		throttleTimers[func.toString()] = now + delay_ms;
+		setTimeout(func, delay_ms)
+	}
+}

@@ -1,4 +1,6 @@
 $(function() {
+    $(document.body).css('overflow-y', 'hidden'); // prevents "pull down to refresh"
+
     var $console = $('.console');
     $(document).on('sock-message', function(e, data) {
         $console.text($console.text() + (new Date()).toLocaleTimeString() + ': ' + JSON.stringify(data) + "\n");
@@ -6,10 +8,13 @@ $(function() {
     });
 
     $('.range-slider').each(function(i) {
-        rangeSlider(this, {
-            vertical: $(this).data('vertical') ? true : false,
+        var $slider = $(this);
+        $slider.rangeSlider({
+            vertical: $slider.data('vertical') ? true : false,
             drag: function(v) {
-                console.log("Power", v);
+                throttle(function () {
+                    sock.send(JSON.stringify({'event': 'state', 'id': $slider.data('sync'), 'value': $slider.data('rangeSlider').getValue()}));
+                }, 250);
             }
         });
     });

@@ -39,13 +39,14 @@
 .range-slider-vertical .range-slider-track:before {
   top:0;
   right:auto;
-  left:14px;
+  left:19px;
   width:2px;
   height:100%;
 }
 .range-slider-vertical .range-slider-track .dragger {
-  width:inherit;
-  height:20px;
+  width: 30px;
+  height: 20px;
+  margin: 10px 5px;
 }
 .no-select {
   -webkit-touch-callout:none;
