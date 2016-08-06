@@ -63,7 +63,7 @@ $(function() {
 	startWebSocket();
 	setInterval(checkWebSocket, 5000);
 
-	$('[data-sync][data-toggle="button"]').click(function() {
+	$('button[data-sync]').click(function() {
 		console.log($(this).data('sync'), !$(this).hasClass('active'), 'was clicked');
 		sock.send(JSON.stringify({'event': 'state', 'id': $(this).data('sync'), 'value': !$(this).hasClass('active')}));
 	});
