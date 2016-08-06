@@ -58,6 +58,18 @@ $pause_width: 164px;
 	}
 }
 
+.lobby-button {
+	position: absolute;
+	top: 0;
+	left: 0;
+	padding: 10px;
+	z-index: 100;
+	color: rgba(127, 127, 127, 0.5) !important;
+	.container-list & {
+		display: none;
+	}
+}
+
 body, html {
 	height: 100%;
 }
@@ -92,7 +104,7 @@ body, html {
 				display: block;
 				content: '';
 				position: absolute;
-				width: 12px;
+				width: 16px;
 				height: 100%;
 				top: 0;
 			}

@@ -6,7 +6,8 @@ $(function() {
 	if(window.location.host == '') {  // electron
 		role = 'captain';
 	} else {
-		role = window.location.pathname.match(/([A-Za-z]+)/)[1];
+		let match = window.location.pathname.match(/([A-Za-z]+)/);
+		role = match ? match[1] : 'list';
 	}
 
 	navigator.vibrate = navigator.vibrate || (navigator as any).webkitVibrate || (navigator as any).mozVibrate || (navigator as any).msVibrate;
@@ -65,6 +66,15 @@ $(function() {
 	$('[data-sync][data-toggle="button"]').click(function() {
 		console.log($(this).data('sync'), !$(this).hasClass('active'), 'was clicked');
 		sock.send(JSON.stringify({'event': 'state', 'id': $(this).data('sync'), 'value': !$(this).hasClass('active')}));
+	});
+
+	var lobby_hold_timer;
+	$('.lobby-button').on('mousedown touchstart', function() {
+		lobby_hold_timer = setTimeout(function () {
+			window.location.assign('/');
+		}, 1000);
+	}).on('mouseup mouseleave touchend', function() {
+		clearTimeout(lobby_hold_timer);
 	});
 });
 window.addEventListener('load', function(e) {
