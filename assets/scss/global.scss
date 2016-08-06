@@ -118,6 +118,17 @@ body, html {
 			}
 		}
 	}
+	&.container-robotics {
+		@extend .container-fluid.container-landscape;
+		height: 100%;
+		padding: 0;
+
+		.background-ship {
+			background: url("/images/ship_robot_background.png") center center/100% 100% no-repeat black;
+			height: 200%;
+			width: 200%;
+		}
+	}
 }
 
 .console {
