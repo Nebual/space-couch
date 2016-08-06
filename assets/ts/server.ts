@@ -1,9 +1,12 @@
 const electron = require('electron');
 const os = require('os');
+const fs = require('fs');
 const app = electron.app;
 const WebSocketServer = require('websocket').server;
 const path = require('path');
 const electronWindow = require('electron-window');
+const compression = require('compression');
+const minify = require('express-minify');
 const express = require('express');
 const http = require('http');
 
@@ -12,6 +15,7 @@ let mainWindow; // reference kept for GC
 
 var host_url;
 let PORT = 8000;
+const MINIFY_ASSETS = !fs.statSync('typings').isDirectory() || false;
 
 var path_to_root = path.resolve(__dirname, '..', '..');
 
@@ -50,7 +54,11 @@ app.on('ready', function() {
 
 	//Staic file server
 	server = express();
-	server.use(express.static(path.join(path_to_root, 'assets')));
+	server.use(compression());
+	if(MINIFY_ASSETS) {
+		server.use(minify());
+	}
+	server.use(express.static(path.join(path_to_root, 'assets'), { maxAge: 1000*60*60*24*7 }));
 	server.use(express.static(path.join(path_to_root, 'generated')));
 	server.set('view engine', 'ejs');
 
@@ -111,7 +119,6 @@ app.on('ready', function() {
 	});
 	var activeSocks = [];
 	function broadcast(data, role='') {
-		'use strict';
 		activeSocks.forEach(function(connection) {
 			if(role && connection.role != role) return;
 			connection.send(JSON.stringify(data));

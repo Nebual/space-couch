@@ -1,0 +1,50 @@
+& {
+	@extend .container-fluid.container-landscape;
+	height: 100%;
+	padding: 0;
+}
+.card-title {
+	text-align: center;
+}
+.cards {
+	height: 100%;
+}
+.card {
+	margin-bottom: 0;
+	height: 100%;
+	border: 0;
+	background-color: inherit;
+	&:not(:first-child)::before,
+	&:not(:last-child)::after {
+		display: block;
+		content: '';
+		position: absolute;
+		width: 16px;
+		height: 100%;
+		top: 0;
+	}
+	&:not(:first-child)::before {
+		left: 0;
+		background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
+	}
+	&:not(:last-child)::after {
+		right: 0;
+		background: linear-gradient(to left, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
+	}
+}
+
+
+.console {
+	background-color: black;
+	color: #BEBEBE;
+	font-weight: bold;
+	font-family: monospace;
+	font-size: 14px;
+	border: 0;
+	padding: 10px;
+	padding-bottom: 0;
+	height: 100%;
+	width: 100%;
+	white-space: pre;
+	overflow-y: scroll;
+}

@@ -46,10 +46,12 @@
   "dependencies": {
     "async": "^2.0.1",
     "bootstrap": "^3.3.7",
+    "compression": "^1.6.2",
     "ejs": "^2.5.1",
     "electron": "latest",
     "electron-window": "^0.8.1",
     "express": "^4.14.0",
+    "express-minify": "^0.2.0",
     "ico": "^0.3.3",
     "jquery": "^3.1.0",
     "qrcode-npm": "0.0.3",
