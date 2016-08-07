@@ -1,3 +1,4 @@
+import {ShipNodes, Robot} from "./server/ship";
 const electron = require('electron');
 const os = require('os');
 const fs = require('fs');
@@ -90,6 +91,7 @@ app.on('ready', function() {
 		public lights_on;
 		public paused;
 		private state;
+		private ship;
 		constructor() {
 			this.lights_on = true;
 			this.paused = false;
@@ -111,8 +113,24 @@ app.on('ready', function() {
 		getRoleStates(role) {
 			return this.state[role] || {};
 		}
+
+		public initShip(shipName: string) {
+			this.ship = new ShipNodes(shipName);
+			this.ship.createRobots(3);
+		}
+		public getShipRobots(): Robot[] {
+			return this.ship.robots;
+		}
+		public moveRobot(id:number, coord) {
+			var robot = this.ship.robots[id];
+			if(!robot) return;
+			robot.left = coord[0];
+			robot.top = coord[1];
+			broadcast({'event': 'robots', 'id': id, 'value': [robot]}, 'robotics');
+		}
 	}
 	var game = new Game();
+	game.initShip('ship1');
 
 	var wsServer = new WebSocketServer({
 		httpServer: server.server
@@ -136,6 +154,7 @@ app.on('ready', function() {
 
 				switch(msg.event) {
 					case 'init':
+						activeSocks.push(connection);
 						connection.role = msg.role;
 
 						connection.send(JSON.stringify({'event': 'lights_on', 'value': game.lights_on}));
@@ -144,7 +163,12 @@ app.on('ready', function() {
 						for(let index of Object.keys(role_state)) {
 							connection.send(JSON.stringify({'event': 'state', 'id': index, 'value': role_state[index]}));
 						}
-						activeSocks.push(connection);
+						switch(connection.role) {
+							case 'robotics': {
+								connection.send(JSON.stringify({'event': 'robots', 'value': game.getShipRobots()}));
+								break;
+							}
+						}
 						break;
 					case 'state':
 						console.log("They set " + msg.id + " to " + msg.value);
@@ -162,6 +186,9 @@ app.on('ready', function() {
 								broadcast({'event': 'pause', 'value': game.paused});
 								break;
 						}
+						break;
+					case 'moveRobot':
+						game.moveRobot(msg.id, msg.value);
 						break;
 					default:
 						console.log("Unknown event: " + msg.event);

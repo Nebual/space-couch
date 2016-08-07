@@ -7,11 +7,14 @@ class ClientNet {
 			this.checkWebSocket()
 		}, 5000);
 	}
-	public send(obj) : void {
+	public sendRaw(obj) : void {
 		this.sock.send(JSON.stringify(obj));
 	}
+	public send(event: string, id: string, value: any) : void {
+		this.sendRaw({'event': event, 'id': id, 'value': value});
+	}
 	public sendState(id: string, value: any) : void {
-		this.send({'event': 'state', 'id': id, 'value': value})
+		this.send('state', id, value);
 	}
 
 	private getRole() : string {
@@ -28,7 +31,7 @@ class ClientNet {
 		this.sock = new WebSocket("ws://" + (window.location.host ? window.location.host : '127.0.0.1:8000') + "/ws");
 		this.sock.onopen = function (e) {
 			console.log("we opened a WS!");
-			self.send({'event': 'init', 'role': self.getRole()});
+			self.sendRaw({'event': 'init', 'role': self.getRole()});
 		};
 		this.sock.onmessage = function (e) {
 			var data = JSON.parse(e.data);
