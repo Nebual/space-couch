@@ -110,7 +110,6 @@
             }
             if (down && pos >= rangeOffset && pos <= (rangeOffset + self._rangeWidth)) {
                 let newPos = ((pos - rangeOffset) / self._rangeWidth) * 100;
-                console.log(pos, (pos - rangeOffset), self._rangeWidth, newPos);
                 self.setValue(newPos);
                 config.drag(Math.round(newPos), e);
             }

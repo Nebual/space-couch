@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "outFile": "generated/js/client.js",
+        "rootDir": "assets/ts/client.d"
+    },
+    "files": [
+        "typings/index.d.ts",
+        "assets/ts/client.d/ClientNet.ts",
+        "assets/ts/client.d/range-slider.ts",
+        "assets/ts/client.d/client.ts"
+    ]
+}

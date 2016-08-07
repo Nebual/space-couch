@@ -13,7 +13,7 @@ $(function() {
             vertical: $slider.data('vertical') ? true : false,
             drag: function(v) {
                 throttle(function () {
-                    sock.send(JSON.stringify({'event': 'state', 'id': $slider.data('sync'), 'value': $slider.data('rangeSlider').getValue()}));
+                    clientNet.sendState($slider.data('sync'), $slider.data('rangeSlider').getValue());
                 }, 250);
             }
         });
