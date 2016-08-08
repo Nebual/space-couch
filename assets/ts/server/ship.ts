@@ -1,3 +1,5 @@
+import {NetPacket} from "./ServerNet";
+import {Game} from "./Game";
 enum RoomType {
 	None,
 	Engine,
@@ -29,10 +31,13 @@ interface Node {
 }
 
 export class ShipNodes {
+	private game: Game;
 	private nodes: {[XxY: string]: Node} = {};
 	public robots: Robot[] = [];
 
-	constructor(layout: string) {
+	constructor(game: Game, layout: string) {
+		this.game = game;
+
 		let grid = ShipNodes[layout];
 		for (let row of grid) {
 			let node = <Node>{
@@ -46,7 +51,6 @@ export class ShipNodes {
 			};
 			this.nodes[node.top + 'x' + node.left] = node;
 		}
-		console.log(this.nodes);
 	}
 
 	createRobots(num: number)
@@ -103,4 +107,20 @@ export class ShipNodes {
 		[10, 6, RoomType.Weapons, 'nsw'],
 		[10, 7, RoomType.Weapons, 'nw'],
 	];
+
+	public onMessage(msg: NetPacket) {
+		switch(msg.event) {
+			case 'moveRobot':
+				this.moveRobot(<number>msg.id, msg.value);
+				break;
+		}
+	}
+
+	public moveRobot(id:number, coord) {
+		var robot = this.robots[id];
+		if(!robot) return;
+		robot.left = coord[0];
+		robot.top = coord[1];
+		this.game.net.broadcast({'event': 'robots', 'id': id, 'value': [robot]}, 'robotics');
+	}
 }
