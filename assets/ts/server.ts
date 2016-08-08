@@ -11,6 +11,8 @@ const compression = require('compression');
 const minify = require('express-minify');
 const express = require('express');
 const http = require('http');
+const repl = require('repl');
+const process = require('process');
 
 let game : Game;
 let server : Express;
@@ -18,7 +20,8 @@ let mainWindow; // reference kept for GC
 
 var host_url;
 let PORT = 8000;
-const MINIFY_ASSETS = !fs.statSync('typings').isDirectory() || false;
+const DEV: boolean = (process.env.NODE_ENV || 'development') === 'development';
+const MINIFY_ASSETS = !fs.statSync('typings').isDirectory() || !DEV;
 
 var path_to_root = path.resolve(__dirname, '..', '..');
 
@@ -91,6 +94,15 @@ app.on('ready', function() {
 	game = new Game();
 	game.net = new ServerNet(game, httpServer);
 	game.initShip('ship1');
+
+	if(DEV) {
+		let replInstance = repl.start({'prompt': 'node> '});
+		replInstance.on('exit', () => {
+			app.quit();
+		});
+		replInstance.context.game = game;
+		replInstance.context.server = server;
+	}
 });
 
 // Quit when all windows are closed.
