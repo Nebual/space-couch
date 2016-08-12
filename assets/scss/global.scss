@@ -85,6 +85,9 @@ body, html {
 		}
 	}
 }
+.container-weapons {
+	@import '_weapons';
+}
 .container-engineer {
 	@import '_engineer';
 }
