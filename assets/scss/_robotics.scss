@@ -26,4 +26,8 @@ $tile_size: 64px;
 			display: none;
 		}
 	}
+	/* Debateably useful 'force GPU rendering' tricks */
+	-webkit-backface-visibility: hidden;
+	perspective: 1000;
+	transform: translateZ(0);
 }

@@ -1,5 +1,6 @@
 import {NetPacket} from "./ServerNet";
 import {Game} from "./Game";
+const PF = require('pathfinding');
 enum RoomType {
 	None,
 	Engine,
@@ -34,9 +35,20 @@ export class ShipNodes {
 	private game: Game;
 	private nodes: {[XxY: string]: Node} = {};
 	public robots: Robot[] = [];
+	private grid;
+	private finder;
 
 	constructor(game: Game, layout: string) {
 		this.game = game;
+
+		// Create a matrix that's entirely unwalkable by default
+		let rows = [], b;
+		while (rows.length < 8) {
+			rows.push(b = []);
+			while (b.push(1) < 13);
+		}
+		this.grid = new PF.Grid(rows);
+		this.finder = new PF.AStarFinder();
 
 		let grid = ShipNodes[layout];
 		for (let row of grid) {
@@ -49,8 +61,13 @@ export class ShipNodes {
 				'south': row[3].includes('s'),
 				'west' : row[3].includes('w')
 			};
-			this.nodes[node.top + 'x' + node.left] = node;
+			this.nodes[node.left + 'x' + node.top] = node;
+			this.grid.setWalkableAt(node.left, node.top, true);
 		}
+	}
+
+	public getNode(x:number, y:number): Node {
+		return this.nodes[`${x}x${y}`];
 	}
 
 	createRobots(num: number)
@@ -117,10 +134,14 @@ export class ShipNodes {
 	}
 
 	public moveRobot(id:number, coord) {
-		var robot = this.robots[id];
-		if(!robot) return;
+		let robot = this.robots[id];
+		let node = this.getNode(coord[0], coord[1]);
+		if(!robot || !node || (coord[0]===robot.left && coord[1]===robot.top)) return;
+
+		let path = this.finder.findPath(robot.left, robot.top, coord[0], coord[1], this.grid.clone());
+		path = PF.Util.compressPath(path);
 		robot.left = coord[0];
 		robot.top = coord[1];
-		this.game.net.broadcast({'event': 'robots', 'id': id, 'value': [robot]}, 'robotics');
+		this.game.net.broadcast({'event': 'robotPath', 'id': id, 'value': path}, 'robotics');
 	}
 }

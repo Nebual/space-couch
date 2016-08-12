@@ -53,6 +53,7 @@
     "express-minify": "^0.2.0",
     "ico": "^0.3.3",
     "jquery": "^3.1.0",
+    "pathfinding": "^0.4.18",
     "qrcode-npm": "0.0.3",
     "tether": "latest",
     "websocket": "^1.0.23"
