@@ -42,13 +42,17 @@ export class ShipNodes {
 		this.game = game;
 
 		// Create a matrix that's entirely unwalkable by default
+		// 2x as large as our grid size, so there's odd "wall" nodes between each even grid cell
 		let rows = [], b;
-		while (rows.length < 8) {
+		while (rows.length < 8*2) {
 			rows.push(b = []);
-			while (b.push(1) < 13);
+			while (b.push(1) < 13*2);
 		}
 		this.grid = new PF.Grid(rows);
-		this.finder = new PF.AStarFinder();
+		this.finder = new PF.AStarFinder({
+			allowDiagonal: true,
+			dontCrossCorners: true
+		});
 
 		let grid = ShipNodes[layout];
 		for (let row of grid) {
@@ -62,8 +66,29 @@ export class ShipNodes {
 				'west' : row[3].includes('w')
 			};
 			this.nodes[node.left + 'x' + node.top] = node;
-			this.grid.setWalkableAt(node.left, node.top, true);
+			this.grid.setWalkableAt(node.left*2, node.top*2, true);
+			if(node.north) this.grid.setWalkableAt(node.left*2, node.top*2 - 1, true);
+			if(node.east) this.grid.setWalkableAt(node.left*2 + 1, node.top*2, true);
+			if(node.south) this.grid.setWalkableAt(node.left*2, node.top*2 + 1, true);
+			if(node.west) this.grid.setWalkableAt(node.left*2 - 1, node.top*2, true);
+			// Kinda a hack, but open up nodes in the middle of the room too
+			if(node.north && node.west && this.grid.isWalkableAt(node.left*2 - 1, node.top*2 - 2)) this.grid.setWalkableAt(node.left*2 - 1, node.top*2 - 1, true);
+			if(node.south && node.west && this.grid.isWalkableAt(node.left*2 - 1, node.top*2 + 2)) this.grid.setWalkableAt(node.left*2 - 1, node.top*2 + 1, true);
 		}
+		this.debug_grid();
+	}
+
+	public debug_grid(grid=null)
+	{
+		if(!grid) grid = this.grid;
+		let s = '';
+		for(let row of grid.nodes) {
+			for(let cell of row) {
+				s += (cell.walkable ? ' ' : 'X');
+			}
+			s += "\n";
+		}
+		console.log(s);
 	}
 
 	public getNode(x:number, y:number): Node {
@@ -138,8 +163,12 @@ export class ShipNodes {
 		let node = this.getNode(coord[0], coord[1]);
 		if(!robot || !node || (coord[0]===robot.left && coord[1]===robot.top)) return;
 
-		let path = this.finder.findPath(robot.left, robot.top, coord[0], coord[1], this.grid.clone());
+		let path = this.finder.findPath(robot.left*2, robot.top*2, coord[0]*2, coord[1]*2, this.grid.clone());
 		path = PF.Util.compressPath(path);
+		for(let i=0; i<path.length; i++) {
+			path[i][0] /= 2;
+			path[i][1] /= 2;
+		}
 		robot.left = coord[0];
 		robot.top = coord[1];
 		this.game.net.broadcast({'event': 'robotPath', 'id': id, 'value': path}, 'robotics');
