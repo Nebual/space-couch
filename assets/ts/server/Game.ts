@@ -14,7 +14,7 @@ export class Game {
         this.state = {
             'captain': {},
             'engineer': {},
-            'navigation': {},
+            'navigator': {},
             'robotics': {},
             'weapons': {},
         };
