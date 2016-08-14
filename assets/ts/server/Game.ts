@@ -1,5 +1,5 @@
 import {ServerNet, Connection, NetPacket} from "./ServerNet";
-import {ShipNodes, Robot} from "./ship";
+import {ShipNodes, RoomType} from "./ship";
 
 export class Game {
     public lights_on;
@@ -21,6 +21,7 @@ export class Game {
     }
 
     public initConnection(connection:Connection) {
+        this.ship.initConnection(connection);
         connection.sendEvent('lights_on', this.lights_on);
         connection.sendEvent('pause', this.paused);
 
@@ -28,15 +29,9 @@ export class Game {
         for(let index of Object.keys(role_state)) {
             connection.send({'event': 'state', 'id': index, 'value': role_state[index]});
         }
-        switch(connection.role) {
-            case 'robotics': {
-                connection.sendEvent('robots', this.getShipRobots());
-                break;
-            }
-        }
     }
 
-    public setRoleState(role: string, id: string, value) {
+    public setRoleState(role: Role, id: string, value) {
         this.state[role][id] = value;
         this.net.broadcast({'event': 'state', 'id': id, 'value': value}, role);
 
@@ -52,6 +47,9 @@ export class Game {
                 this.paused = value;
                 this.net.broadcast({'event': 'pause', 'value': this.paused});
                 break;
+            case 'start_generator_fire':
+                this.ship.startFire(RoomType.Generator);
+                break;
         }
     }
     public getRoleState(role, id) {
@@ -64,9 +62,6 @@ export class Game {
     public initShip(shipName: string) {
         this.ship = new ShipNodes(this, shipName);
         this.ship.createRobots(3);
-    }
-    public getShipRobots(): Robot[] {
-        return this.ship.robots;
     }
 
     public onMessage(msg: NetPacket) {

@@ -1,7 +1,7 @@
-import {NetPacket} from "./ServerNet";
+import {NetPacket, Connection} from "./ServerNet";
 import {Game} from "./Game";
 const PF = require('pathfinding');
-enum RoomType {
+export enum RoomType {
 	None,
 	Engine,
 	Generator,
@@ -29,11 +29,14 @@ interface Node {
 	east: boolean;
 	south: boolean;
 	west: boolean;
+
+	onFire: boolean;
 }
 
 export class ShipNodes {
 	private game: Game;
 	private nodes: {[XxY: string]: Node} = {};
+	private nodesByRoom: {[room: number]: Node[]} = {};
 	public robots: Robot[] = [];
 	private grid;
 	private finder;
@@ -66,6 +69,8 @@ export class ShipNodes {
 				'west' : row[3].includes('w')
 			};
 			this.nodes[node.left + 'x' + node.top] = node;
+			if(!this.nodesByRoom[node.room]) this.nodesByRoom[node.room] = [];
+			this.nodesByRoom[node.room].push(node);
 			this.grid.setWalkableAt(node.left*2, node.top*2, true);
 			if(node.north) this.grid.setWalkableAt(node.left*2, node.top*2 - 1, true);
 			if(node.east) this.grid.setWalkableAt(node.left*2 + 1, node.top*2, true);
@@ -97,12 +102,9 @@ export class ShipNodes {
 
 	createRobots(num: number)
 	{
-		for (let node_pos in this.nodes) {
-			let node = this.nodes[node_pos];
-			if (node.room == RoomType.Robotics) {
-				this.robots.push(<Robot>{'left':node.left, 'top':node.top, 'id': this.robots.length});
-				if (--num <= 0) break;
-			}
+		for (let node of this.nodesByRoom[RoomType.Robotics]) {
+			this.robots.push(<Robot>{'left':node.left, 'top':node.top, 'id': this.robots.length});
+			if (--num <= 0) break;
 		}
 	}
 
@@ -155,6 +157,23 @@ export class ShipNodes {
 			case 'moveRobot':
 				this.moveRobot(<number>msg.id, msg.value);
 				break;
+			case 'robotAction':
+				this.robotAction(<number>msg.id, msg.value);
+		}
+	}
+
+	public initConnection(connection:Connection) {
+		switch(connection.role) {
+			case 'robotics': {
+				connection.sendEvent('robots', this.robots);
+				for(let node_id in this.nodes) {
+					let node = this.nodes[node_id];
+					if(node.onFire) {
+						connection.sendEvent('nodeFire', {'left': node.left, 'top': node.top, 'onFire': node.onFire});
+					}
+				}
+				break;
+			}
 		}
 	}
 
@@ -172,5 +191,45 @@ export class ShipNodes {
 		robot.left = coord[0];
 		robot.top = coord[1];
 		this.game.net.broadcast({'event': 'robotPath', 'id': id, 'value': path}, 'robotics');
+	}
+
+	private robotAction(robot_id:number, action:string) {
+		let robot = this.robots[robot_id];
+		switch(action) {
+			case 'extinguish':
+				let node = this.nodes[robot.left+'x'+robot.top];
+				if(!node.onFire) break;
+
+				this.game.setRoleState('robotics', 'robot_'+robot_id, true);
+				setTimeout(() => {
+					let node = this.nodes[robot.left+'x'+robot.top];
+					if(node.onFire) {
+						this.stopFire(node);
+					}
+					this.game.setRoleState('robotics', 'robot_'+robot_id, false);
+				}, 5000);
+				break;
+		}
+	}
+
+	public startFire(roomType:RoomType): boolean {
+		let nodes = this.nodesByRoom[roomType].slice();
+		while(nodes.length) {
+			let i = Math.floor(Math.random()*nodes.length);
+			let node = nodes[i];
+			if(node.onFire) {
+				nodes.splice(i, 1);
+				continue;
+			}
+			node.onFire = true;
+			this.game.net.broadcastEvent('nodeFire', '', {'left': node.left, 'top': node.top, 'onFire': node.onFire}, 'robotics');
+			return true;
+		}
+		return false;
+	}
+
+	public stopFire(node:Node): void {
+		node.onFire = false;
+		this.game.net.broadcastEvent('nodeFire', '', {'left': node.left, 'top': node.top, 'onFire': node.onFire}, 'robotics');
 	}
 }

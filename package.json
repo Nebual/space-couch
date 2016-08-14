@@ -37,6 +37,8 @@
     "7zip-bin": "^1.0.5",
     "electron-packager": "^7.4.0",
     "electron-prebuilt": "^1.2.0",
+    "compass-mixins": "^0.12.10",
+    "mathsass": "^0.9.5",
     "node-sass": "^3.8.0",
     "npm-run-all": "^2.3.0",
     "typescript": "^1.8.10",

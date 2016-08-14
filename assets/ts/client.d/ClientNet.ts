@@ -31,6 +31,7 @@ class ClientNet {
 		this.sock = new WebSocket("ws://" + (window.location.host ? window.location.host : '127.0.0.1:8000') + "/ws");
 		this.sock.onopen = function (e) {
 			console.log("we opened a WS!");
+			$(document).trigger('sock-init');
 			self.sendRaw({'event': 'init', 'role': self.getRole()});
 		};
 		this.sock.onmessage = function (e) {

@@ -1,3 +1,4 @@
+/// <reference path="globals/bootstrap/index.d.ts" />
 /// <reference path="globals/custom.d.ts" />
 /// <reference path="globals/electron/index.d.ts" />
 /// <reference path="globals/express-serve-static-core/index.d.ts" />

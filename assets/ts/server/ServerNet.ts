@@ -11,7 +11,7 @@ export interface NetPacket {
 
 export class Connection {
     private _connection: WSConnection;
-    public role: string;
+    public role: Role;
 
     constructor(_connection: WSConnection) {
         this._connection = _connection;
@@ -80,10 +80,13 @@ export class ServerNet {
         }
     }
 
-    broadcast(data: NetPacket, role='') {
+    broadcast(data: NetPacket, role: Role|'' ='') {
         this.connections.forEach(function(connection) {
             if(role && connection.role != role) return;
             connection.send(data);
         });
+    }
+    broadcastEvent(event: string, id: string, value, role: Role|''='') {
+        this.broadcast({'event': event, 'id': id, 'value': value}, role);
     }
 }
