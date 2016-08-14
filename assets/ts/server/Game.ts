@@ -50,6 +50,9 @@ export class Game {
             case 'start_generator_fire':
                 this.ship.startFire(RoomType.Generator);
                 break;
+            case 'break_shields':
+                this.ship.startBreak(RoomType.Shields);
+                break;
         }
     }
     public getRoleState(role, id) {
@@ -61,7 +64,6 @@ export class Game {
 
     public initShip(shipName: string) {
         this.ship = new ShipNodes(this, shipName);
-        this.ship.createRobots(3);
     }
 
     public onMessage(msg: NetPacket) {

@@ -69,3 +69,10 @@ $tile_size: 64px;
 	opacity: 0.75;
 	pointer-events: none;
 }
+
+.sparks {
+	@extend .tiled_entity;
+	z-index: 15;
+	background-image: url("/images/sparks.gif");
+	pointer-events: none;
+}

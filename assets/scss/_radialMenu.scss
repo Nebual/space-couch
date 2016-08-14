@@ -63,10 +63,10 @@
 			transform: scale(1, 1);
 		}
 		$distance: $radial_width*1.5;
-		$n: 5;
+		$n: 6;
 		@for $i from 0 to $n {
 			> li:nth-child(#{$i + 1}) {
-				$angle: $i*$PI/($n - 1);
+				$angle: $i*$PI/($n/2);
 				left: #{-$distance*cos($angle)}px;
 				top: #{-$distance*sin($angle)}px;
 			}

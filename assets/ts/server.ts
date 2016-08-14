@@ -12,7 +12,6 @@ const minify = require('express-minify');
 const express = require('express');
 const http = require('http');
 const repl = require('repl');
-const process = require('process');
 
 let game : Game;
 let server : Express;

@@ -45,10 +45,10 @@ Then connect to http://[lan-ip-here]:8000/ from your phones
 * Robotics Expert
   * [X] Needs a map of the ship
   * [X] Directs robots over it to do things that need movement
-  * Fire extinguishing
-  * Repair
-    * With spare part - fast, but takes system offline briefly, consumes part
-    * With duct tape - slower, drops efficiency of system
+  * [X] Fire extinguishing
+  * [X] Repair
+    * [X] With spare part - slower, consumes part
+    * [X] With duct tape - faster, drops efficiency of system
   * Improving
     * Adding more power conduits (increases max that Engineer can set it to)
   * Move sensors

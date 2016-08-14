@@ -1,13 +1,13 @@
 import {Robot} from "./server/ship";
 const NODE_SIZE = 64;
 
-function setFire(left: number, top: number, onFire: boolean) {
-	let id = left+'x'+top;
-	let $fire = $('.fire').filter('[data-sync="fire_'+id+'"]');
-	if(!onFire && $fire.length) {
-		$fire.remove();
-	} else if(onFire && !$fire.length) {
-		$('<div class="fire" data-sync="fire_'+id+'"></div>')
+function setNodeState(left: number, top: number, type: string, state: boolean) {
+	let id = type+'_'+left+'x'+top;
+	let $obj = $('.'+type).filter(`[data-sync="${id}"]`);
+	if(!state && $obj.length) {
+		$obj.remove();
+	} else if(state && !$obj.length) {
+		$(`<div class="${type}" data-sync="${id}"></div>`)
 			.css({'left': left * NODE_SIZE, 'top': top * NODE_SIZE})
 			.appendTo($('.ship'));
 	}
@@ -34,7 +34,7 @@ $(function() {
 		}
 	}
 	$(document).on('sock-init', function(e) {
-		$('.fire, .robot').remove();
+		$('.fire, .robot, .sparks').remove();
 	});
 	$(document).on('sock-message', function(e, data) {
 		switch(data.event) {
@@ -50,8 +50,8 @@ $(function() {
 			case 'robotPath':
 				moveRobot(data.id, data.value);
 				break;
-			case 'nodeFire':
-				setFire(data.value.left, data.value.top, data.value.onFire);
+			case 'nodeState':
+				setNodeState(data.value.left, data.value.top, data.id, data.value.state);
 				break;
 		}
 	});
