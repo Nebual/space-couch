@@ -19,7 +19,7 @@ class ClientNet {
 
 	private getRole() : string {
 		if(window.location.host == '') {  // electron
-			return 'captain';
+			return 'overview';
 		} else {
 			let match = window.location.pathname.match(/([A-Za-z]+)/);
 			return match ? match[1] : 'list';

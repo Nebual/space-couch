@@ -19,18 +19,32 @@ Then connect to http://[lan-ip-here]:8000/ from your phones
 ###Game isn't fun
 * Yeah its kinda early
 
-###There's no stars, this isn't space at all
+###~~There's no stars~~ The stars don't move, this isn't space at all
 * Working on it
 
+## Design Principles
+* Require cross-role coordination
+* Encourage tunnel-vision
+  * Each role has its own narrow focus, and isn't given sufficient information to 
+  correctly make decisions without information from other roles (or the captain)
+* Roles should all have small amounts of downtime
+
 ## Todo
+* Backend
+  * [X] Saves/restores client state between refreshes/disconnects
+  * [ ] Saves/restores server state between server reboots/crashes
 * Engineer
+  * [X] Many swipe-navigable panels, categorized
   * Tons of knobs, buttons, and dials
   * Max Watts (capacity) sliders for subsystems
   * Max Volts (strength) sliders for subsystems
+  * Everything is poorly labeled - can vary according to the Model # of the module (which changes when upgraded, and each game start will have different default models)
+    * Protogen's Thor Sublight Thrusters have a 'T Inhibitor' (inverse max capacity) and a 'T Coefficient' (voltage) sliders,
+    * Far Horizon's Calibrus Thrusters use a pair of 'T Cap A' and 'T Cap B' max capcity sliders, B must stay below A but are otherwise added together, along with a 'T Vlt' (voltage) slider
   * Has to manage temperature of the reactor core
 * Robotics Expert
-  * Needs a map of the ship
-  * Directs robots over it to do things that need movement
+  * [X] Needs a map of the ship
+  * [X] Directs robots over it to do things that need movement
   * Fire extinguishing
   * Repair
     * With spare part - fast, but takes system offline briefly, consumes part
@@ -55,11 +69,21 @@ Then connect to http://[lan-ip-here]:8000/ from your phones
     that kinda looks like Leo, which would make it the Xenu system, unless
     that's the other constellation, in which case its the Abott system.
     Going with Xenu. Probably.
+    * Have the same parallax stars view as Weapons
+    * Have an overlayed list of constellations you can tick off upon finding them,
+    which automatically narrows down the list of systems it could be. 
+    List shows tiny thumbnails, can tap them to zoom in on a big picture of the constellation.
   * To find where you're going, you need a bearing...
   * Calculates the distance... math/pattern thing?
+* Science (may merge into Navigation)
+  * Analyzes ships that jump into radar range
+    * Can mark as friend/foe, classify (size? capabilities? weapon types?)
+  * Creates/improves maps (for uncharted systems)
+  * Collects KSP-like science (earns money)
 * Weapons
   * Reticle minigame
-  * Parallax stars background (gyro)
+	  * [X] Stars background
+	  * [ ] Parallax stars background according to gyro movement
   * Swipe to switch to different views (different gun mount points)
 * Shields
   * Combat
@@ -71,6 +95,14 @@ Then connect to http://[lan-ip-here]:8000/ from your phones
   emit a field that surrounds it but is more efficient closer to the emitter,
   so if the Port emitter goes down, the other ones can compensate inefficiently
 * Captain
-  * Overview Screen
+  * Mission details
   * Has inventory of spare parts
   * Has the JUMP button
+* Overview Screen (TV)
+  * Shows vague stats about the ship, just a very high level "this system is unpowered/overpowered/damaged"
+  * Mission countdown clock
+  * Displays alerts
+    * damage taken
+    * Systems offline
+    * New ship detected on radar
+    * "Mission Complete"

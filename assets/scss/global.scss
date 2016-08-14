@@ -85,6 +85,12 @@ body, html {
 		}
 	}
 }
+.container-list {
+	@import '_list';
+}
+.container-captain {
+	@import '_captain';
+}
 .container-weapons {
 	@import '_weapons';
 }
