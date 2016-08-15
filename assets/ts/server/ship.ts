@@ -47,6 +47,7 @@ class Room {
 
 export class ShipNodes {
 	private game: Game;
+	private shipType: string;
 	private nodes: {[XxY: string]: Node} = {};
 	private rooms: {[room: number]: Room} = {};
 	public robots: Robot[] = [];
@@ -56,6 +57,7 @@ export class ShipNodes {
 
 	constructor(game: Game, layout: string) {
 		this.game = game;
+		this.shipType = layout;
 
 		// Create a matrix that's entirely unwalkable by default
 		// 2x as large as our grid size, so there's odd "wall" nodes between each even grid cell

@@ -2,22 +2,19 @@ import {ServerNet, Connection, NetPacket} from "./ServerNet";
 import {ShipNodes, RoomType} from "./ship";
 
 export class Game {
-    public lights_on;
-    public paused;
-    private state;
+    public lights_on = true;
+    public paused = false;
+    private state = {
+        'captain': {},
+        'engineer': {},
+        'navigator': {},
+        'robotics': {},
+        'weapons': {},
+    };
     public ship: ShipNodes;
     public net: ServerNet;
 
     constructor() {
-        this.lights_on = true;
-        this.paused = false;
-        this.state = {
-            'captain': {},
-            'engineer': {},
-            'navigator': {},
-            'robotics': {},
-            'weapons': {},
-        };
     }
 
     public initConnection(connection:Connection) {
