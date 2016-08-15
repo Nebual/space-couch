@@ -58,13 +58,13 @@ $(function() {
 
 	let $robotActions = $('#robot-actions');
 	var $selectedRobot:JQuery;
-	$('.ship').on('click', function(e:JQueryInputEventObject) {
+	$('.ship').on('click', function(e) {
 		let $clicked = $(e.target);
 		if ($selectedRobot) {
 			if($robotActions.hasClass('active')) return; // Don't do anything here if the menu is open
 
 			if ($clicked.is($selectedRobot)) { // double click
-				let position = $selectedRobot.offset();
+				let position = $selectedRobot.position();
 				$robotActions.css({left: position.left, top: position.top});
 				$('.radial-overlay').toggleClass('active', !$robotActions.hasClass('active'));
 				setTimeout(() => {
@@ -75,7 +75,7 @@ $(function() {
 				e.stopPropagation();
 				return;
 			}
-			clientNet.send('moveRobot', $selectedRobot.data('sync').substr(6), [Math.floor(e.pageX/NODE_SIZE), Math.floor(e.pageY/NODE_SIZE)]);
+			clientNet.send('moveRobot', $selectedRobot.data('sync').substr(6), [Math.floor(e.offsetX/NODE_SIZE), Math.floor(e.offsetY/NODE_SIZE)]);
 
 			$selectedRobot.removeClass('selected');
 			$selectedRobot = null;
@@ -100,4 +100,8 @@ $(function() {
 		$selectedRobot.removeClass('selected');
 		$selectedRobot = null;
 	});
+
+	if($(document).width() > 1200) {
+		($('.main-container') as any).overscroll();
+	}
 });

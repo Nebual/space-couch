@@ -4,13 +4,14 @@
 $tile_size: 64px;
 
 & {
-	@extend .container-fluid.container-landscape;
+	@extend .container-landscape;
 	height: 100%;
 	padding: 0;
 }
 
 .ship {
 	background: url("/images/ship_robot_background.png") center center/100% 100% no-repeat black;
+	position: relative;
 	height: 640px;
 	width: 960px;
 }

@@ -74,15 +74,12 @@ body, html {
 	height: 100%;
 }
 
-.container-fluid {
-
-	&.container-landscape {
-		@media only screen and (orientation: portrait) {
-			height: 100vw;
-			-webkit-transform: rotate(90deg);
-			-moz-transform: rotate(90deg);
-			transform: rotate(90deg);
-		}
+.container-landscape {
+	@media only screen and (orientation: portrait) {
+		height: 100vw;
+		-webkit-transform: rotate(90deg);
+		-moz-transform: rotate(90deg);
+		transform: rotate(90deg);
 	}
 }
 .container-list {
@@ -99,4 +96,17 @@ body, html {
 }
 .container-robotics {
 	@import '_robotics';
+}
+
+@media screen and (min-width: 1200px) {
+	// Hacks for desktop view
+	.main-container {
+		width: #{640 + 4}px;
+		height: #{360 + 4}px;
+		background-color: white;
+		box-shadow: 5px 5px 20px black;
+		margin: 50px;
+		border: 2px solid black;
+		overflow: hidden;
+	}
 }
