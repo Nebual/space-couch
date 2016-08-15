@@ -94,7 +94,7 @@ app.on('ready', function() {
 	game.net = new ServerNet(game, httpServer);
 	game.initShip('ship1');
 
-	if(DEV) {
+	if(DEV && os.platform() !== 'win32') {
 		let replInstance = repl.start({'prompt': 'node> '});
 		replInstance.on('exit', () => {
 			app.quit();
