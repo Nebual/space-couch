@@ -31,10 +31,10 @@ window.addEventListener('load', function(e) {
 }, false);
 
 var throttleTimers = {};
-function throttle(func : {(): void;}, delay_ms : number) : void {
+function throttle(id: string, func: {(): void;}, delay_ms: number): void {
 	var now = (new Date()).getTime();
-	if(now > (throttleTimers[func.toString()] || 0))  {
-		throttleTimers[func.toString()] = now + delay_ms;
+	if(now > (throttleTimers[id] || 0))  {
+		throttleTimers[id] = now + delay_ms;
 		setTimeout(func, delay_ms)
 	}
 }

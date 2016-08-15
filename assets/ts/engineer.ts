@@ -1,4 +1,7 @@
+'use strict';
+
 $(function() {
+    let initial_load = true;
     $(document.body).css('overflow-y', 'hidden'); // prevents "pull down to refresh"
 
     var $console = $('.console');
@@ -12,7 +15,8 @@ $(function() {
         $slider.rangeSlider({
             vertical: $slider.data('vertical') ? true : false,
             drag: function(v) {
-                throttle(function () {
+                if(initial_load) return;
+                throttle($slider.data('sync'), function () {
                     clientNet.sendState($slider.data('sync'), $slider.data('rangeSlider').getValue());
                 }, 250);
             }
@@ -55,4 +59,5 @@ $(function() {
             $console.scrollTop($console.prop("scrollHeight"));
         }
     });
+    initial_load = false;
 });

@@ -3,9 +3,8 @@
     function rangeSlider(elem, config) {
         var self = this;
 
-        var html = document.documentElement,
-            down = false,
-            rangeOffset = 0;
+        this._rangeOffset = 0;
+        this._down = false;
         this._range = document.createElement('div');
         this._dragger = document.createElement('span');
         this._cachePosition = 0;
@@ -61,55 +60,60 @@
         self._dragger.className = ('dragger ' + config.draggerClass).replace(/ +$/, "");
 
         addEventTo(self._range, "mousedown touchstart", function (e) {
-            html.className = (html.className + ' no-select').replace(/^ +/, "");
+            let target = getTarget(e);
+            if(!target) return;
+
             self._rangeWidth = self._range[!isVertical ? 'offsetWidth' : 'offsetHeight'];
-            rangeOffset = getPos(self._range)[!isVertical ? 0 : 1];
+            self._rangeOffset = getPos(self._range)[!isVertical ? 0 : 1];
             self._draggerWidth = self._dragger[!isVertical ? 'offsetWidth' : 'offsetHeight'];
-            down = true;
-            updateDragger(e);
+            self._down = true;
+            updateDragger(e, target);
             return false;
         });
 
         addEventTo(document, "mousemove touchmove", function (e) {
-            updateDragger(e);
+            let target = getTarget(e);
+            if(!target) return;
+
+            updateDragger(e, target);
         });
 
         addEventTo(document, "mouseup touchend", function (e) {
-            html.className = html.className.replace(/(^| )no-select( |$)/g, "");
-            down = false;
+            let target = getTarget(e);
+            if(!target) return;
+
+            self._down = false;
         });
 
         addEventTo(window, "resize", function (e) {
             var woh = self._dragger[!isVertical ? 'offsetWidth' : 'offsetHeight'];
             self._dragger.style[!isVertical ? 'left' : 'top'] = (((self._cachePosition / 100) * self._range[!isVertical ? 'offsetWidth' : 'offsetHeight']) - (woh / 2)) + 'px';
-            down = false;
+            self._down = false;
         });
 
-        function updateDragger(e) {
-            e = e || window.event;
-            //check if event was touch
-            //console.log(e.touches);
-            var currentX;
-            var currentY;
+        function getTarget(e) {
             if (e.changedTouches) {
                 for (var i = 0; i < e.changedTouches.length; i++) {
-                    if (e.changedTouches[i].target == self._dragger) {
-                        currentX = e.changedTouches[i].pageX;
-                        currentY = e.changedTouches[i].pageY;
+                    if (e.changedTouches[i].target === self._dragger) {
+                        return e.changedTouches[i];
                     }
                 }
             } else {
-                currentX = e.pageX;
-                currentY = e.pageY;
+                return e;
             }
-            if (currentX === undefined) return;
+        }
+
+        function updateDragger(e, target) {
+            e = e || window.event;
+            let currentX = target.pageX;
+            let currentY = target.pageY;
 
             var pos = !isVertical ? currentX : currentY;
             if (!pos) {
                 pos = !isVertical ? currentX + document.body.scrollLeft + document.documentElement.scrollLeft : currentY + document.body.scrollTop + document.documentElement.scrollTop;
             }
-            if (down && pos >= rangeOffset && pos <= (rangeOffset + self._rangeWidth)) {
-                let newPos = ((pos - rangeOffset) / self._rangeWidth) * 100;
+            if (self._down && pos >= self._rangeOffset && pos <= (self._rangeOffset + self._rangeWidth)) {
+                let newPos = ((pos - self._rangeOffset) / self._rangeWidth) * 100;
                 self.setValue(newPos);
                 config.drag(Math.round(newPos), e);
             }
