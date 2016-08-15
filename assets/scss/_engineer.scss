@@ -5,6 +5,11 @@
 }
 .card-title {
 	text-align: center;
+	color: whitesmoke;
+	margin-bottom: 0;
+}
+.card-block {
+	height: calc(100% - 26px);
 }
 .cards {
 	height: 100%;
@@ -13,7 +18,21 @@
 	margin-bottom: 0;
 	height: 100%;
 	border: 0;
-	background-color: inherit;
+
+	background:
+		radial-gradient(circle at center, #222 15%, transparent 15%),
+		radial-gradient(circle at center, rgba(255, 255, 255, 0.7) 15%, transparent 15%),
+		radial-gradient(circle at center, #111 15%, transparent 15%),
+		radial-gradient(circle at center, rgba(255, 255, 255, 0.7) 15%, transparent 15%),
+		radial-gradient(circle farthest-side at center, rgba(255, 255, 255, 0.2) 0%, transparent 60%),
+		linear-gradient(60deg, #21262c 0%, #2b2b3b 20%, #363d49 23%, #2d3353 30%, #171a1c 45%, #1d1d30 65%, #2b2e3b 70%, #1d2630 100%);
+	background-size: 25px 25px, 25px 25px, 25px 25px, 25px 25px, 100% 100%, 100% 100%;
+	background-position: 0 0, 0px -1px, 12.5px 12.5px, 12.5px 13.5px, 1px 1px, 1px 2px;
+	&:nth-child(even) {
+		background-position: 6px 0, 6px -1px, 18.5px 12.5px, 18.5px 13.5px, 7px 1px, 7px 2px;
+	}
+
+	// Swipe shadows
 	&:not(:first-child)::before,
 	&:not(:last-child)::after {
 		display: block;

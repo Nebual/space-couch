@@ -24,6 +24,7 @@ $(function() {
     });
 
     var $cards = $('.card');
+    $cards.filter(':not(:first-child())').hide();
     var hammertime = new Hammer(document.body, {
         recognizers: [
             // RecognizerClass, [options], [recognizeWith, ...], [requireFailure, ...]

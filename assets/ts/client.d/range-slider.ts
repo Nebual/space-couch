@@ -1,10 +1,10 @@
 (function($) {
 
     function rangeSlider(elem, config) {
+        let $elem = $(elem);
         var self = this;
 
         this._rangeOffset = 0;
-        this._down = false;
         this._range = document.createElement('div');
         this._dragger = document.createElement('span');
         this._cachePosition = 0;
@@ -55,7 +55,7 @@
 
         var isVertical = config.vertical;
 
-        elem.className = (elem.className + ' range-slider range-slider-' + (isVertical ? 'vertical' : 'horizontal')).replace(/^ +/, "");
+        $elem.addClass('range-slider').addClass('range-slider-' + (isVertical ? 'vertical' : 'horizontal'));
         self._range.className = ('range-slider-track ' + config.rangeClass).replace(/ +$/, "");
         self._dragger.className = ('dragger ' + config.draggerClass).replace(/ +$/, "");
 
@@ -66,7 +66,7 @@
             self._rangeWidth = self._range[!isVertical ? 'offsetWidth' : 'offsetHeight'];
             self._rangeOffset = getPos(self._range)[!isVertical ? 0 : 1];
             self._draggerWidth = self._dragger[!isVertical ? 'offsetWidth' : 'offsetHeight'];
-            self._down = true;
+            $elem.addClass('active');
             updateDragger(e, target);
             return false;
         });
@@ -82,13 +82,13 @@
             let target = getTarget(e);
             if(!target) return;
 
-            self._down = false;
+            $elem.removeClass('active');
         });
 
         addEventTo(window, "resize", function (e) {
             var woh = self._dragger[!isVertical ? 'offsetWidth' : 'offsetHeight'];
             self._dragger.style[!isVertical ? 'left' : 'top'] = (((self._cachePosition / 100) * self._range[!isVertical ? 'offsetWidth' : 'offsetHeight']) - (woh / 2)) + 'px';
-            self._down = false;
+            $elem.removeClass('active');
         });
 
         function getTarget(e) {
@@ -112,7 +112,7 @@
             if (!pos) {
                 pos = !isVertical ? currentX + document.body.scrollLeft + document.documentElement.scrollLeft : currentY + document.body.scrollTop + document.documentElement.scrollTop;
             }
-            if (self._down && pos >= self._rangeOffset && pos <= (self._rangeOffset + self._rangeWidth)) {
+            if ($elem.hasClass('active') && pos >= self._rangeOffset && pos <= (self._rangeOffset + self._rangeWidth)) {
                 let newPos = ((pos - self._rangeOffset) / self._rangeWidth) * 100;
                 self.setValue(newPos);
                 config.drag(Math.round(newPos), e);
