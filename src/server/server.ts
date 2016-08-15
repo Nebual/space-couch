@@ -10,6 +10,7 @@ const minify = require('express-minify');
 const express = require('express');
 const http = require('http');
 const repl = require('repl');
+const argv = require('minimist')(process.argv.slice(2));
 
 let PORT = 8000;
 const DEV: boolean = (process.env.NODE_ENV || 'development') === 'development';
@@ -68,10 +69,24 @@ function initHttpServer(expressServer: Express, port: number): HttpServer {
 	return httpServer;
 }
 
+function initGame(): Game {
+	try {
+		let saveName = argv['load-last'] ? 'last_save.json' : argv['load'];
+		if (saveName) {
+			console.log(`Loading save ${saveName}...`);
+			return Game.load(saveName);
+		}
+	} catch (e) {
+		console.log('Failed to load last_save.json\n  ', e.message);
+	}
+
+	const defaultGameJson = { _ship: { shipType: 'ship1' } };
+	return Game.fromJSON(defaultGameJson);
+}
+
 function initGameServer(httpServer: HttpServer) {
-	let game = new Game();
+	let game = initGame();
 	game.net = new ServerNet(game, httpServer);
-	game.initShip('ship1');
 	return game;
 }
 
@@ -79,6 +94,14 @@ if (require.main === module) {
 	let server: Express = initExpress();
 	let httpServer = initHttpServer(server, PORT);
 	let game: Game = initGameServer(httpServer);
+
+	const saveOnShutdown = e => {
+		console.log('Writing exit save to last_save.json');
+		game.save('last_save.json');
+		process.exit(2);
+	};
+	process.on('SIGINT', saveOnShutdown);
+	process.on('SIGTERM', saveOnShutdown);
 
 	if (DEV && os.platform() !== 'win32') {
 		let replInstance = repl.start({ prompt: 'node> ' });

@@ -7,8 +7,7 @@
 
 /build
 /build-server
-/dist
-/generated
+/saves
 
 # misc
 /coverage

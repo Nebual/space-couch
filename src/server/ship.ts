@@ -45,6 +45,16 @@ class Room {
 	constructor(type: RoomType) {
 		this.type = type;
 	}
+	public toJSON() {
+		return {
+			condition: this.condition,
+			isBroken: this.isBroken,
+		};
+	}
+	public applyJSON(obj) {
+		if (obj.condition !== undefined) this.condition = obj.condition;
+		if (obj.isBroken !== undefined) this.isBroken = obj.isBroken;
+	}
 }
 
 export class ShipNodes {
@@ -125,6 +135,21 @@ export class ShipNodes {
 		this.debug_grid();
 		this.createRobots(shipType.numRobots);
 		this.partsRemaining = shipType.numParts;
+	}
+
+	public toJSON() {
+		return {
+			robots: this.robots,
+			rooms: this.rooms,
+		};
+	}
+	public applyJSON(obj) {
+		if (obj.robots !== undefined) this.robots = obj.robots;
+		if (obj.rooms !== undefined) {
+			for (let room_id in obj.rooms) {
+				this.rooms[room_id].applyJSON(obj.rooms[room_id]);
+			}
+		}
 	}
 
 	public debug_grid(grid?: Grid) {

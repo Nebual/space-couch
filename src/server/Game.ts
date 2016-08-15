@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 import { ServerNet, Connection, NetPacket } from './ServerNet';
 import { ShipNodes, RoomType } from './ship';
 
@@ -17,6 +20,45 @@ export class Game {
 	public net: ServerNet;
 
 	constructor() {}
+
+	public toJSON() {
+		return {
+			lights_on: this.lights_on,
+			paused: this.paused,
+			state: this.state,
+			_ship: this.ship.toJSON(),
+		};
+	}
+	public static fromJSON(obj): Game {
+		let game = new this();
+
+		for (let key in obj) {
+			if (game.hasOwnProperty(key)) {
+				if (game[key] instanceof Object) {
+					Object.assign(game[key], obj[key]); // caution: not a deep copy
+				} else {
+					game[key] = obj[key];
+				}
+			}
+		}
+		let shipType = 'ship1';
+		if (obj._ship && obj._ship.shipType) shipType = obj._ship.shipType;
+		game.initShip(shipType);
+
+		if (obj._ship !== undefined) game.ship.applyJSON(obj._ship);
+		return game;
+	}
+
+	public save(saveName: string = 'last_save.json') {
+		const fileName = path.join('saves', saveName);
+		fs.mkdirSync('saves', { recursive: true });
+		fs.writeFileSync(fileName, JSON.stringify(this));
+	}
+	public static load(saveName: string): Game {
+		const fileName = path.join('saves', saveName);
+		let json = JSON.parse(fs.readFileSync(fileName, 'utf8'));
+		return Game.fromJSON(json);
+	}
 
 	public initConnection(connection: Connection) {
 		this.ship.initConnection(connection);
