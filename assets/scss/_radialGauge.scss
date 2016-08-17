@@ -1,0 +1,166 @@
+$gauge-d: 5rem;
+$gauge-width: $gauge-d / 3; // width of the colours
+$outer-border-size: $gauge-d / 8;
+
+$dial-d: $gauge-d - $gauge-width;
+$dial-os: $gauge-width / 2;
+
+$indicator-size: $gauge-width * 0.9;
+$arm-length: ($gauge-d/2.15) - ($indicator-size/2);
+$arm-width: $indicator-size/4;
+$ind-x: ($dial-d/2) - ($indicator-size/2);
+
+$wg-bg: hsl(0, 0%, 20%);
+$accent: hsl(0, 90%, 25%);
+$ts-light: hsla(0, 0, 100%, .5);
+$ts-dark: hsla(0, 0, 0%, .5);
+
+$white: hsla(0, 0%, 100%, 1);
+$black: hsla(0, 0%, 0%, 1);
+$blue: hsl(200, 100%, 40%);
+$green: hsl(120, 100%, 40%);
+$red: hsl(0, 100%, 40%);
+$yellow: hsl(60, 100%, 40%);
+$pink: hsl(330, 100%, 40%);
+
+$d9: transparentize($black, 1-0.1);
+$d8: transparentize($black, 1-0.8);
+$d7: transparentize($black, 1-0.7);
+$d6: transparentize($black, 1-0.6);
+$d5: transparentize($black, 1-0.5);
+$d4: transparentize($black, 1-0.4);
+$d3: transparentize($black, 1-0.3);
+$d2: transparentize($black, 1-0.2);
+$d1: transparentize($black, 1-0.1);
+
+@mixin pos($x, $y) {
+	top: $y;
+	left: $x;
+}
+
+@mixin size($width, $height) {
+	width: $width;
+	height: $height;
+}
+
+@mixin circle($size) {
+	@include size($size, $size);
+	border-radius: 50%;
+}
+
+@mixin inset($c, $i) {
+	box-shadow: 0 1px 0 0 darken($ts-light, 15),
+	inset 0 1px 1px 2px $ts-dark;
+	background: linear-gradient(to bottom, darken($c, $i), $c);
+}
+
+@mixin outset($c, $i) {
+	box-shadow: inset 0 1px 0 0 $ts-light,
+	0 2px 1px -1px $ts-dark,
+	0 4px 1px -2px $ts-dark;
+	background: linear-gradient(to bottom, $c, darken($c, $i));
+}
+
+@mixin indicator($x, $y, $c, $z: 1) {
+	position: absolute;
+	display: inline-block;
+	@include circle($indicator-size);
+	@include pos($x, $y);
+	border-radius: 50%;
+	transform-origin: 50% 50%;
+	background: $c;
+	z-index: $z;
+	&:after {
+		content: '';
+		position: absolute;
+		display: inline-block;
+		@include pos($arm-width*1.5, $arm-length/32 - $arm-length);
+		border-radius: 100% 100% 0 0;
+		@include size($arm-width, $arm-length);
+		background: $c;
+	}
+}
+
+.gaugewrap {
+	position: absolute;
+	text-align: left;
+	display: inline-block;
+	border-radius: 50%;
+	box-sizing: padding-box;
+	padding: $outer-border-size;
+	box-shadow: 1px 3px 1px 0 $d4,
+	inset 0 3px 1px 1px transparentize($white, 0.3);
+	background: linear-gradient(30deg,
+			transparentize($white, 0.5) 20%, $d3 50%, transparentize($white, 0.6) 80%),
+	linear-gradient(105deg,
+					$d5 20%, transparentize($white, 0.7) 50%, $d4 80%),
+	linear-gradient(135deg,
+					hsla(210, 15%, 35%, .5) 0%,
+					hsla(240, 15%, 50%, .5) 20%,
+					hsla(220, 15%, 45%, .5) 23%,
+					hsla(230, 30%, 60%, .5) 30%,
+					hsla(230, 40%, 60%, .5) 45%,
+					hsla(240, 25%, 50%, .5) 75%,
+					hsla(230, 15%, 25%, .5) 90%,
+					hsla(210, 25%, 10%, .5) 100%),
+	linear-gradient(to bottom,
+					lighten($wg-bg, 30),
+					darken($wg-bg, 30));
+	.gauge {
+		position: relative;
+		@include circle($gauge-d);
+		overflow: hidden;
+		box-shadow: -1px -2px 1px 2px $d5,
+		1px 2px 1px 2px transparentize($white, 1-0.4);
+		background: linear-gradient(330deg, transparent 50%,
+				#0C0 50%),
+		linear-gradient(270deg, transparent 50%,
+						#000 50%),
+		linear-gradient(5deg, transparent 50%, #CC0 50%),
+		linear-gradient(30deg, #000 50%, #C00 50%);
+
+		.dial {
+			position: relative;
+			display: inline-block;
+			@include circle($dial-d);
+			@include pos($dial-os, $dial-os);
+			background: linear-gradient(to bottom,
+					#AAA, #666);
+			.indicator {
+				@include indicator($ind-x, $ind-x, $accent, 999);
+				background: radial-gradient(circle at center,
+						#EEE 10%, #111 20%, $accent 20%, darken($accent, 15));
+				& + i {
+					@include indicator($ind-x * 1.05, $ind-x * 1.1, $d4, 1);
+					//background: transparent;
+					//box-shadow: 0 0 2px 0 $d3;
+				}
+				/*.active &,
+				.active & + i {*/
+				&,
+				& + i {
+					will-change: transform;
+				}
+			}
+			.dialbase {
+				position: absolute;
+				display: inline-block;
+				@include size($gauge-d * 0.58, $gauge-d * 0.2);
+				left: 50%;
+				transform: translate(-50%);
+				background: black;
+				top: $gauge-d * 0.5;
+				output {
+					//box-shadow: 0 0 1px 1px hsla(190, 40%, 20%, .5);
+					//background: #000;
+					display: inline-block;
+					width: 100%;
+					color: #39C;
+					text-align: center;
+					font-size: $gauge-d / 6;
+					font-family: Audiowide;
+				}
+			}
+		}
+	}
+}

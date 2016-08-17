@@ -35,13 +35,22 @@ Then connect to http://[lan-ip-here]:8000/ from your phones
   * [ ] Saves/restores server state between server reboots/crashes
 * Engineer
   * [X] Many swipe-navigable panels, categorized
-  * Tons of knobs, buttons, and dials
+  * A ton of widgets, including:
+    * [X] Sliders
+    * [X] Gauges
+    * [ ] Dials
+    * [ ] Knobs
+    * [ ] Buttons
   * Max Watts (capacity) sliders for subsystems
   * Max Volts (strength) sliders for subsystems
   * Everything is poorly labeled - can vary according to the Model # of the module (which changes when upgraded, and each game start will have different default models)
     * Protogen's Thor Sublight Thrusters have a 'T Inhibitor' (inverse max capacity) and a 'T Coefficient' (voltage) sliders,
     * Far Horizon's Calibrus Thrusters use a pair of 'T Cap A' and 'T Cap B' max capcity sliders, B must stay below A but are otherwise added together, along with a 'T Vlt' (voltage) slider
   * Has to manage temperature of the reactor core
+    * Also temperature of individual components - indicates how overworked they are
+    * Overall Ship temperature is reduced via deployed radiators, 
+    which can be damaged if mid-combat, must be retracted before jumping,
+    and are more efficient with shields down
 * Robotics Expert
   * [X] Needs a map of the ship
   * [X] Directs robots over it to do things that need movement
@@ -54,9 +63,12 @@ Then connect to http://[lan-ip-here]:8000/ from your phones
   * Move sensors
   * Move guns
   * Counter Intrusion
+  * Has FTL styles sensors, if they're offline, only rooms with robots in them are viewable
+  * Other roles have a 'check engine light', which can be a 3 second fix for the RE, or its just nothing
 * Pilot?
   * Has local area map (in maneuverability thruster mode)
-  * Has system map (in sublight mode)
+  * ~~Has system map (in sublight mode)~~ 
+  Or maybe navigation has the system map, and can add waypoints for the pilot
   * Has to set the heading for Jumps
   * Turns via spinning giant wooden steering wheel
   * Has giant throttle lever, or https://img1.etsystatic.com/000/0/6355253/il_fullxfull.340992455.jpg
@@ -85,8 +97,11 @@ Then connect to http://[lan-ip-here]:8000/ from your phones
 	  * [X] Stars background
 	  * [ ] Parallax stars background according to gyro movement
   * Swipe to switch to different views (different gun mount points)
-* Shields
+* Shields (probably handled by Weapons)
+  * Have an energy buffer, depletes over time, used up upon absorbing hits
+  * Can be disengaged/enabled quite quickly while the buffer is full - slower the lower it is
   * Combat
+    * Can be toggled off between enemy shots, if attack patterns are predictable
   * Noncombat:
     * Asteroids
     * While in Warp

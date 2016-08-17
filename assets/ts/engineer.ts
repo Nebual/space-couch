@@ -16,9 +16,18 @@ $(function() {
             vertical: $slider.data('vertical') ? true : false,
             drag: function(v) {
                 if(initial_load) return;
+                let ang: number = 2 * v;
                 throttle($slider.data('sync'), function () {
                     clientNet.sendState($slider.data('sync'), $slider.data('rangeSlider').getValue());
+                    if($slider.data('sync') == 'power2') {
+                        $('output').val(Math.floor(ang / 240 * 100) + '°C');
+                    }
                 }, 250);
+                if($slider.data('sync') == 'power2') {
+                    $('.indicator, .indicator + i').css({
+                        transform: 'rotate(' + (ang - 120) + 'deg)'
+                    });
+                }
             }
         });
     });
