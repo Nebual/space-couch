@@ -90,7 +90,10 @@ Then connect to http://[lan-ip-here]:8000/ from your phones
 * Science (may merge into Navigation)
   * Analyzes ships that jump into radar range
     * Can mark as friend/foe, classify (size? capabilities? weapon types?)
+    * Longer scans/different equipment reveals different characteristics (thrust signature, reactor radiation, shielding methods)
+    which hint at ship identity
   * Creates/improves maps (for uncharted systems)
+    * Scan anomalies/planets/etc, Elite/EvE probe minigames
   * Collects KSP-like science (earns money)
 * Weapons
   * Reticle minigame
@@ -109,6 +112,10 @@ Then connect to http://[lan-ip-here]:8000/ from your phones
   * Shield Emitters are in specific locations around the ship,
   emit a field that surrounds it but is more efficient closer to the emitter,
   so if the Port emitter goes down, the other ones can compensate inefficiently
+* Communications
+  * Can hail ships/stations and attempt to parlay
+  * Often challenging due to cultural/language barriers (Shaka, when the walls fell)
+  * Codex/Reference Book detailing cultural practices and how to best navigate them
 * Captain
   * Mission details
   * Has inventory of spare parts
