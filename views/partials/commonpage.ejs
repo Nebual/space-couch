@@ -24,7 +24,9 @@
     <script src="/js/gyro.js"></script>
 
     <script src="/js/client.js"></script>
-    <script src="/js/<%= role; %>.js"></script>
+    <% if (role !== 'list') { %>
+        <script src="/js/<%= role; %>.js"></script>
+    <% } %>
 </head>
 <body>
 <div class="main-container container-<%= role; %>">
@@ -33,3 +35,7 @@
         <i class="fa fa-pause-circle"></i>
     </div>
     <button type="button" class="btn btn-link lobby-button"><i class="fa fa-hand-o-left"></i></button>
+    <%- include('../' + role); %>
+</div>
+</body>
+</html>

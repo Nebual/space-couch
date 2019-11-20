@@ -16,7 +16,7 @@
     "watch": "npm-run-all --parallel watch:* build:css",
     "dist": "npm run build && node node_modules/electron-packager/cli.js . space-couch --out dist/ --prune --ignore \\.idea --ignore typings --ignore .*\\.7z --ignore node_modules/electron/dist --platform=win32 --arch=x64",
     "7z": "./node_modules/7zip-bin-linux/x64/7za a space-couch-win32-x64.7z dist/space-couch-win32-x64",
-    "start": "electron ."
+    "start": "electron generated/js/electronServer.js"
   },
   "repository": {
     "type": "git",
