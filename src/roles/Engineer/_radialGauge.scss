@@ -12,8 +12,8 @@ $ind-x: ($dial-d/2) - ($indicator-size/2);
 
 $wg-bg: hsl(0, 0%, 20%);
 $accent: hsl(0, 90%, 25%);
-$ts-light: hsla(0, 0, 100%, .5);
-$ts-dark: hsla(0, 0, 0%, .5);
+$ts-light: hsla(0, 0, 100%, 0.5);
+$ts-dark: hsla(0, 0, 0%, 0.5);
 
 $white: hsla(0, 0%, 100%, 1);
 $black: hsla(0, 0%, 0%, 1);
@@ -49,15 +49,13 @@ $d1: transparentize($black, 1-0.1);
 }
 
 @mixin inset($c, $i) {
-	box-shadow: 0 1px 0 0 darken($ts-light, 15),
-	inset 0 1px 1px 2px $ts-dark;
+	box-shadow: 0 1px 0 0 darken($ts-light, 15), inset 0 1px 1px 2px $ts-dark;
 	background: linear-gradient(to bottom, darken($c, $i), $c);
 }
 
 @mixin outset($c, $i) {
-	box-shadow: inset 0 1px 0 0 $ts-light,
-	0 2px 1px -1px $ts-dark,
-	0 4px 1px -2px $ts-dark;
+	box-shadow: inset 0 1px 0 0 $ts-light, 0 2px 1px -1px $ts-dark,
+		0 4px 1px -2px $ts-dark;
 	background: linear-gradient(to bottom, $c, darken($c, $i));
 }
 
@@ -74,7 +72,7 @@ $d1: transparentize($black, 1-0.1);
 		content: '';
 		position: absolute;
 		display: inline-block;
-		@include pos($arm-width*1.5, $arm-length/32 - $arm-length);
+		@include pos($arm-width * 1.5, $arm-length/32 - $arm-length);
 		border-radius: 100% 100% 0 0;
 		@include size($arm-width, $arm-length);
 		background: $c;
@@ -89,47 +87,57 @@ $d1: transparentize($black, 1-0.1);
 	box-sizing: padding-box;
 	padding: $outer-border-size;
 	box-shadow: 1px 3px 1px 0 $d4,
-	inset 0 3px 1px 1px transparentize($white, 0.3);
-	background: linear-gradient(30deg,
-			transparentize($white, 0.5) 20%, $d3 50%, transparentize($white, 0.6) 80%),
-	linear-gradient(105deg,
-					$d5 20%, transparentize($white, 0.7) 50%, $d4 80%),
-	linear-gradient(135deg,
-					hsla(210, 15%, 35%, .5) 0%,
-					hsla(240, 15%, 50%, .5) 20%,
-					hsla(220, 15%, 45%, .5) 23%,
-					hsla(230, 30%, 60%, .5) 30%,
-					hsla(230, 40%, 60%, .5) 45%,
-					hsla(240, 25%, 50%, .5) 75%,
-					hsla(230, 15%, 25%, .5) 90%,
-					hsla(210, 25%, 10%, .5) 100%),
-	linear-gradient(to bottom,
-					lighten($wg-bg, 30),
-					darken($wg-bg, 30));
+		inset 0 3px 1px 1px transparentize($white, 0.3);
+	background: linear-gradient(
+			30deg,
+			transparentize($white, 0.5) 20%,
+			$d3 50%,
+			transparentize($white, 0.6) 80%
+		),
+		linear-gradient(
+			105deg,
+			$d5 20%,
+			transparentize($white, 0.7) 50%,
+			$d4 80%
+		),
+		linear-gradient(
+			135deg,
+			hsla(210, 15%, 35%, 0.5) 0%,
+			hsla(240, 15%, 50%, 0.5) 20%,
+			hsla(220, 15%, 45%, 0.5) 23%,
+			hsla(230, 30%, 60%, 0.5) 30%,
+			hsla(230, 40%, 60%, 0.5) 45%,
+			hsla(240, 25%, 50%, 0.5) 75%,
+			hsla(230, 15%, 25%, 0.5) 90%,
+			hsla(210, 25%, 10%, 0.5) 100%
+		),
+		linear-gradient(to bottom, lighten($wg-bg, 30), darken($wg-bg, 30));
 	.gauge {
 		position: relative;
 		@include circle($gauge-d);
 		overflow: hidden;
 		box-shadow: -1px -2px 1px 2px $d5,
-		1px 2px 1px 2px transparentize($white, 1-0.4);
-		background: linear-gradient(330deg, transparent 50%,
-				#0C0 50%),
-		linear-gradient(270deg, transparent 50%,
-						#000 50%),
-		linear-gradient(5deg, transparent 50%, #CC0 50%),
-		linear-gradient(30deg, #000 50%, #C00 50%);
+			1px 2px 1px 2px transparentize($white, 1-0.4);
+		background: linear-gradient(330deg, transparent 50%, #0c0 50%),
+			linear-gradient(270deg, transparent 50%, #000 50%),
+			linear-gradient(5deg, transparent 50%, #cc0 50%),
+			linear-gradient(30deg, #000 50%, #c00 50%);
 
 		.dial {
 			position: relative;
 			display: inline-block;
 			@include circle($dial-d);
 			@include pos($dial-os, $dial-os);
-			background: linear-gradient(to bottom,
-					#AAA, #666);
+			background: linear-gradient(to bottom, #aaa, #666);
 			.indicator {
 				@include indicator($ind-x, $ind-x, $accent, 999);
-				background: radial-gradient(circle at center,
-						#EEE 10%, #111 20%, $accent 20%, darken($accent, 15));
+				background: radial-gradient(
+					circle at center,
+					#eee 10%,
+					#111 20%,
+					$accent 20%,
+					darken($accent, 15)
+				);
 				& + i {
 					@include indicator($ind-x * 1.05, $ind-x * 1.1, $d4, 1);
 					//background: transparent;
@@ -155,7 +163,7 @@ $d1: transparentize($black, 1-0.1);
 					//background: #000;
 					display: inline-block;
 					width: 100%;
-					color: #39C;
+					color: #39c;
 					text-align: center;
 					font-size: $gauge-d / 6;
 					font-family: Audiowide;

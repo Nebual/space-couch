@@ -1,73 +1,113 @@
 {
-  "name": "space-couch",
-  "version": "0.0.1",
-  "description": "Project Space Couch",
-  "license": "MIT",
-  "main": "generated/js/server.js",
-  "scripts": {
-    "build:js": "tsc",
-    "build:js-client": "tsc -p tsconfig.client.json",
-    "build:css": "node-sass --include-path assets/scss assets/scss/ --output generated/styles/ --output-style expanded",
-    "build": "npm-run-all --parallel build:*",
-    "clean": "rm -rf generated/ dist/",
-    "watch:js": "tsc -w",
-    "watch:js-client": "tsc -w -p tsconfig.client.json",
-    "watch:css": "node-sass -w --include-path assets/scss assets/scss/ --output generated/styles/ --output-style expanded",
-    "watch": "npm-run-all --parallel watch:* build:css",
-    "dist": "npm run build && node node_modules/electron-packager/cli.js . space-couch --out dist/ --prune --ignore \\.idea --ignore typings --ignore .*\\.7z --ignore node_modules/electron/dist --platform=win32 --arch=x64",
-    "7z": "./node_modules/7zip-bin-linux/x64/7za a space-couch-win32-x64.7z dist/space-couch-win32-x64",
-    "start": "electron generated/js/electronServer.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Nebual/space-couch.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Nebual/space-couch/issues"
-  },
-  "homepage": "https://github.com/Nebual/space-couch#readme",
-  "devDependencies": {
-    "@types/bootstrap": "^3.3.7",
-    "@types/express": "^4.17.1",
-    "@types/express-serve-static-core": "^4.16.10",
-    "@types/hammerjs": "^2.0.36",
-    "@types/jquery": "^3.3.31",
-    "@types/node": "^12.11.7",
-    "@types/serve-static": "^1.13.3",
-    "@types/websocket": "^1.0.0",
-    "7zip-bin": "^5.0.3",
-    "compass-mixins": "^0.12.10",
-    "electron-packager": "^14.0.6",
-    "electron-prebuilt": "^1.2.0",
-    "mathsass": "^0.11.0",
-    "node-sass": "^4.0.0",
-    "npm-run-all": "^4.1.5",
-    "typescript": "^3.6"
-  },
-  "dependencies": {
-    "async": "^3.1.0",
-    "bootstrap": "^3.3.7",
-    "compression": "^1.6.2",
-    "ejs": "^2.5.1",
-    "electron": "^7.0.0",
-    "electron-window": "^0.8.1",
-    "express": "^4.14.0",
-    "express-minify": "^1.0.0",
-    "ico": "^0.3.3",
-    "jquery": "^3.1.0",
-    "pathfinding": "^0.4.18",
-    "qrcode-npm": "0.0.3",
-    "tether": "latest",
-    "websocket": "^1.0.23"
-  },
-  "contributors": [
-    {
-      "name": "Nebual",
-      "url": "https://github.com/Nebual"
-    },
-    {
-      "name": "Rob Williams",
-      "url": "https://github.com/Robert-Williams"
-    }
-  ]
+	"name": "space-couch",
+	"version": "0.2.0",
+	"private": true,
+	"description": "Project Space Couch",
+	"license": "MIT",
+	"scripts": {
+		"start": "PORT=8000 react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject"
+	},
+	"main-old": "generated/js/server.js",
+	"scripts-old": {
+		"build:js": "tsc",
+		"build:js-client": "tsc -p tsconfig.client.json",
+		"build:css": "node-sass --include-path assets/scss assets/scss/ --output generated/styles/ --output-style expanded",
+		"build": "npm-run-all --parallel build:*",
+		"clean": "rm -rf generated/ dist/",
+		"watch:js": "tsc -w",
+		"watch:js-client": "tsc -w -p tsconfig.client.json",
+		"watch:css": "node-sass -w --include-path assets/scss assets/scss/ --output generated/styles/ --output-style expanded",
+		"watch": "npm-run-all --parallel watch:* build:css",
+		"dist": "npm run build && node node_modules/electron-packager/cli.js . space-couch --out dist/ --prune --ignore \\.idea --ignore typings --ignore .*\\.7z --ignore node_modules/electron/dist --platform=win32 --arch=x64",
+		"7z": "./node_modules/7zip-bin-linux/x64/7za a space-couch-win32-x64.7z dist/space-couch-win32-x64",
+		"start": "electron generated/js/electronServer.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Nebual/space-couch.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Nebual/space-couch/issues"
+	},
+	"homepage": "https://github.com/Nebual/space-couch#readme",
+	"devDependenciesOld": {
+		"@types/bootstrap": "^3.3.7",
+		"@types/express": "^4.17.1",
+		"@types/express-serve-static-core": "^4.16.10",
+		"@types/hammerjs": "^2.0.36",
+		"@types/jquery": "^3.3.31",
+		"@types/node": "^12.11.7",
+		"@types/serve-static": "^1.13.3",
+		"@types/websocket": "^1.0.0",
+		"electron-packager": "^14.0.6",
+		"electron-prebuilt": "^1.2.0"
+	},
+	"devDependencies": {
+		"7zip-bin": "^5.0.3",
+		"compass-mixins": "^0.12.10",
+		"mathsass": "^0.11.0",
+		"node-sass": "^4.13.0",
+		"npm-run-all": "^4.1.5",
+		"prettier": "^1.19.1"
+	},
+	"dependenciesOld": {
+		"async": "^3.1.0",
+		"bootstrap": "^3.3.7",
+		"compression": "^1.6.2",
+		"ejs": "^2.5.1",
+		"electron": "^7.0.0",
+		"electron-window": "^0.8.1",
+		"express-minify": "^1.0.0",
+		"ico": "^0.3.3",
+		"jquery": "^3.1.0",
+		"tether": "latest"
+	},
+	"dependencies": {
+		"express": "^4.14.0",
+		"pathfinding": "^0.4.18",
+		"qrcode-npm": "0.0.3",
+		"react": "^16.12.0",
+		"react-dom": "^16.12.0",
+		"react-router-dom": "^5.1.2",
+		"react-scripts": "3.2.0",
+		"typescript": "^3.7.3",
+		"websocket": "^1.0.23"
+	},
+	"contributors": [
+		{
+			"name": "Nebual",
+			"url": "https://github.com/Nebual"
+		},
+		{
+			"name": "Rob Williams",
+			"url": "https://github.com/Robert-Williams"
+		}
+	],
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"eslintConfig": {
+		"extends": "react-app"
+	},
+	"prettier": {
+		"useTabs": true,
+		"tabWidth": 4,
+		"semi": true,
+		"singleQuote": true,
+		"trailingComma": "es5",
+		"jsxBracketSameLine": false,
+		"proseWrap": "never"
+	}
 }

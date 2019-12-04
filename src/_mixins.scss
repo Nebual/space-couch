@@ -1,0 +1,8 @@
+@mixin container-landscape {
+	@media only screen and (orientation: portrait) {
+		height: 100vw;
+		-webkit-transform: rotate(90deg);
+		-moz-transform: rotate(90deg);
+		transform: rotate(90deg);
+	}
+}

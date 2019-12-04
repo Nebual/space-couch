@@ -1,5 +1,7 @@
-
-@import "_range-slider";
+body,
+html {
+	height: 100%;
+}
 
 .btn:focus {
 	outline: 0 !important;
@@ -71,34 +73,6 @@ $pause_width: 164px;
 	.container-list & {
 		display: none;
 	}
-}
-
-body, html {
-	height: 100%;
-}
-
-.container-landscape {
-	@media only screen and (orientation: portrait) {
-		height: 100vw;
-		-webkit-transform: rotate(90deg);
-		-moz-transform: rotate(90deg);
-		transform: rotate(90deg);
-	}
-}
-.container-list {
-	@import '_list';
-}
-.container-captain {
-	@import '_captain';
-}
-.container-weapons {
-	@import '_weapons';
-}
-.container-engineer {
-	@import '_engineer';
-}
-.container-robotics {
-	@import '_robotics';
 }
 
 @media screen and (min-width: 1200px) {

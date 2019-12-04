@@ -14,15 +14,6 @@ $(function() {
 		console.log($(this).data('sync'), !$(this).hasClass('active'), 'was clicked');
 		clientNet.sendState($(this).data('sync'), !$(this).hasClass('active'));
 	});
-
-	var lobby_hold_timer;
-	$('.lobby-button').on('mousedown touchstart', function() {
-		lobby_hold_timer = setTimeout(function () {
-			window.location.assign('/');
-		}, 1000);
-	}).on('mouseup mouseleave touchend', function() {
-		clearTimeout(lobby_hold_timer);
-	});
 });
 window.addEventListener('load', function(e) {
 	// Vague attempts to hide the address bar... doesn't work in most browsers anymore

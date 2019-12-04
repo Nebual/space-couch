@@ -1,21 +1,21 @@
-@import "../../node_modules/compass-mixins/lib/_compass";
-@import "../../node_modules/mathsass/dist/math";
+@import '../../../node_modules/compass-mixins/lib/compass';
+@import '../../../node_modules/mathsass/dist/math';
 
 .radial-overlay {
-	width:100%;
-	height:100%;
-	background-color: rgba(0,0,0,0.6);
-	position:fixed;
-	top:0;
-	left:0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.6);
+	position: fixed;
+	top: 0;
+	left: 0;
 	display: none;
-	opacity:0;
-	transition: opacity .3s ease;
+	opacity: 0;
+	transition: opacity 0.3s ease;
 	z-index: 110;
-	pointer-events:none;
-	&.active{
-		pointer-events:auto;
-		opacity:1;
+	pointer-events: none;
+	&.active {
+		pointer-events: auto;
+		opacity: 1;
 		display: block;
 	}
 }
@@ -62,13 +62,13 @@
 			}
 			transform: scale(1, 1);
 		}
-		$distance: $radial_width*1.5;
+		$distance: $radial_width * 1.5;
 		$n: 6;
 		@for $i from 0 to $n {
 			> li:nth-child(#{$i + 1}) {
-				$angle: $i*$PI/($n/2);
-				left: #{-$distance*cos($angle)}px;
-				top: #{-$distance*sin($angle)}px;
+				$angle: $i * $PI/($n/2);
+				left: #{-$distance * cos($angle)}px;
+				top: #{-$distance * sin($angle)}px;
 			}
 		}
 	}

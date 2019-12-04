@@ -5,11 +5,16 @@
 ```
 git clone git@github.com:Nebual/space-couch.git
 cd space-couch
-npm install
-npm run build
-npm start
+yarn install
+yarn start
 ```
 Then connect to http://[lan-ip-here]:8000/ from your phones
+
+#### Optimized Static Build
+```
+yarn build
+yarn serve # todo
+```
 
 ## Troubleshooting
 

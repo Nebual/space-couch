@@ -1,0 +1,80 @@
+@import '../../mixins';
+@import 'radialMenu';
+
+$tile_size: 64px;
+
+.container-robotics {
+	@include container-landscape;
+	height: 100%;
+	padding: 0;
+
+	.ship {
+		background: url('/images/ship_robot_background.png') center center/100%
+			100% no-repeat black;
+		position: relative;
+		height: 640px;
+		width: 960px;
+	}
+
+	.tiled_entity {
+		width: $tile_size;
+		height: $tile_size;
+		position: absolute;
+		background: center center/100% 100% no-repeat;
+	}
+
+	.fa-spin {
+		transform-origin: 50% calc(50% - 0.5px);
+	}
+
+	.robot {
+		@extend .tiled_entity;
+		background-image: url('/images/robot.png');
+		z-index: 10;
+		.fa-circle-o-notch {
+			font-size: 4em;
+			color: rgba(3, 193, 49, 0.6);
+			pointer-events: none;
+			z-index: 20;
+		}
+		&:not(.selected) {
+			.fa-circle-o-notch {
+				display: none;
+			}
+		}
+		.robot__busy {
+			position: absolute;
+			top: 24px;
+			left: 22px;
+			color: lime;
+			pointer-events: none;
+			display: none;
+			z-index: 20;
+		}
+		&.busy {
+			.robot__busy {
+				display: initial;
+			}
+		}
+		/* Debateably useful 'force GPU rendering' tricks */
+		-webkit-backface-visibility: hidden;
+		perspective: 1000;
+		transform: translateZ(0);
+	}
+
+	.fire {
+		@extend .tiled_entity;
+		z-index: 15;
+		background-image: url('/images/fire.gif');
+		background-size: 80%;
+		opacity: 0.75;
+		pointer-events: none;
+	}
+
+	.sparks {
+		@extend .tiled_entity;
+		z-index: 15;
+		background-image: url('/images/sparks.gif');
+		pointer-events: none;
+	}
+}
