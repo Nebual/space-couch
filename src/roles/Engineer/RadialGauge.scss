@@ -79,12 +79,10 @@ $d1: transparentize($black, 1-0.1);
 	}
 }
 
-.gaugewrap {
-	position: absolute;
+.gauge-container {
 	text-align: left;
 	display: inline-block;
 	border-radius: 50%;
-	box-sizing: padding-box;
 	padding: $outer-border-size;
 	box-shadow: 1px 3px 1px 0 $d4,
 		inset 0 3px 1px 1px transparentize($white, 0.3);
@@ -138,17 +136,8 @@ $d1: transparentize($black, 1-0.1);
 					$accent 20%,
 					darken($accent, 15)
 				);
-				& + i {
-					@include indicator($ind-x * 1.05, $ind-x * 1.1, $d4, 1);
-					//background: transparent;
-					//box-shadow: 0 0 2px 0 $d3;
-				}
-				/*.active &,
-				.active & + i {*/
-				&,
-				& + i {
-					will-change: transform;
-				}
+				box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.4);
+				will-change: transform;
 			}
 			.dialbase {
 				position: absolute;
@@ -159,8 +148,6 @@ $d1: transparentize($black, 1-0.1);
 				background: black;
 				top: $gauge-d * 0.5;
 				output {
-					//box-shadow: 0 0 1px 1px hsla(190, 40%, 20%, .5);
-					//background: #000;
 					display: inline-block;
 					width: 100%;
 					color: #39c;

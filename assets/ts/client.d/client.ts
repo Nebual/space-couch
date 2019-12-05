@@ -20,19 +20,3 @@ window.addEventListener('load', function(e) {
 	window.scrollTo(0, 1);
 	setTimeout(function() { window.scrollTo(0, 1); }, 1);
 }, false);
-
-var throttleTimers = {};
-function throttle(id: string, func: {(): void;}, delay_ms: number): void {
-	var now = (new Date()).getTime();
-	if(now > (throttleTimers[id] || 0))  {
-		throttleTimers[id] = now + delay_ms;
-		setTimeout(func, delay_ms)
-	}
-}
-
-navigator.vibrate = navigator.vibrate || (navigator as any).webkitVibrate || (navigator as any).mozVibrate || (navigator as any).msVibrate;
-function vibrate(ms) {
-	if (!navigator.vibrate) return; // unsupported
-	if (ms === undefined || ms === true || ms === false) ms = 200;
-	navigator.vibrate(ms);
-}

@@ -1,6 +1,4 @@
 @import '../../mixins';
-@import 'radialGauge';
-@import 'rangeSlider';
 
 .container-engineer {
 	@include container-landscape;
@@ -9,7 +7,9 @@
 	.card-title {
 		text-align: center;
 		color: whitesmoke;
+		text-shadow: 1px 1px 2px black;
 		margin-bottom: 0;
+		padding-top: 0.25em;
 	}
 	.card-block {
 		height: calc(100% - 26px);
@@ -85,20 +85,5 @@
 				rgba(0, 0, 0, 0)
 			);
 		}
-	}
-
-	.console {
-		background-color: black;
-		color: #bebebe;
-		font-weight: bold;
-		font-family: monospace;
-		font-size: 14px;
-		border: 0;
-		padding: 10px;
-		padding-bottom: 0;
-		height: 100%;
-		width: 100%;
-		white-space: pre;
-		overflow-y: scroll;
 	}
 }

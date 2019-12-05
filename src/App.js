@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import StylesProvider from '@material-ui/styles/StylesProvider';
 
 import RoleList from './roles/List/RoleList';
 import LobbyButton from './roles/List/LobbyButton';
@@ -10,7 +11,7 @@ import Weapons from './roles/Weapons/Weapons';
 
 import './global.scss';
 
-export default function App() {
+function App() {
 	return (
 		<div className="main-container">
 			<div
@@ -42,5 +43,13 @@ export default function App() {
 				</Switch>
 			</Router>
 		</div>
+	);
+}
+
+export default function() {
+	return (
+		<StylesProvider injectFirst>
+			<App />
+		</StylesProvider>
 	);
 }

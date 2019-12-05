@@ -3,36 +3,8 @@ html {
 	height: 100%;
 }
 
-.btn:focus {
-	outline: 0 !important;
-}
-
-.btn-danger {
-	&:active,
-	&:hover,
-	&:focus {
-		background-color: #d9534f;
-		border-color: #d9534f;
-	}
-	&.active {
-		&,
-		&:active,
-		&:hover,
-		&:focus {
-			background-color: #ac2925;
-			border-color: #8b211e;
-		}
-	}
-}
-
-.active-green.active {
-	&,
-	&:active,
-	&:hover,
-	&:focus {
-		background-color: #398439;
-		border-color: #2d672d;
-	}
+#root {
+	height: 100%;
 }
 
 $pause_width: 164px;
@@ -73,6 +45,10 @@ $pause_width: 164px;
 	.container-list & {
 		display: none;
 	}
+}
+
+.main-container {
+	height: 100%;
 }
 
 @media screen and (min-width: 1200px) {

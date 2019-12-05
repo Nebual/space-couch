@@ -1,0 +1,55 @@
+button:focus {
+	outline: 0 !important;
+}
+
+@mixin btn-base() {
+	color: white;
+	text-shadow: 1px 1px 1px black;
+	border-width: 2px;
+}
+
+@mixin btn-color($color) {
+	&,
+	&:focus,
+	&:active {
+		background-color: $color;
+		border-color: darken($color, 10);
+	}
+
+	&:hover {
+		background-color: darken($color, 10);
+		border-color: darken($color, 20);
+	}
+}
+
+$btn-red: #dc3545;
+$btn-green: #398439;
+$btn-orange: #ffc107;
+
+.btn-danger {
+	@include btn-base();
+	@include btn-color($btn-red);
+	&.active {
+		@include btn-color(darken($btn-red, 20));
+	}
+}
+
+.active-green.active {
+	@include btn-color($btn-green);
+}
+
+.btn-warning {
+	@include btn-base();
+	@include btn-color($btn-orange);
+	&.active {
+		@include btn-color(darken($btn-orange, 20));
+	}
+}
+
+.container-engineer {
+	.MuiButton-root {
+		margin-left: 0.5em;
+		margin-right: 0.5em;
+		box-shadow: 2px 2px 3px 0 #111;
+	}
+}

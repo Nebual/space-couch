@@ -1,106 +1,99 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useSwipeable } from 'react-swipeable';
 
 import './Engineer.scss';
+import RangeSlider from './RangeSlider';
+import RadialGauge from './RadialGauge';
+import ButtonSync from './ButtonSync';
+import Console from './Console';
 
 export default function() {
+	const [currentCard, setCurrentCard] = useState(0);
+
+	const [power2, setPower2] = useState(0);
+	const [power3, setPower3] = useState(20);
+
+	const swipeableHandlers = useSwipeable({
+		onSwipedLeft: () =>
+			setCurrentCard(1 + Math.min(cards.length, currentCard)),
+		onSwipedRight: () => setCurrentCard(Math.max(0, currentCard - 1)),
+		preventDefaultTouchmoveEvent: true,
+		trackMouse: true,
+	});
 	const cards = [
 		<div className="card">
 			<h4 className="card-title">Main Power</h4>
 			<div className="card-block">
-				<div
-					className="range-slider"
-					data-vertical="true"
-					data-sync="power1"
+				<RangeSlider syncId="power1" />
+				<RangeSlider
+					syncId="power2"
+					initialValue={power2}
+					onChange={setPower2}
 				/>
-				<div
-					className="range-slider"
-					data-vertical="true"
-					data-sync="power2"
+				<RangeSlider
+					syncId="power3"
+					initialValue={power3}
+					onChange={setPower3}
 				/>
-				<div
-					className="range-slider"
-					data-vertical="true"
-					data-sync="power3"
+				<RangeSlider syncId="power4" />
+				<RadialGauge
+					style={{
+						position: 'absolute',
+						top: '1em',
+						right: '1em',
+					}}
+					value={(power2 + power3 * 1.5) / 2.5}
 				/>
-				<div
-					className="range-slider"
-					data-vertical="true"
-					data-sync="power4"
-				/>
-				<div className="gaugewrap">
-					<div className="gauge">
-						<div className="dial">
-							<div className="indicator" />
-							<i />
-							<div className="dialbase">
-								<output>0</output>
-							</div>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>,
 		<div className="card">
 			<h4 className="card-title">Buttons</h4>
 			<div className="card-block">
-				<button
-					type="button"
-					className="btn btn-danger active-green"
-					data-toggle="button"
-					data-sync="main_power_system"
-					aria-pressed="false"
-				>
-					<i className="fa fa-2x fa-power-off" />
-				</button>
-				<button
-					type="button"
-					className="btn btn-danger"
-					data-toggle="button"
-					data-sync="enable_doritos"
-					aria-pressed="false"
-				>
-					<i className="fa fa-2x fa-hand-lizard-o" />
-				</button>
-				<br />
-				<br />
-				<button
-					type="button"
-					className="btn btn-warning"
-					data-sync="flush_gravity"
-					aria-pressed="false"
-				>
-					<i className="fa fa-2x fa-viacoin" />
-				</button>
-				<button
-					type="button"
-					className="btn btn-warning"
-					data-sync="start_generator_fire"
-				>
-					<i className="fa fa-2x fa-fire" />
-				</button>
-				<button
-					type="button"
-					className="btn btn-warning"
-					data-sync="break_shields"
-				>
-					<i className="fa fa-2x fa-ban" />
-				</button>
+				<div>
+					<ButtonSync
+						className="btn btn-danger active-green"
+						toggle
+						syncId="main_power_system"
+					>
+						<i className="fa fa-2x fa-power-off" />
+					</ButtonSync>
+					<ButtonSync
+						className="btn btn-danger"
+						syncId="enable_doritos"
+					>
+						<i className="fa fa-2x fa-hand-lizard-o" />
+					</ButtonSync>
+				</div>
+				<div style={{ marginTop: '1em' }}>
+					<ButtonSync
+						className="btn btn-warning"
+						syncId="flush_gravity"
+					>
+						<i className="fa fa-2x fa-viacoin" />
+					</ButtonSync>
+					<ButtonSync
+						className="btn btn-warning"
+						syncId="start_generator_fire"
+					>
+						<i className="fa fa-2x fa-fire" />
+					</ButtonSync>
+					<ButtonSync
+						className="btn btn-warning"
+						syncId="break_shields"
+					>
+						<i className="fa fa-2x fa-ban" />
+					</ButtonSync>
+				</div>
 			</div>
 		</div>,
 
 		<div className="card">
-			<div className="console">
-				&gt; tail -f /var/log/ship/network.log
-			</div>
+			<Console />
 		</div>,
 	];
 	return (
-		<div className="container-engineer">
-			<div className="cards">
-				{cards.map((card, index) => (
-					<React.Fragment key={index}>{card}</React.Fragment>
-				))}
-			</div>
+		<div className="container-engineer" {...swipeableHandlers}>
+			<div className="cards">{cards[currentCard]}</div>
 		</div>
 	);
 }
