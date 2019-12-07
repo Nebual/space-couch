@@ -50,6 +50,19 @@ $pause_width: 164px;
 .main-container {
 	height: 100%;
 }
+.lights-off {
+	background-color: black;
+	&:after {
+		content: ' ';
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		top: 0;
+		left: 0;
+		background: rgba(0, 0, 0, 0.6);
+		pointer-events: none;
+	}
+}
 
 @media screen and (min-width: 1200px) {
 	// Hacks for desktop view
@@ -62,4 +75,15 @@ $pause_width: 164px;
 		border: 2px solid black;
 		overflow: hidden;
 	}
+}
+
+// Helper Classes
+.hidden {
+	display: none;
+}
+.height-100 {
+	height: 100%;
+}
+.width-100 {
+	width: 100%;
 }

@@ -4,6 +4,7 @@ import Slider from '@material-ui/core/Slider';
 import { throttle } from '../../Util';
 
 import './RangeSlider.scss';
+import { useClientNet, useWebsocketStateChange } from '../../client/ClientNet';
 
 const marks = [
 	{
@@ -23,7 +24,7 @@ const marks = [
 RangeSlider.defaultProps = {
 	vertical: true,
 	initialValue: 0,
-	syncDelay: 250,
+	syncDelay: 333,
 };
 
 export default function RangeSlider({
@@ -33,7 +34,12 @@ export default function RangeSlider({
 	initialValue,
 	onChange,
 }) {
+	const clientNet = useClientNet();
 	const [displayValue, setDisplayValue] = useState(initialValue);
+	useWebsocketStateChange(newValue => {
+		setDisplayValue(newValue);
+		onChange && onChange(newValue);
+	}, syncId);
 
 	return (
 		<div className="range-slider-container">
@@ -48,7 +54,7 @@ export default function RangeSlider({
 						throttle(
 							syncId,
 							() => {
-								//clientNet.sendState(syncId, newValue)
+								clientNet.sendState(syncId, newValue);
 							},
 							syncDelay
 						);

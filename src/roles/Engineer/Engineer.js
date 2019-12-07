@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import classNames from 'classnames';
 import { useSwipeable } from 'react-swipeable';
 
 import './Engineer.scss';
@@ -29,6 +30,7 @@ export default function() {
 					syncId="power2"
 					initialValue={power2}
 					onChange={setPower2}
+					syncDelay={125}
 				/>
 				<RangeSlider
 					syncId="power3"
@@ -93,7 +95,17 @@ export default function() {
 	];
 	return (
 		<div className="container-engineer" {...swipeableHandlers}>
-			<div className="cards">{cards[currentCard]}</div>
+			{cards.map((card, index) => (
+				<div
+					className={classNames(
+						'height-100',
+						index !== currentCard && 'hidden'
+					)}
+					key={index}
+				>
+					{card}
+				</div>
+			))}
 		</div>
 	);
 }

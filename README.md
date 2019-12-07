@@ -6,14 +6,17 @@
 git clone git@github.com:Nebual/space-couch.git
 cd space-couch
 yarn install
+yarn build:server
+yarn start:server &
 yarn start
 ```
-Then connect to http://[lan-ip-here]:8000/ from your phones
+Then connect to http://[lan-ip-here]:3000/ from your phones
 
 #### Optimized Static Build
 ```
 yarn build
-yarn serve # todo
+yarn build:server
+yarn start:server
 ```
 
 ## Troubleshooting

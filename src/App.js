@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
+import classNames from 'classnames';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import StylesProvider from '@material-ui/styles/StylesProvider';
 
+import { useWebsocketMessage } from './client/ClientNet';
+import { vibrate } from './Util';
+import Overview from './roles/Overview/Overview';
 import RoleList from './roles/List/RoleList';
 import LobbyButton from './roles/List/LobbyButton';
 import Captain from './roles/Captain/Captain';
@@ -12,12 +16,23 @@ import Weapons from './roles/Weapons/Weapons';
 import './global.scss';
 
 function App() {
+	const [isPaused, setIsPaused] = useState(false);
+	useWebsocketMessage(packet => {
+		if (packet.event === 'lights_on') {
+			document.body.classList.toggle('lights-off', !packet.value);
+		}
+		if (packet.event === 'vibrate') {
+			vibrate(packet.value);
+		}
+		if (packet.event === 'pause') {
+			setIsPaused(packet.value);
+		}
+	});
 	return (
 		<div className="main-container">
 			<div
 				id="pause-dialog"
-				className="dropshadow"
-				style={{ display: 'none' }}
+				className={classNames('dropshadow', !isPaused && 'hidden')}
 			>
 				<div className="dropshadow-background" />
 				<i className="fa fa-pause-circle" />
@@ -25,6 +40,9 @@ function App() {
 			<Router>
 				<LobbyButton />
 				<Switch>
+					<Route path="/overview">
+						<Overview />
+					</Route>
 					<Route exact path="/">
 						<RoleList />
 					</Route>
