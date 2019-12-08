@@ -51,7 +51,8 @@ export class ClientNet {
 			window.location.port === '3000'
 				? '127.0.0.1:8000'
 				: window.location.host;
-		this.sock = new WebSocket(`ws://${wsHost}/ws`);
+		const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+		this.sock = new WebSocket(`${wsProtocol}://${wsHost}/ws/`);
 		this.sock.onopen = e => {
 			console.log('WS: opened!');
 			this.sendRaw({ event: 'init' });

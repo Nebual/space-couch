@@ -1,4 +1,5 @@
 let throttleTimers: { [id: string]: number } = {};
+// todo: replace this with a library, it runs the older version of func() :(
 export function throttle(
 	id: string,
 	func: { (): void },
@@ -11,12 +12,12 @@ export function throttle(
 	}
 }
 
-navigator.vibrate =
-	navigator.vibrate ||
-	(navigator as any).webkitVibrate ||
-	(navigator as any).mozVibrate ||
-	(navigator as any).msVibrate;
 export function vibrate(ms: number) {
-	if (!navigator.vibrate) return; // unsupported
-	navigator.vibrate(ms || 200);
+	const browserVibrate =
+		navigator.vibrate ||
+		(navigator as any).webkitVibrate ||
+		(navigator as any).mozVibrate ||
+		(navigator as any).msVibrate;
+	if (!browserVibrate) return; // unsupported
+	browserVibrate(ms || 200);
 }

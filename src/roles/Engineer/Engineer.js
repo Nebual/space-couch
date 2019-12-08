@@ -8,7 +8,7 @@ import RadialGauge from './RadialGauge';
 import ButtonSync from './ButtonSync';
 import Console from './Console';
 
-export default function() {
+export default function Engineer() {
 	const [currentCard, setCurrentCard] = useState(0);
 
 	const [power2, setPower2] = useState(0);

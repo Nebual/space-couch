@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import './RoleList.scss';
 
-export default function() {
+export default function RoleList() {
 	return (
 		<div className="container-list">
 			<h1>Project Space Couch</h1>

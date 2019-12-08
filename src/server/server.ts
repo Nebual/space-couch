@@ -51,6 +51,10 @@ function initExpress() {
 			maxAge: 1000 * 60 * 5,
 		})
 	);
+	// Handles any requests that don't match the ones above
+	server.get('/*', (req, res) => {
+		res.sendFile(path.join(staticPath, 'index.html'));
+	});
 
 	return server;
 }
