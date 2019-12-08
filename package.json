@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "react-scripts start",
-		"start:server": "node build-server/server.js",
+		"start:server": "yarn build:server && node build-server/server.js",
 		"build": "react-scripts build",
 		"build:server": "tsc -p src/server/tsconfig.json",
 		"watch:server": "tsc -w -p src/server/tsconfig.json",
@@ -40,6 +40,7 @@
 		"classnames": "^2.2.6",
 		"express": "^4.14.0",
 		"express-minify": "^1.0.0",
+		"gsap": "^3.0.2",
 		"pathfinding": "^0.4.18",
 		"prop-types": "^15.7.2",
 		"qrcode": "^1.4.4",

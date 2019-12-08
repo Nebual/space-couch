@@ -31,7 +31,9 @@ export class ClientNet {
 		this.send({ event: 'state', id: id, value: value });
 	}
 	public updateRole(): void {
-		this.send({ event: 'changeRole', value: ClientNet.getRole() });
+		let packet = { event: 'changeRole', value: ClientNet.getRole() };
+		this.send(packet);
+		this.callListeners(packet);
 	}
 
 	private static getRole(): string {
@@ -51,20 +53,23 @@ export class ClientNet {
 				: window.location.host;
 		this.sock = new WebSocket(`ws://${wsHost}/ws`);
 		this.sock.onopen = e => {
-			console.log('we opened a WS!');
+			console.log('WS: opened!');
 			this.sendRaw({ event: 'init' });
+			this.updateRole();
 		};
 		this.sock.onmessage = e => {
 			let data = JSON.parse(e.data);
 			console.log('WS: received', data);
-			Object.values(this.messageListeners).map(callback =>
-				callback(data)
-			);
+			this.callListeners(data);
 		};
 		this.sock.onclose = e => {
-			console.log('WS closed!');
+			console.log('WS: closed!');
 			this.checkWebSocket();
 		};
+	}
+
+	private callListeners(packet) {
+		Object.values(this.messageListeners).map(callback => callback(packet));
 	}
 
 	public subscribeListener(hookId, callback) {

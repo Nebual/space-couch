@@ -39,6 +39,6 @@ export default function ButtonSync({
 			}}
 			className={classNames(className, active && ' active')}
 			{...props}
-		></Button>
+		/>
 	);
 }

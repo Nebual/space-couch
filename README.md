@@ -3,10 +3,9 @@
 ## Running
 
 ```
-git clone git@github.com:Nebual/space-couch.git
+git clone https://github.com/Nebual/space-couch.git
 cd space-couch
 yarn install
-yarn build:server
 yarn start:server &
 yarn start
 ```

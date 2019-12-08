@@ -37,24 +37,14 @@ $tile_size: 64px;
 			pointer-events: none;
 			z-index: 20;
 		}
-		&:not(.selected) {
-			.fa-circle-o-notch {
-				display: none;
-			}
-		}
 		.robot__busy {
 			position: absolute;
-			top: 24px;
-			left: 22px;
+			top: -10px;
+			left: 25px;
 			color: lime;
 			pointer-events: none;
-			display: none;
 			z-index: 20;
-		}
-		&.busy {
-			.robot__busy {
-				display: initial;
-			}
+			text-shadow: 0 0 2px black;
 		}
 		/* Debateably useful 'force GPU rendering' tricks */
 		-webkit-backface-visibility: hidden;
