@@ -25,6 +25,7 @@ const sampleData = [
 	0.00095,
 ];
 
+// curved lines? http://blogs.sitepointstatic.com/examples/tech/svg-curves/cubic-curve.html
 export default ({
 	data = sampleData,
 	dataMax = Math.max(...data),
