@@ -37,7 +37,7 @@ export default function ButtonSync({
 				}
 				syncId && clientNet.sendState(syncId, !active);
 			}}
-			className={classNames(className, active && ' active')}
+			className={classNames(className, toggle && active && 'active')}
 			{...props}
 		/>
 	);

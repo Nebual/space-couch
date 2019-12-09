@@ -39,7 +39,7 @@ yarn start:server
 ## Todo
 * Backend
   * [X] Saves/restores client state between refreshes/disconnects
-  * [ ] Saves/restores server state between server reboots/crashes
+  * [X] Saves/restores server state between server reboots/crashes
 * Engineer
   * [X] Many swipe-navigable panels, categorized
   * A ton of widgets, including:
@@ -102,11 +102,18 @@ yarn start:server
   * Creates/improves maps (for uncharted systems)
     * Scan anomalies/planets/etc, Elite/EvE probe minigames
   * Collects KSP-like science (earns money)
+* Radar
+  * Single-sensor 360 view radar charts (eg. temperature in all directions)
+  * Multi-sensor radar charts aimed in a cone (point sensor array forward: tachyons + sin waving EM? Must be Klingons warping in)
+  * Can inform Weapons of enemy ships (potentially types)
+  * Can inform Communications of tightbeam direction channel
+  * Can inform ship of anomalies, science, mission criteria
 * Weapons
   * Reticle minigame
 	  * [X] Stars background
-	  * [ ] Parallax stars background according to gyro movement
+	  * [X] Parallax stars background according to gyro movement
   * Swipe to switch to different views (different gun mount points)
+  * The only Role to think of space as full 3d sphere space (most are just a 2d plane)
 * Shields (probably handled by Weapons)
   * Have an energy buffer, depletes over time, used up upon absorbing hits
   * Can be disengaged/enabled quite quickly while the buffer is full - slower the lower it is
@@ -123,15 +130,19 @@ yarn start:server
   * Can hail ships/stations and attempt to parlay
   * Often challenging due to cultural/language barriers (Shaka, when the walls fell)
   * Codex/Reference Book detailing cultural practices and how to best navigate them
+  * Broadbeam = no aiming, really loud EM. Narrowbeam = rough aiming, quiet EM. Tightbeam = tight aiming, silent EM.
 * Captain
   * Mission details
   * Has inventory of spare parts
+  * Red Alert button
   * Has the JUMP button
 * Overview Screen (TV)
   * Shows vague stats about the ship, just a very high level "this system is unpowered/overpowered/damaged"
   * Mission countdown clock
   * Displays alerts
     * damage taken
+    * Missiles locked
+    * Red Alert (set by Captain)
     * Systems offline
     * New ship detected on radar
     * "Mission Complete"

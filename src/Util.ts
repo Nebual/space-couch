@@ -13,11 +13,12 @@ export function throttle(
 }
 
 export function vibrate(ms: number) {
-	const browserVibrate =
+	const browserVibrate = (
 		navigator.vibrate ||
 		(navigator as any).webkitVibrate ||
 		(navigator as any).mozVibrate ||
-		(navigator as any).msVibrate;
+		(navigator as any).msVibrate
+	).bind(navigator);
 	if (!browserVibrate) return; // unsupported
 	browserVibrate(ms || 200);
 }
