@@ -30,6 +30,13 @@ export default function RoleList() {
 						Fills the sky with lead - or lasers, as it may be
 					</p>
 				</Link>
+				<Link className="card card-block" to="radar">
+					<h4 className="card-title">Radar</h4>
+					<p className="card-text">
+						The Eyes, Ears, and Nose of the Ship. Additionally, the
+						thermal probe, Tachyon detector, and EM tuner.
+					</p>
+				</Link>
 				<Link className="card card-block" to="navigator">
 					<h4 className="card-title">Navigator</h4>
 					<p className="card-text">

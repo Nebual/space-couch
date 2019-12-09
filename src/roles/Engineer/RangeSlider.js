@@ -21,17 +21,11 @@ const marks = [
 	},
 ];
 
-RangeSlider.defaultProps = {
-	vertical: true,
-	initialValue: 0,
-	syncDelay: 333,
-};
-
 export default function RangeSlider({
-	vertical,
+	vertical = true,
 	syncId,
-	syncDelay,
-	initialValue,
+	syncDelay = 333,
+	initialValue = 0,
 	onChange,
 }) {
 	const clientNet = useClientNet();

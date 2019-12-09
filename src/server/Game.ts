@@ -14,6 +14,7 @@ export class Game {
 		},
 		navigator: {},
 		robotics: {},
+		radar: {},
 		weapons: {},
 	};
 	public ship: ShipNodes;

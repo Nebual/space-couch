@@ -14,6 +14,7 @@ import Robotics from './roles/Robotics/Robotics';
 import Weapons from './roles/Weapons/Weapons';
 
 import './global.scss';
+import Radar from './roles/Radar/Radar';
 
 function App() {
 	const [isPaused, setIsPaused] = useState(false);
@@ -54,6 +55,9 @@ function App() {
 					</Route>
 					<Route path="/robotics">
 						<Robotics />
+					</Route>
+					<Route path="/radar">
+						<Radar />
 					</Route>
 					<Route path="/weapons">
 						<Weapons />

@@ -12,15 +12,11 @@ ButtonSync.propTypes = {
 	initialValue: PropTypes.bool,
 	className: PropTypes.string,
 };
-ButtonSync.defaultProps = {
-	toggle: false,
-	initialValue: false,
-};
 
 export default function ButtonSync({
-	toggle,
+	toggle = false,
 	syncId,
-	initialValue,
+	initialValue = false,
 	className,
 	...props
 }) {

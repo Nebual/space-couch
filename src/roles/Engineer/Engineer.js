@@ -1,28 +1,18 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
-import { useSwipeable } from 'react-swipeable';
 
 import './Engineer.scss';
 import RangeSlider from './RangeSlider';
 import RadialGauge from './RadialGauge';
 import ButtonSync from './ButtonSync';
 import Console from './Console';
+import CardDeck from './CardDeck';
 
 export default function Engineer() {
-	const [currentCard, setCurrentCard] = useState(0);
-
 	const [power2, setPower2] = useState(0);
 	const [power3, setPower3] = useState(20);
 
-	const swipeableHandlers = useSwipeable({
-		onSwipedLeft: () =>
-			setCurrentCard(1 + Math.min(cards.length, currentCard)),
-		onSwipedRight: () => setCurrentCard(Math.max(0, currentCard - 1)),
-		preventDefaultTouchmoveEvent: true,
-		trackMouse: true,
-	});
 	const cards = [
-		<div className="card">
+		<>
 			<h4 className="card-title">Main Power</h4>
 			<div className="card-block">
 				<RangeSlider syncId="power1" />
@@ -47,8 +37,9 @@ export default function Engineer() {
 					value={(power2 + power3 * 1.5) / 2.5}
 				/>
 			</div>
-		</div>,
-		<div className="card">
+		</>,
+
+		<>
 			<h4 className="card-title">Buttons</h4>
 			<div className="card-block">
 				<div>
@@ -87,25 +78,9 @@ export default function Engineer() {
 					</ButtonSync>
 				</div>
 			</div>
-		</div>,
+		</>,
 
-		<div className="card">
-			<Console />
-		</div>,
+		<Console />,
 	];
-	return (
-		<div className="container-engineer" {...swipeableHandlers}>
-			{cards.map((card, index) => (
-				<div
-					className={classNames(
-						'height-100',
-						index !== currentCard && 'hidden'
-					)}
-					key={index}
-				>
-					{card}
-				</div>
-			))}
-		</div>
-	);
+	return <CardDeck className="container-engineer" cards={cards} />;
 }
