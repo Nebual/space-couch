@@ -35,6 +35,9 @@ export default ({
 	pointRadius = 4,
 	color = '#f5810c',
 }) => {
+	if (!data || !data.length) {
+		return null;
+	}
 	const radius = Math.min(width, height) / 2;
 
 	const radiusScale = scaleLinear({

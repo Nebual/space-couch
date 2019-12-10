@@ -104,8 +104,8 @@ export default function Weapons() {
 			maxY: DEFAULT_HEIGHT / 2,
 		};
 		const camera = {
-			x: -gyroData.gamma * 6,
-			y: -gyroData.beta * 6 + windowHeight,
+			x: -gyroData.beta * 6,
+			y: gyroData.gamma * 6 + windowHeight,
 		};
 		const camX = clamp(
 			-camera.x + canvas.width / 2,

@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 let throttleTimers: { [id: string]: number } = {};
 // todo: replace this with a library, it runs the older version of func() :(
 export function throttle(
@@ -21,4 +23,27 @@ export function vibrate(ms: number) {
 	).bind(navigator);
 	if (!browserVibrate) return; // unsupported
 	browserVibrate(ms || 200);
+}
+
+export function useInterval(callback, delay) {
+	const savedCallback = useRef();
+
+	// Remember the latest callback.
+	useEffect(() => {
+		savedCallback.current = callback;
+	}, [callback]);
+
+	// Set up the interval.
+	useEffect(() => {
+		function tick() {
+			if (savedCallback.current !== undefined) {
+				// @ts-ignore
+				savedCallback.current();
+			}
+		}
+		if (delay !== null) {
+			let id = setInterval(tick, delay);
+			return () => clearInterval(id);
+		}
+	}, [delay]);
 }

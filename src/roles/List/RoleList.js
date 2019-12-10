@@ -2,12 +2,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import './RoleList.scss';
+import FullscreenButton from './FullscreenButton';
 
 export default function RoleList() {
 	return (
 		<div className="container-list">
-			<h1>Project Space Couch</h1>
-			<div className="card-columns">
+			<div style={{ display: 'flex' }}>
+				<h1>Project Space Couch</h1>
+				<FullscreenButton />
+			</div>
+			<div className="card-tiles">
 				<Link className="card card-block" to="captain">
 					<h4 className="card-title">Captain</h4>
 					<p className="card-text">

@@ -12,7 +12,7 @@ export default function LobbyButton() {
 	}, [history.location.pathname, clientNet]);
 	const hide =
 		history.location.pathname === '/overview' ||
-		history.location.pathname === '/list';
+		history.location.pathname === '/';
 
 	const [isRedirecting, setIsRedirecting] = useState(false);
 	const lobbyButtonStartTouch = () => {
