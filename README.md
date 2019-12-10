@@ -6,7 +6,6 @@
 git clone https://github.com/Nebual/space-couch.git
 cd space-couch
 yarn install
-yarn start:server &
 yarn start
 ```
 Then connect to http://[lan-ip-here]:3000/ from your phones
@@ -14,8 +13,14 @@ Then connect to http://[lan-ip-here]:3000/ from your phones
 #### Optimized Static Build
 ```
 yarn build
-yarn build:server
-yarn start:server
+yarn serve
+```
+
+#### Split dev terminals
+```
+yarn watch:client # Webpack output
+yarn watch:server:tsc # Server recompiling output
+yarn watch:server:express # Server runtime window
 ```
 
 ## Troubleshooting

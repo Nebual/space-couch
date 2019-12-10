@@ -2,6 +2,7 @@ import { Game } from './Game';
 import { ServerNet } from './ServerNet';
 import { Express } from 'express';
 import { Server as HttpServer } from 'http';
+import throttle from './throttle';
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
@@ -84,17 +85,29 @@ function initGame(): Game {
 	return Game.fromJSON(defaultGameJson);
 }
 
-function initGameServer(httpServer: HttpServer) {
-	let game = initGame();
-	game.net = new ServerNet(game, httpServer);
-	return game;
-}
-
 if (require.main === module) {
-	let server: Express = initExpress();
-	let httpServer = initHttpServer(server, PORT);
-	let game: Game = initGameServer(httpServer);
+	const server: Express = initExpress();
+	const httpServer = initHttpServer(server, PORT);
+	let game: Game = initGame();
+	const serverNet = new ServerNet(game, httpServer);
 
+	const reloadServer = () => {
+		const gameState = JSON.stringify(game);
+		Object.keys(require.cache)
+			.filter(key => /.*build-server.*/.test(key))
+			.forEach(key => delete require.cache[key]);
+		game = require('./Game').Game.fromJSON(JSON.parse(gameState));
+		serverNet.setGame(game);
+	};
+	if (argv['watch']) {
+		const chokidar = require('chokidar');
+		const watcher = chokidar.watch('./build-server/');
+		watcher.on('ready', () => {
+			watcher.on('all', () => {
+				throttle('reloadServer', reloadServer, 100);
+			});
+		});
+	}
 	const saveOnShutdown = e => {
 		console.log('Writing exit save to last_save.json');
 		game.save('last_save.json');
@@ -107,6 +120,7 @@ if (require.main === module) {
 		let replInstance = repl.start({ prompt: 'node> ' });
 		replInstance.context.game = game;
 		replInstance.context.server = server;
+		replInstance.context.reload = reloadServer;
 	}
 }
 
@@ -114,5 +128,4 @@ module.exports = {
 	getHostUrl,
 	initExpress,
 	initHttpServer,
-	initGameServer,
 };

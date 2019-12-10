@@ -123,7 +123,22 @@ export class Game {
 		this.ship = new ShipNodes(this, shipName);
 	}
 
-	public onMessage(msg: NetPacket) {
+	public onMessage(connection: Connection, msg: NetPacket) {
+		switch (msg.event) {
+			case 'changeRole':
+				connection.role = msg.value;
+				this.initConnection(connection);
+				break;
+			case 'state':
+				console.log('They set ' + msg.id + ' to ' + msg.value);
+				this.setRoleState(
+					connection.role,
+					msg.id as string,
+					msg.value,
+					connection
+				);
+				break;
+		}
 		this.ship.onMessage(msg);
 	}
 }

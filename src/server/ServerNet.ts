@@ -40,7 +40,7 @@ export class ServerNet {
 	private game: Game;
 
 	constructor(game: Game, server: HttpServer) {
-		this.game = game;
+		this.setGame(game);
 		this.wsServer = new WebSocketServer({
 			httpServer: server,
 		});
@@ -70,19 +70,9 @@ export class ServerNet {
 				return;
 			case 'changeRole':
 				connection.role = msg.value;
-				this.game.initConnection(connection);
-				return;
-			case 'state':
-				console.log('They set ' + msg.id + ' to ' + msg.value);
-				this.game.setRoleState(
-					connection.role,
-					<string>msg.id,
-					msg.value,
-					connection
-				);
 				break;
 		}
-		this.game.onMessage(msg);
+		this.game.onMessage(connection, msg);
 	}
 
 	onClose(connection: Connection) {
@@ -112,5 +102,10 @@ export class ServerNet {
 		role: Role | '' = ''
 	) {
 		this.broadcast({ event: event, id: id, value: value }, role);
+	}
+
+	setGame(game: Game) {
+		this.game = game;
+		game.net = this;
 	}
 }
