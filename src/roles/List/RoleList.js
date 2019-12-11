@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -6,8 +6,7 @@ import Typography from '@material-ui/core/Typography';
 
 import './RoleList.scss';
 import FullscreenButton from './FullscreenButton';
-import InputLabel from "@material-ui/core/InputLabel";
-import NativeSelect from "@material-ui/core/NativeSelect";
+import ShipSelector from './ShipSelector';
 
 function RoleCard({ to, title, children }) {
 	return (
@@ -31,14 +30,7 @@ export default function RoleList() {
 				<Typography variant="h3" gutterBottom>
 					Space Couch
 				</Typography>
-				<div className="selector-container" >
-					<InputLabel id="ship-select-label">Select Ship</InputLabel>
-					<NativeSelect labelId="ship-select-label"  >
-						<option value="ship1">Ship 1</option>
-						<option value="ship2">Ship 2</option>
-						<option value="ship3">Ship 3</option>
-					</NativeSelect>
-				</div>
+				<ShipSelector />
 				<FullscreenButton />
 			</div>
 			<div className="card-tiles">

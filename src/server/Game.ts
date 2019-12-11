@@ -148,6 +148,9 @@ export class Game {
 					connection
 				);
 				break;
+			case 'changeShip':
+				this.initShip(msg.value);
+				break;
 		}
 		this.ship.onMessage(msg);
 	}
