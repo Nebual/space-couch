@@ -91,11 +91,7 @@ export class Game {
 
 		switch (id) {
 			case 'main_power_system':
-				this.lights_on = value;
-				this.net.broadcast({
-					event: 'lights_on',
-					value: this.lights_on,
-				});
+				this.setPlayerLights(value);
 				break;
 			case 'flush_gravity':
 				this.net.broadcast({ event: 'vibrate', value: 300 });
@@ -110,8 +106,22 @@ export class Game {
 			case 'break_shields':
 				this.ship.startBreak(RoomType.Shields);
 				break;
+			case 'power2':
+				if (value > 90) {
+					this.setPlayerLights(false);
+				}
+				break;
 		}
 	}
+
+	private setPlayerLights(value) {
+		this.lights_on = value;
+		this.net.broadcast({
+			event: 'lights_on',
+			value: this.lights_on,
+		});
+	}
+
 	public getRoleState(role, id) {
 		return this.state[role][id];
 	}

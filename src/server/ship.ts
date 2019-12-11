@@ -71,67 +71,61 @@ export class ShipNodes {
 		this.game = game;
 		this.shipType = layout;
 
+		let shipType = ShipTypes[layout];
+		let nodes = shipType.nodes.map(
+			([left, top, room, openings]) =>
+				({
+					left,
+					top,
+					room,
+					north: openings.includes('n'),
+					east: openings.includes('e'),
+					south: openings.includes('s'),
+					west: openings.includes('w'),
+				} as Node)
+		);
+
+		const maxGridX = Math.max(...nodes.map(n => n.left), 0) + 1;
+		const maxGridY = Math.max(...nodes.map(n => n.top), 0) + 1;
+
 		// Create a matrix that's entirely unwalkable by default
 		// 2x as large as our grid size, so there's odd "wall" nodes between each even grid cell
-		let rows: number[][] = [];
-		while (rows.length < 8 * 2) {
-			let b: number[] = [];
-			rows.push(b);
-			while (b.push(1) < 13 * 2);
-		}
+		let rows: number[][] = Array(maxGridY * 2).fill(
+			Array(maxGridX * 2).fill(1)
+		);
 		this.grid = new PF.Grid(rows);
 		this.finder = new PF.AStarFinder({
 			allowDiagonal: true,
 			dontCrossCorners: true,
 		});
-
-		let shipType = <ShipType>ShipTypes[layout];
-		let grid = shipType.nodes;
-		for (let row of grid) {
-			let node = <Node>{
-				left: row[0],
-				top: row[1],
-				room: row[2],
-				north: row[3].includes('n'),
-				east: row[3].includes('e'),
-				south: row[3].includes('s'),
-				west: row[3].includes('w'),
-			};
+		nodes.forEach(node => {
 			this.nodes[node.left + 'x' + node.top] = node;
-			if (!this.rooms[node.room])
+			if (!this.rooms[node.room]) {
 				this.rooms[node.room] = new Room(node.room);
+			}
 			this.rooms[node.room].nodes.push(node);
-			this.grid.setWalkableAt(node.left * 2, node.top * 2, true);
-			if (node.north)
-				this.grid.setWalkableAt(node.left * 2, node.top * 2 - 1, true);
-			if (node.east)
-				this.grid.setWalkableAt(node.left * 2 + 1, node.top * 2, true);
-			if (node.south)
-				this.grid.setWalkableAt(node.left * 2, node.top * 2 + 1, true);
-			if (node.west)
-				this.grid.setWalkableAt(node.left * 2 - 1, node.top * 2, true);
+
+			const subX = node.left * 2;
+			const subY = node.top * 2;
+			this.grid.setWalkableAt(subX, subY, true);
+			if (node.south) this.grid.setWalkableAt(subX, subY + 1, true);
+			if (node.west) this.grid.setWalkableAt(subX - 1, subY, true);
 			// Kinda a hack, but open up nodes in the middle of the room too
 			if (
 				node.north &&
 				node.west &&
-				this.grid.isWalkableAt(node.left * 2 - 1, node.top * 2 - 2)
-			)
-				this.grid.setWalkableAt(
-					node.left * 2 - 1,
-					node.top * 2 - 1,
-					true
-				);
+				this.grid.isWalkableAt(subX - 1, subY - 2)
+			) {
+				this.grid.setWalkableAt(subX - 1, subY - 1, true);
+			}
 			if (
 				node.south &&
 				node.west &&
-				this.grid.isWalkableAt(node.left * 2 - 1, node.top * 2 + 2)
-			)
-				this.grid.setWalkableAt(
-					node.left * 2 - 1,
-					node.top * 2 + 1,
-					true
-				);
-		}
+				this.grid.isWalkableAt(subX - 1, subY + 2)
+			) {
+				this.grid.setWalkableAt(subX - 1, subY + 1, true);
+			}
+		});
 		this.debug_grid();
 		this.createRobots(shipType.numRobots);
 		this.partsRemaining = shipType.numParts;
@@ -147,6 +141,9 @@ export class ShipNodes {
 		if (obj.robots !== undefined) this.robots = obj.robots;
 		if (obj.rooms !== undefined) {
 			for (let room_id in obj.rooms) {
+				if (!this.rooms[room_id]) {
+					continue;
+				}
 				this.rooms[room_id].applyJSON(obj.rooms[room_id]);
 			}
 		}
@@ -380,8 +377,9 @@ interface ShipType {
 	numParts: number;
 	nodes: [number, number, RoomType, string][];
 }
-class ShipTypes {
-	static ship1 = <ShipType>{
+
+const ShipTypes: { [shipId: string]: ShipType } = {
+	ship1: {
 		numRobots: 3,
 		numParts: 3,
 		nodes: [
@@ -427,5 +425,5 @@ class ShipTypes {
 			[10, 6, RoomType.Weapons, 'nsw'],
 			[10, 7, RoomType.Weapons, 'nw'],
 		],
-	};
-}
+	},
+};
