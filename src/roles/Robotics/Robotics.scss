@@ -13,6 +13,14 @@ $tile_size: 64px;
 
 	.ship {
 		height: 100%;
+
+		@media screen and (min-width: 1200px) {
+			// Hacks for desktop view
+			overflow: hidden;
+			width: max-content;
+			height: max-content;
+			position: relative;
+		}
 	}
 	.ship-image {
 		position: absolute;

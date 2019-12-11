@@ -1,7 +1,8 @@
 .StarCanvas {
 	position: fixed;
 	@media screen and (min-width: 1200px) {
-		position: absolute;
+		position: initial;
+		float: left;
 	}
 	z-index: -1;
 	height: 100%;
