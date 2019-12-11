@@ -2,10 +2,24 @@ button:focus {
 	outline: 0 !important;
 }
 
+.btn-link {
+	&,
+	&:focus,
+	&:active {
+		background-color: transparent;
+		border-color: transparent;
+	}
+	padding: 0.5rem 1rem;
+	font-size: 1rem;
+	cursor: pointer;
+}
+
 @mixin btn-base() {
 	color: white;
 	text-shadow: 1px 1px 1px black;
-	border-width: 2px;
+	border: 2px solid transparent;
+	padding: 0.5rem 1rem;
+	font-size: 1rem;
 }
 
 @mixin btn-color($color) {

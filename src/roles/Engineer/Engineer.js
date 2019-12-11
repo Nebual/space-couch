@@ -6,6 +6,7 @@ import RadialGauge from './RadialGauge';
 import ButtonSync from './ButtonSync';
 import Console from './Console';
 import CardDeck from './CardDeck';
+import Typography from '@material-ui/core/Typography';
 
 export default function Engineer() {
 	const [power2, setPower2] = useState(0);
@@ -13,7 +14,9 @@ export default function Engineer() {
 
 	const cards = [
 		<>
-			<h4 className="card-title">Main Power</h4>
+			<Typography variant="h5" className="card-title">
+				Main Power
+			</Typography>
 			<div className="card-block">
 				<RangeSlider syncId="power1" />
 				<RangeSlider
@@ -40,7 +43,9 @@ export default function Engineer() {
 		</>,
 
 		<>
-			<h4 className="card-title">Buttons</h4>
+			<Typography variant="h5" className="card-title">
+				Buttons
+			</Typography>
 			<div className="card-block">
 				<div>
 					<ButtonSync

@@ -4,6 +4,7 @@ import './Radar.scss';
 import CardDeck from '../Engineer/CardDeck';
 import RadarGraph from './RadarGraph';
 import { useInterval } from '../../Util';
+import Typography from '@material-ui/core/Typography';
 
 export default function Radar() {
 	const [temperatureData, setTemperatureData] = useState([]);
@@ -51,7 +52,9 @@ export default function Radar() {
 	];
 	const cards = [
 		<>
-			<h4 className="card-title">Thermal Scans</h4>
+			<Typography variant="h5" className="card-title">
+				Thermal Scans
+			</Typography>
 			<div className="card-block">
 				<RadarGraph
 					numRings={3}
@@ -65,7 +68,9 @@ export default function Radar() {
 			</div>
 		</>,
 		<>
-			<h4 className="card-title">Tachyon Detector</h4>
+			<Typography variant="h5" className="card-title">
+				Tachyon Detector
+			</Typography>
 			<div className="card-block">
 				<RadarGraph
 					numRings={3}

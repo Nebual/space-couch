@@ -1,52 +1,58 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
 
 import './RoleList.scss';
 import FullscreenButton from './FullscreenButton';
+
+function RoleCard({ to, title, children }) {
+	return (
+		<Link className="card" to={to}>
+			<Card elevation={2}>
+				<CardContent>
+					<Typography variant="h5" gutterBottom>
+						{title}
+					</Typography>
+					<Typography variant="body2">{children}</Typography>
+				</CardContent>
+			</Card>
+		</Link>
+	);
+}
 
 export default function RoleList() {
 	return (
 		<div className="container-list">
 			<div style={{ display: 'flex' }}>
-				<h1>Project Space Couch</h1>
+				<Typography variant="h3" gutterBottom>
+					Project Space Couch
+				</Typography>
 				<FullscreenButton />
 			</div>
 			<div className="card-tiles">
-				<Link className="card card-block" to="captain">
-					<h4 className="card-title">Captain</h4>
-					<p className="card-text">
-						Ensures smooth communication between crew.
-					</p>
-				</Link>
-				<Link className="card card-block" to="engineer">
-					<h4 className="card-title">Engineer</h4>
-					<p className="card-text">
-						Manages power levels throughout the ship.
-					</p>
-				</Link>
-				<Link className="card card-block" to="robotics">
-					<h4 className="card-title">Robologistics</h4>
-					<p className="card-text">Head of HR - err, well</p>
-				</Link>
-				<Link className="card card-block" to="weapons">
-					<h4 className="card-title">Weapons</h4>
-					<p className="card-text">
-						Fills the sky with lead - or lasers, as it may be
-					</p>
-				</Link>
-				<Link className="card card-block" to="radar">
-					<h4 className="card-title">Radar</h4>
-					<p className="card-text">
-						The Eyes, Ears, and Nose of the Ship. Additionally, the
-						thermal probe, Tachyon detector, and EM tuner.
-					</p>
-				</Link>
-				<Link className="card card-block" to="/">
-					<h4 className="card-title">Navigator</h4>
-					<p className="card-text">
-						Figures out where we are, and where we're going.
-					</p>
-				</Link>
+				<RoleCard to="captain" title="Captain">
+					Ensures smooth communication between crew.
+				</RoleCard>
+				<RoleCard to="engineer" title="Engineer">
+					{' '}
+					Manages power levels throughout the ship.
+				</RoleCard>
+				<RoleCard to="robotics" title="Robologistics">
+					Head of HR - err, well
+				</RoleCard>
+
+				<RoleCard to="weapons" title="Weapons">
+					Fills the sky with lead - or lasers, as it may be
+				</RoleCard>
+				<RoleCard to="radar" title="Radar">
+					The Eyes, Ears, and Nose of the Ship. Additionally, the
+					thermal probe, Tachyon detector, and EM tuner.{' '}
+				</RoleCard>
+				<RoleCard to="/" title="Navigator">
+					Figures out where we are, and where we're going.
+				</RoleCard>
 			</div>
 		</div>
 	);

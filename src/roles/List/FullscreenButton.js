@@ -38,7 +38,7 @@ export default function FullscreenButton() {
 		<Button
 			variant={isFullscreen ? 'text' : 'contained'}
 			onClick={toggleFullscreen}
-			style={{ marginLeft: 'auto' }}
+			style={{ marginLeft: 'auto', maxHeight: '3em' }}
 		>
 			Fullscreen
 		</Button>
