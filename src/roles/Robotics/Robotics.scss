@@ -7,13 +7,12 @@ $tile_size: 64px;
 	@include container-landscape;
 	height: 100%;
 	padding: 0;
+	// for ship background
+	z-index: 0;
+	position: relative;
 
-	.ship {
-		background: url('/images/ship_robot_background.png') center center/100%
-			100% no-repeat black;
-		position: relative;
-		width: $tile_size * 15;
-		height: $tile_size * 10;
+	.ship-image {
+		position: absolute;
 	}
 
 	.tiled_entity {

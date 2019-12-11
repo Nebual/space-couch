@@ -133,6 +133,7 @@ export class ShipNodes {
 
 	public toJSON() {
 		return {
+			shipType: this.shipType,
 			robots: this.robots,
 			rooms: this.rooms,
 		};
@@ -189,6 +190,7 @@ export class ShipNodes {
 	public initConnection(connection: Connection) {
 		switch (connection.role) {
 			case 'robotics': {
+				connection.sendEvent('shipId', this.shipType);
 				connection.sendEvent('robots', this.robots);
 				for (let node_id in this.nodes) {
 					let node = this.nodes[node_id];

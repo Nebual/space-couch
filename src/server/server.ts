@@ -81,8 +81,7 @@ function initGame(): Game {
 		console.log('Failed to load last_save.json\n  ', e.message);
 	}
 
-	const defaultGameJson = { _ship: { shipType: 'ship1' } };
-	return Game.fromJSON(defaultGameJson);
+	return Game.fromJSON({});
 }
 
 if (require.main === module) {

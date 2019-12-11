@@ -49,7 +49,7 @@ export class ClientNet {
 	private startWebSocket() {
 		const wsHost =
 			window.location.port === '3000'
-				? '127.0.0.1:8000'
+				? `${window.location.hostname}:8000`
 				: window.location.host;
 		const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 		this.sock = new WebSocket(`${wsProtocol}://${wsHost}/ws/`);

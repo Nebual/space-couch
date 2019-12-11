@@ -63,6 +63,7 @@ yarn watch:server:express # Server runtime window
     * Overall Ship temperature is reduced via deployed radiators, 
     which can be damaged if mid-combat, must be retracted before jumping,
     and are more efficient with shields down
+  * Life Support is a power lever - if left unpowered, vision blurs for everyone and/or ice crystals form
 * Robotics Expert
   * [X] Needs a map of the ship
   * [X] Directs robots over it to do things that need movement
@@ -86,6 +87,8 @@ yarn watch:server:express # Server runtime window
   * Has giant throttle lever, or https://img1.etsystatic.com/000/0/6355253/il_fullxfull.340992455.jpg
 * Navigation
   * 3D gyroscoped panoramic parallax view of space, including constellations
+  * Reuses Weapons's view - but while Weapons ignore the stars to focus on the foreground,
+  Nav looks past the ships and planets to analyze the backdrop
   * To find where you are, you have to match visible constellations 
   with a database of known ones
     * Option a: Match against db of "Big Dipper is visible from 8 systems, 

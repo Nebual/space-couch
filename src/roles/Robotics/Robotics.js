@@ -9,6 +9,7 @@ import {
 	useWebsocketStateChange,
 } from '../../client/ClientNet';
 import RobotActionsMenu from './RobotActionsMenu';
+import StarCanvas from './StarCanvas';
 
 const NODE_SIZE = 64;
 
@@ -19,6 +20,7 @@ export default function Robotics() {
 	const [selectedRobot, setSelectedRobot] = useState(null);
 	const [robotActionsOpen, setRobotActionsOpen] = useState(false);
 	const [robotActionsPosition, setRobotActionsPosition] = useState({});
+	const [shipId, setShipId] = useState('');
 
 	const closeRobotActions = useCallback(() => {
 		setRobotActionsOpen(false);
@@ -28,6 +30,9 @@ export default function Robotics() {
 	// if($(document).width() > 1200) ($('.main-container') as any).overscroll();
 	useWebsocketMessage(packet => {
 		switch (packet.event) {
+			case 'shipId':
+				setShipId(packet.value);
+				break;
 			case 'robots':
 				setRobots(
 					packet.value.map(newRobot => ({
@@ -69,6 +74,7 @@ export default function Robotics() {
 			default:
 		}
 	});
+
 	return (
 		<div className="container-robotics">
 			<RobotActionsMenu
@@ -98,6 +104,12 @@ export default function Robotics() {
 					setSelectedRobot(null);
 				}}
 			>
+				<img
+					src={shipId ? `/images/ships/${shipId}.png` : ''}
+					alt="Ship Frame"
+					className="ship-image"
+				/>
+				<StarCanvas />
 				{nodes.map(node => {
 					const styles = {
 						left: node.left * NODE_SIZE,

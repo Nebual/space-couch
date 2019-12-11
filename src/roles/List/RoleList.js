@@ -25,7 +25,7 @@ export default function RoleList() {
 					</p>
 				</Link>
 				<Link className="card card-block" to="robotics">
-					<h4 className="card-title">Robotics Expert</h4>
+					<h4 className="card-title">Robologistics</h4>
 					<p className="card-text">Head of HR - err, well</p>
 				</Link>
 				<Link className="card card-block" to="weapons">
@@ -41,7 +41,7 @@ export default function RoleList() {
 						thermal probe, Tachyon detector, and EM tuner.
 					</p>
 				</Link>
-				<Link className="card card-block" to="navigator">
+				<Link className="card card-block" to="/">
 					<h4 className="card-title">Navigator</h4>
 					<p className="card-text">
 						Figures out where we are, and where we're going.
