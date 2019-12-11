@@ -6,6 +6,8 @@ import Typography from '@material-ui/core/Typography';
 
 import './RoleList.scss';
 import FullscreenButton from './FullscreenButton';
+import InputLabel from "@material-ui/core/InputLabel";
+import NativeSelect from "@material-ui/core/NativeSelect";
 
 function RoleCard({ to, title, children }) {
 	return (
@@ -27,8 +29,16 @@ export default function RoleList() {
 		<div className="container-list">
 			<div style={{ display: 'flex' }}>
 				<Typography variant="h3" gutterBottom>
-					Project Space Couch
+					Space Couch
 				</Typography>
+				<div className="selector-container" >
+					<InputLabel id="ship-select-label">Select Ship</InputLabel>
+					<NativeSelect labelId="ship-select-label"  >
+						<option value="ship1">Ship 1</option>
+						<option value="ship2">Ship 2</option>
+						<option value="ship3">Ship 3</option>
+					</NativeSelect>
+				</div>
 				<FullscreenButton />
 			</div>
 			<div className="card-tiles">

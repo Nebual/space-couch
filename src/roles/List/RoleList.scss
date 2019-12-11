@@ -18,4 +18,12 @@
 			background-color: #ccc;
 		}
 	}
+
+	.selector-container {
+		padding-left: 1em;
+
+		.MuiNativeSelect-root {
+			min-width: 8em;
+		}
+	}
 }
