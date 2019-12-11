@@ -11,6 +11,9 @@ $tile_size: 64px;
 	z-index: 0;
 	position: relative;
 
+	.ship {
+		height: 100%;
+	}
 	.ship-image {
 		position: absolute;
 	}
