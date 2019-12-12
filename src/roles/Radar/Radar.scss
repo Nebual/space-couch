@@ -1,5 +1,24 @@
 .container-radar {
+	display: flex;
+	align-items: center;
+	height: 100%;
+
 	.card {
 		padding: 10px;
+	}
+	.card-block {
+		height: 100%;
+		padding: 1.25rem;
+	}
+	.card-title {
+		text-align: center;
+		margin-bottom: 0;
+	}
+	.button-column {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		padding: 0 1.5em;
+		margin-top: -1em;
 	}
 }

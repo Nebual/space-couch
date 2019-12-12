@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import classNames from 'classnames';
 
 import './CardDeck.scss';
 
-export default function CardDeck({ cards, className, ...props }) {
+export default function CardDeck({
+	cards,
+	className,
+	cardOverride,
+	swipeable = true,
+	...props
+}) {
 	const [currentCard, setCurrentCard] = useState(0);
 	const swipeableHandlers = useSwipeable({
 		onSwipedLeft: () =>
@@ -13,12 +19,17 @@ export default function CardDeck({ cards, className, ...props }) {
 		preventDefaultTouchmoveEvent: true,
 		trackMouse: true,
 	});
+	useEffect(() => {
+		if (cardOverride === 0 || cardOverride > 0) {
+			setCurrentCard(cardOverride);
+		}
+	}, [cardOverride]);
 
 	return (
 		<div
 			className={classNames(className, 'CardDeck')}
 			{...props}
-			{...swipeableHandlers}
+			{...(swipeable ? swipeableHandlers : {})}
 		>
 			{cards.map((card, index) => (
 				<div

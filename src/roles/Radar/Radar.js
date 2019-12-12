@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import classNames from 'classnames';
 
 import './Radar.scss';
-import CardDeck from '../Engineer/CardDeck';
 import RadarGraph from './RadarGraph';
 import { useInterval } from '../../Util';
 import Typography from '@material-ui/core/Typography';
+import ButtonPush from './ButtonPush';
 
 export default function Radar() {
+	const [currentCard, setCurrentCard] = useState(0);
 	const [temperatureData, setTemperatureData] = useState([]);
 	const sensorFuzz = 1.0;
 	const refreshRandomData = () => {
@@ -84,5 +86,31 @@ export default function Radar() {
 			</div>
 		</>,
 	];
-	return <CardDeck className="container-radar" cards={cards} />;
+	return (
+		<div className="container-radar">
+			<div className="button-column" style={{ alignItems: 'flex-end' }}>
+				<ButtonPush onLongPress={() => setCurrentCard(0)} />
+				<ButtonPush onLongPress={() => setCurrentCard(1)} />
+				<ButtonPush />
+				<ButtonPush />
+			</div>
+			{cards.map((card, index) => (
+				<div
+					className={classNames(
+						'card',
+						index !== currentCard && 'hidden'
+					)}
+					key={index}
+				>
+					{card}
+				</div>
+			))}
+			<div className="button-column" style={{ alignItems: 'flex-start' }}>
+				<ButtonPush />
+				<ButtonPush />
+				<ButtonPush />
+				<ButtonPush />
+			</div>
+		</div>
+	);
 }

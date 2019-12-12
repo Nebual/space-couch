@@ -113,9 +113,12 @@ yarn watch:server:express # Server runtime window
 * Radar
   * Single-sensor 360 view radar charts (eg. temperature in all directions)
   * Multi-sensor radar charts aimed in a cone (point sensor array forward: tachyons + sin waving EM? Must be Klingons warping in)
+  https://www.visualcinnamon.com/2015/10/different-look-d3-radar-chart.html
   * Can inform Weapons of enemy ships (potentially types)
   * Can inform Communications of tightbeam direction channel
   * Can inform ship of anomalies, science, mission criteria
+  * Asthetic: CRT with big buttons on the sides, including a degauss effect upon switching
+  https://en.wikipedia.org/wiki/File:Space_Rocks_(game).jpg
 * Weapons
   * Reticle minigame
 	  * [X] Stars background
