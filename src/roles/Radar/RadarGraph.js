@@ -7,6 +7,7 @@ import Color from 'color';
 
 const lineColor = '#d9d9d9';
 const ANG = 360;
+const textPadding = 30;
 const sampleData = [
 	0.02782,
 	0.04253,
@@ -51,15 +52,18 @@ export default ({
 	});
 
 	const webs = genAngles(data.length);
-	const points = genPoints(data.length, radius);
+	const points = genPoints(24, radius);
 	const polygonPoints = genPolygonPoints(data, yScale);
 	const zeroPoint = new Point({ x: 0, y: 0 });
 
 	const polygonColor = Color(color).lighten(0.2);
 
 	return (
-		<svg width={width} height={height}>
-			<Group top={height / 2} left={width / 2}>
+		<svg width={width + textPadding} height={height + textPadding}>
+			<Group
+				top={(height + textPadding) / 2}
+				left={(width + textPadding) / 2}
+			>
 				{[...Array(numRings)].map((_, i) => {
 					const r = ((i + 1) * radius) / numRings;
 					return (
@@ -76,13 +80,21 @@ export default ({
 						/>
 					);
 				})}
-				{[...Array(data.length)].map((_, i) => (
-					<Line
-						key={`radar-line-${i}`}
-						from={zeroPoint}
-						to={points[i]}
-						stroke={lineColor}
-					/>
+				{points.map((point, i) => (
+					<React.Fragment key={`radar-line-${i}`}>
+						<Line from={zeroPoint} to={point} stroke={lineColor} />
+						<text
+							x={point.x + (point.x / radius) * 8}
+							y={point.y + (point.y / radius) * 8}
+							dy={'.33em'}
+							fontSize={8}
+							textAnchor="middle"
+						>
+							{Math.round(
+								((i / points.length - 1.5) * -ANG) % ANG
+							)}
+						</text>
+					</React.Fragment>
 				))}
 				<polygon
 					points={polygonPoints.polygon}
