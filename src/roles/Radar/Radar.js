@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import './Radar.scss';
@@ -6,52 +6,37 @@ import RadarGraph from './RadarGraph';
 import { useInterval } from '../../Util';
 import Typography from '@material-ui/core/Typography';
 import ButtonPush from './ButtonPush';
+import { useWebsocketMessage } from '../../client/ClientNet';
 
 export default function Radar() {
 	const [currentCard, setCurrentCard] = useState(0);
 	const [temperatureData, setTemperatureData] = useState([]);
-	const sensorFuzz = 1.0;
+	const [tachyonData, setTachyonData] = useState([]);
+
+	useWebsocketMessage(packet => {
+		if (packet.event === 'radar_data') {
+			if (packet.id === 'heat') {
+				setTemperatureData(packet.value);
+			}
+		}
+	});
+
 	const refreshRandomData = () => {
-		setTemperatureData(
-			[
-				0.5,
-				0.6,
-				0.5,
-				3,
-				6,
-				7,
-				2,
-				1.5,
-				1.3,
-				1.4,
-				2,
-				9.3,
-				0.5,
-				0.7,
-				0.3,
-				0.3,
-				0.7,
-				1.5,
-				0.4,
-				1.8,
-			].map(val => val + Math.random() * sensorFuzz)
-		);
+		const tachyonBaseline = 0.02 + Math.random() * 0.03;
+		setTachyonData([
+			...Array(4).fill(tachyonBaseline),
+			Math.sin(Date.now() / 2215) > 0.5
+				? Math.sin(Date.now() / 2215)
+				: tachyonBaseline,
+			Math.sin(Date.now() / 2215) > 0.5
+				? Math.sin(Date.now() / 2215) * 0.7 +
+				  Math.sin(Date.now() / 2101) * 0.3
+				: tachyonBaseline,
+			...Array(14).fill(tachyonBaseline),
+		]);
 	};
 	useInterval(refreshRandomData, 1000);
-	useEffect(refreshRandomData, []);
 
-	const tachyonBaseline = 0.02 + Math.random() * 0.03;
-	const tachyonData = [
-		...Array(4).fill(tachyonBaseline),
-		Math.sin(Date.now() / 2215) > 0.5
-			? Math.sin(Date.now() / 2215)
-			: tachyonBaseline,
-		Math.sin(Date.now() / 2215) > 0.5
-			? Math.sin(Date.now() / 2215) * 0.7 +
-			  Math.sin(Date.now() / 2101) * 0.3
-			: tachyonBaseline,
-		...Array(14).fill(tachyonBaseline),
-	];
 	const cards = [
 		<>
 			<Typography variant="h5" className="card-title">
@@ -65,7 +50,7 @@ export default function Radar() {
 					color="red"
 					pointRadius={0}
 					data={temperatureData}
-					dataMax={10}
+					dataMax={100}
 				/>
 			</div>
 		</>,

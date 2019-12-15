@@ -49,6 +49,7 @@
 		"@vx/shape": "^0.0.192",
 		"classnames": "^2.2.6",
 		"color": "^3.1.2",
+		"ecsy": "Nebual/ecsy#staging",
 		"express": "^4.14.0",
 		"express-minify": "^1.0.0",
 		"gsap": "^3.0.2",

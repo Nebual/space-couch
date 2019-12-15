@@ -1,8 +1,16 @@
 import fs from 'fs';
 import path from 'path';
+import { World } from 'ecsy';
+import { performance } from 'perf_hooks';
 
 import { ServerNet, Connection, NetPacket } from './ServerNet';
 import { ShipNodes, RoomType } from './ship';
+import { Position, Velocity, Emission, EmissionDetector } from './Components';
+import {
+	EmissionDetectorSystem,
+	EmissionSystem,
+	MovableSystem,
+} from './Systems';
 
 export class Game {
 	public lights_on = true;
@@ -19,8 +27,56 @@ export class Game {
 	};
 	public ship: ShipNodes;
 	public net: ServerNet;
+	public world: World;
+	private worldTimer: NodeJS.Timeout;
 
-	constructor() {}
+	constructor() {
+		this.registerWorld();
+		this.addWorldTestEntities();
+	}
+
+	private registerWorld() {
+		this.world = new World()
+			.registerComponent(Position)
+			.registerComponent(Velocity)
+			.registerComponent(Emission)
+			.registerSystem(MovableSystem)
+			.registerSystem(EmissionSystem)
+			.registerSystem(EmissionDetectorSystem, { getNet: () => this.net });
+
+		let lastTime = performance.now() / 1000;
+		this.worldTimer = setInterval(() => {
+			let time = performance.now() / 1000;
+			let delta = time - lastTime;
+			lastTime = time;
+
+			// Run all the systems
+			this.world.execute(delta, time);
+		}, 100);
+	}
+	public shutdown() {
+		clearInterval(this.worldTimer);
+	}
+
+	private addWorldTestEntities() {
+		// a random test heat emission: travelling eastward
+		this.world
+			.createEntity()
+			.addComponent(Position, { x: -200, y: 10 })
+			.addComponent(Velocity, { x: 10 })
+			.addComponent(Emission, {
+				type: 'heat',
+				strength: 70,
+			});
+
+		// parts of the ship
+		this.world
+			.createEntity()
+			.addComponent(Position)
+			.addComponent(EmissionDetector, {
+				type: 'heat',
+			});
+	}
 
 	public toJSON() {
 		return {

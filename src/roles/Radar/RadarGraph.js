@@ -137,8 +137,8 @@ function genPolygonPoints(data, scale) {
 	const points = new Array(data.length).fill({});
 	points.polygon = new Array(data.length + 1).fill('').reduce((res, _, i) => {
 		if (i > data.length) return res;
-		const x = scale(data[i - 1]) * Math.sin(i * step);
-		const y = scale(data[i - 1]) * Math.cos(i * step);
+		const x = scale(data[i - 1]) * Math.sin((i - 1) * step + Math.PI);
+		const y = scale(data[i - 1]) * Math.cos((i - 1) * step + Math.PI);
 		points[i - 1] = { x, y };
 		return (res += `${x},${y} `);
 	});

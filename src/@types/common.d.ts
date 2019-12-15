@@ -7,5 +7,6 @@ type Role =
 	| 'list'
 	| 'engineer'
 	| 'robotics'
+	| 'radar'
 	| 'weapons'
 	| 'navigator';

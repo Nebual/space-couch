@@ -92,6 +92,7 @@ if (require.main === module) {
 
 	const reloadServer = () => {
 		const gameState = JSON.stringify(game);
+		game.shutdown();
 		Object.keys(require.cache)
 			.filter(key => /.*build-server.*/.test(key))
 			.forEach(key => delete require.cache[key]);
@@ -109,6 +110,7 @@ if (require.main === module) {
 	}
 	const saveOnShutdown = e => {
 		console.log('Writing exit save to last_save.json');
+		game.shutdown();
 		game.save('last_save.json');
 		process.exit(2);
 	};
