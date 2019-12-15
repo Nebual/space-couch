@@ -34,11 +34,9 @@ export default ({
 	height,
 	numRings = 5,
 	pointRadius = 4,
+	resolution = 24,
 	color = '#f5810c',
 }) => {
-	if (!data || !data.length) {
-		return null;
-	}
 	const radius = Math.min(width, height) / 2;
 
 	const radiusScale = scaleLinear({
@@ -51,8 +49,8 @@ export default ({
 		domain: [0, dataMax],
 	});
 
-	const webs = genAngles(data.length);
-	const points = genPoints(24, radius);
+	const webs = genAngles(resolution);
+	const points = genPoints(resolution, radius);
 	const polygonPoints = genPolygonPoints(data, yScale);
 	const zeroPoint = new Point({ x: 0, y: 0 });
 

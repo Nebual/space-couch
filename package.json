@@ -62,6 +62,7 @@
 		"react-router-dom": "^5.1.2",
 		"react-scripts": "3.3.0",
 		"react-swipeable": "^5.5.0",
+		"simplex-noise": "^2.4.0",
 		"typescript": "^3.7.3",
 		"unique-slug": "^2.0.2",
 		"websocket": "^1.0.23"

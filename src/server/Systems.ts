@@ -1,4 +1,5 @@
 import { Entity, System } from 'ecsy';
+import SimplexNoise from 'simplex-noise';
 import { Emission, EmissionDetector, Position, Velocity } from './Components';
 import { ServerNet } from './ServerNet';
 
@@ -38,10 +39,14 @@ EmissionSystem.queries = {
 
 export class EmissionDetectorSystem extends System {
 	private getNet: () => ServerNet;
+	private simplex: SimplexNoise;
 	constructor(world, attributes) {
 		// @ts-ignore
 		super(world, attributes);
 		this.getNet = attributes.getNet;
+	}
+	init() {
+		this.simplex = new SimplexNoise();
 	}
 	execute(delta, time) {
 		this.queries.emissionDetectors.results.forEach((detector: Entity) => {
@@ -58,9 +63,11 @@ export class EmissionDetectorSystem extends System {
 			const detectorPos = detector.getComponent(Position);
 
 			// todo: omnitype results aggregation
-			const radarResults = [...new Array(resolution)].map(
-				() => Math.max(2, Math.sin(time * 7.21) * 6) + Math.random() * 4
-			);
+			const radarResults = [...new Array(resolution)].map((_, i) => {
+				const x = Math.sin(i * 4);
+				const y = Math.cos(i * 6);
+				return (this.simplex.noise3D(x, y, time / 5) + 1) * 5 + 2;
+			});
 			this.queries.emissions.results.forEach((emissionEntity: Entity) => {
 				const emission = emissionEntity.getComponent(Emission);
 				if (detectorType !== 'all' && emission.type !== detectorType) {
