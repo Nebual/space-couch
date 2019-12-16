@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Group } from '@vx/group';
 import { scaleLinear } from '@vx/scale';
 import { Point } from '@vx/point';
@@ -37,6 +37,7 @@ export default ({
 	resolution = 24,
 	color = '#f5810c',
 }) => {
+	const [polygonColor, setPolygonColor] = useState(color);
 	const radius = Math.min(width, height) / 2;
 
 	const radiusScale = scaleLinear({
@@ -54,7 +55,19 @@ export default ({
 	const polygonPoints = genPolygonPoints(data, yScale);
 	const zeroPoint = new Point({ x: 0, y: 0 });
 
-	const polygonColor = Color(color).lighten(0.2);
+	// gradually fade away colour if no data received
+	useEffect(() => {
+		let lighten = 0.2;
+		setPolygonColor(Color(color).lighten(lighten));
+		const timer = setInterval(() => {
+			lighten += 0.1;
+			setPolygonColor(Color(color).lighten(lighten));
+			if (lighten >= 0.7) {
+				clearInterval(timer);
+			}
+		}, 1000);
+		return () => clearInterval(timer);
+	}, [color, data]);
 
 	return (
 		<svg width={width + textPadding} height={height + textPadding}>

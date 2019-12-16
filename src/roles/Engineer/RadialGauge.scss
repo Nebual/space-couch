@@ -1,15 +1,3 @@
-$gauge-d: 5rem;
-$gauge-width: $gauge-d / 3; // width of the colours
-$outer-border-size: $gauge-d / 8;
-
-$dial-d: $gauge-d - $gauge-width;
-$dial-os: $gauge-width / 2;
-
-$indicator-size: $gauge-width * 0.9;
-$arm-length: ($gauge-d/2.15) - ($indicator-size/2);
-$arm-width: $indicator-size/4;
-$ind-x: ($dial-d/2) - ($indicator-size/2);
-
 $wg-bg: hsl(0, 0%, 20%);
 $accent: hsl(0, 90%, 25%);
 $ts-light: hsla(0, 0, 100%, 0.5);
@@ -59,7 +47,12 @@ $d1: transparentize($black, 1-0.1);
 	background: linear-gradient(to bottom, $c, darken($c, $i));
 }
 
-@mixin indicator($x, $y, $c, $z: 1) {
+@mixin indicator($dial-d, $indicator-size, $c, $z: 1) {
+	$ind-x: ($dial-d/2) - ($indicator-size/2);
+	$x: $ind-x;
+	$y: $ind-x;
+	$arm-length: ($dial-d * 0.7) - ($indicator-size/2);
+	$arm-width: $indicator-size/4;
 	position: absolute;
 	display: inline-block;
 	@include circle($indicator-size);
@@ -79,9 +72,18 @@ $d1: transparentize($black, 1-0.1);
 	}
 }
 
-.gauge-container {
+@mixin radial-gauge($gauge-d) {
+	$gauge-width: $gauge-d / 3; // width of the colours
+	$outer-border-size: $gauge-d / 8;
+
+	$dial-d: $gauge-d - $gauge-width;
+	$dial-os: $gauge-width / 2;
+
+	$indicator-size: $gauge-width * 0.9;
+
 	text-align: left;
 	display: inline-block;
+	width: $gauge-d + $outer-border-size * 2;
 	border-radius: 50%;
 	padding: $outer-border-size;
 	box-shadow: 1px 3px 1px 0 $d4,
@@ -120,6 +122,11 @@ $d1: transparentize($black, 1-0.1);
 			linear-gradient(270deg, transparent 50%, #000 50%),
 			linear-gradient(5deg, transparent 50%, #cc0 50%),
 			linear-gradient(30deg, #000 50%, #c00 50%);
+		&.inverted {
+			background: linear-gradient(0deg, transparent 65%, #cc0 50%),
+				linear-gradient(-30deg, transparent 50%, #c00 50%),
+				linear-gradient(30deg, #000 50%, #0c0 50%);
+		}
 
 		.dial {
 			position: relative;
@@ -128,7 +135,7 @@ $d1: transparentize($black, 1-0.1);
 			@include pos($dial-os, $dial-os);
 			background: linear-gradient(to bottom, #aaa, #666);
 			.indicator {
-				@include indicator($ind-x, $ind-x, $accent, 999);
+				@include indicator($dial-d, $indicator-size, $accent, 999);
 				background: radial-gradient(
 					circle at center,
 					#eee 10%,
@@ -138,6 +145,7 @@ $d1: transparentize($black, 1-0.1);
 				);
 				box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.4);
 				will-change: transform;
+				transition: transform 0.6s linear;
 			}
 			.dialbase {
 				position: absolute;
@@ -150,6 +158,9 @@ $d1: transparentize($black, 1-0.1);
 				output {
 					display: inline-block;
 					width: 100%;
+					position: absolute;
+					top: 0;
+					line-height: $gauge-d/3;
 					color: #39c;
 					text-align: center;
 					font-size: $gauge-d / 6;
@@ -158,4 +169,12 @@ $d1: transparentize($black, 1-0.1);
 			}
 		}
 	}
+}
+
+.gauge-container {
+	@include radial-gauge(5rem);
+}
+
+.gauge-container--sm {
+	@include radial-gauge(2.5rem);
 }

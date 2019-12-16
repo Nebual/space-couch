@@ -1,9 +1,20 @@
 import { Entity, System } from 'ecsy';
 import SimplexNoise from 'simplex-noise';
-import { Emission, EmissionDetector, Position, Velocity } from './Components';
-import { ServerNet } from './ServerNet';
+import {
+	Emission,
+	EmissionDetector,
+	Position,
+	PowerBuffer,
+	PowerConsumer,
+	PowerProducer,
+	SyncId,
+	Velocity,
+} from './Components';
+import { GameWorld } from './Game';
 
-export class MovableSystem extends System {
+abstract class GameSystem extends System<GameWorld> {}
+
+export class MovableSystem extends GameSystem {
 	execute(delta, time) {
 		this.queries.moving.results.forEach((entity: Entity) => {
 			let velocity = entity.getComponent(Velocity);
@@ -19,7 +30,7 @@ MovableSystem.queries = {
 	},
 };
 
-export class EmissionSystem extends System {
+export class EmissionSystem extends GameSystem {
 	execute(delta, time) {
 		this.queries.emissions.results.forEach((entity: Entity) => {
 			let emission = entity.getMutableComponent(Emission);
@@ -37,16 +48,18 @@ EmissionSystem.queries = {
 	},
 };
 
-export class EmissionDetectorSystem extends System {
-	private getNet: () => ServerNet;
+export class EmissionDetectorSystem extends GameSystem {
 	private simplex: SimplexNoise;
-	constructor(world, attributes) {
-		// @ts-ignore
-		super(world, attributes);
-		this.getNet = attributes.getNet;
-	}
 	init() {
 		this.simplex = new SimplexNoise();
+	}
+	broadcastRadar(detectorType, values) {
+		this.world
+			.getNet()
+			.broadcast(
+				{ event: 'radar_data', id: detectorType, value: values },
+				'radar'
+			);
 	}
 	execute(delta, time) {
 		this.queries.emissionDetectors.results.forEach((detector: Entity) => {
@@ -57,6 +70,12 @@ export class EmissionDetectorSystem extends System {
 				return;
 			}
 			emissionDetector.nextScanTime = time + 1;
+
+			const detectorConsumer = detector.getComponent(PowerConsumer);
+			if (!detectorConsumer.powered || !detectorConsumer.on) {
+				return;
+			}
+
 			const detectorType = emissionDetector.type;
 			const resolution = 24;
 
@@ -84,14 +103,7 @@ export class EmissionDetectorSystem extends System {
 				const compassIndex = radsToCompass(ang, resolution);
 				radarResults[compassIndex] += emission.strength;
 			});
-			this.getNet().broadcast(
-				{
-					event: 'radar_data',
-					id: detectorType,
-					value: radarResults,
-				},
-				'radar'
-			);
+			this.broadcastRadar(detectorType, radarResults);
 		});
 	}
 }
@@ -114,3 +126,86 @@ function radsToCompass(angRads, resolution): number {
 	const angPercent = (angRads / (2 * Math.PI) + 0.75) % 1;
 	return Math.round(angPercent * resolution);
 }
+
+export class PowerProductionSystem extends GameSystem {
+	execute(delta, time) {
+		this.queries.producers.results.forEach((entity: Entity) => {
+			const producer = entity.getComponent(PowerProducer);
+			if (!producer.on) {
+				return;
+			}
+			const buffer = entity.getMutableComponent(PowerBuffer);
+
+			buffer.current = Math.min(
+				buffer.current + producer.rate * delta,
+				buffer.max
+			);
+		});
+	}
+}
+PowerProductionSystem.queries = {
+	producers: {
+		components: [PowerProducer, PowerBuffer],
+	},
+};
+
+export class PowerConsumptionSystem extends GameSystem {
+	execute(delta, time) {
+		this.queries.consumers.results.forEach((entity: Entity) => {
+			const consumer = entity.getMutableComponent(PowerConsumer);
+			if (!consumer.on) {
+				return;
+			}
+			const buffer = entity.getMutableComponent(PowerBuffer);
+
+			const subtracted = consumer.rate * delta;
+			consumer.powered = buffer.current > subtracted;
+			if (consumer.powered) {
+				buffer.current -= subtracted;
+			}
+		});
+	}
+}
+PowerConsumptionSystem.queries = {
+	consumers: {
+		components: [PowerConsumer, PowerBuffer],
+	},
+};
+
+export class PowerFlowSystem extends GameSystem {
+	execute(delta, time) {
+		this.queries.buffers.results.forEach((entity: Entity) => {
+			const buffer = entity.getMutableComponent(PowerBuffer);
+
+			buffer.sources.forEach(sourceEnt => {
+				if (buffer.current >= buffer.max) {
+					return;
+				}
+				const sourceBuffer = sourceEnt.getMutableComponent(PowerBuffer);
+				const requested = Math.min(
+					buffer.max - buffer.current,
+					buffer.rate * delta,
+					sourceBuffer.current
+				);
+				sourceBuffer.current -= requested;
+				buffer.current += requested;
+			});
+			const syncId = entity.getComponent(SyncId)?.value;
+			if (syncId) {
+				this.world
+					.getNet()
+					.broadcastStateThrottled(
+						'powerBuffer:' + syncId,
+						buffer.current / buffer.max,
+						'engineer',
+						500
+					);
+			}
+		});
+	}
+}
+PowerFlowSystem.queries = {
+	buffers: {
+		components: [PowerBuffer],
+	},
+};

@@ -13,6 +13,7 @@ export default function ShipSelector() {
 			case 'shipId':
 				setShipType(packet.value);
 				break;
+			default:
 		}
 	});
 	return (
@@ -31,7 +32,9 @@ export default function ShipSelector() {
 			>
 				<option value="ship1">Ship 1</option>
 				<option value="ship2">Ship 2</option>
-				<option value="ship3">Ship 3</option>
+				<option value="ship3" disabled={true}>
+					Ship 3
+				</option>
 			</NativeSelect>
 		</div>
 	);

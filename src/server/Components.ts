@@ -1,4 +1,4 @@
-import { createComponentClass } from 'ecsy';
+import { createComponentClass, Entity } from 'ecsy';
 
 export const Position = createComponentClass<iPosition>(
 	{
@@ -73,3 +73,119 @@ interface iEmissionDetector {
 	direction: 'all' | number;
 	nextScanTime: number;
 }
+
+export const SyncId = createComponentClass<iSyncId>(
+	{ value: { default: '' } },
+	'SyncId'
+);
+interface iSyncId {
+	value: string;
+}
+
+export const ShipPosition = createComponentClass<iShipPosition>(
+	{
+		x: { default: 0 },
+		y: { default: 0 },
+	},
+	'ShipPosition'
+);
+interface iShipPosition {
+	x: number;
+	y: number;
+}
+
+export const PowerBuffer = createComponentClass<iPowerBuffer>(
+	{
+		current: { default: 0 },
+		max: { default: 0 },
+		rate: { default: 10 },
+		maxRate: { default: 100 },
+		sinks: { default: [] },
+		sources: { default: [] },
+	},
+	'PowerBuffer'
+);
+interface iPowerBuffer {
+	current: number;
+	max: number;
+	rate: number;
+	maxRate: number;
+	sinks: number[];
+	sources: Entity[];
+}
+
+export const PowerProducer = createComponentClass<iPowerProducer>(
+	{
+		rate: { default: 0 },
+		maxRate: { default: 1000 },
+		on: { default: true },
+	},
+	'PowerProducer'
+);
+interface iPowerProducer {
+	rate: number;
+	maxRate: number;
+	on: boolean;
+}
+
+export const PowerConsumer = createComponentClass<iPowerConsumer>(
+	{
+		rate: { default: 10 },
+		on: { default: true },
+		powered: { default: true },
+	},
+	'PowerConsumer'
+);
+interface iPowerConsumer {
+	rate: number;
+	on: boolean;
+	powered: boolean;
+}
+
+export const ModuleTemperature = createComponentClass<iModuleTemperature>(
+	{
+		temperature: { default: 20 },
+	},
+	'ModuleTemperature'
+);
+interface iModuleTemperature {
+	temperature: number;
+}
+
+const safeTypes = {
+	number: true,
+	boolean: true,
+	string: true,
+};
+export const serializeComponentValue = val => {
+	if (safeTypes[typeof val]) {
+		return val;
+	}
+	if (Array.isArray(val)) {
+		return val.map(serializeComponentValue);
+	}
+	if (
+		typeof val === 'object' &&
+		(val as Entity).hasComponent &&
+		(val as Entity).hasComponent(SyncId)
+	) {
+		return 'SyncId:' + (val as Entity).getComponent(SyncId).value;
+	}
+	return null;
+};
+
+export const deserializeCompValue = (
+	shipEntities: { [key: string]: Entity },
+	val
+) => {
+	if (Array.isArray(val)) {
+		return val.map(val2 => deserializeCompValue(shipEntities, val2));
+	}
+	if (typeof val === 'string' && val.substr(0, 7) === 'SyncId:') {
+		const syncId = val.substr(7);
+		return Object.values(shipEntities).find(
+			ent => ent.getComponent(SyncId)?.value === syncId
+		);
+	}
+	return val;
+};

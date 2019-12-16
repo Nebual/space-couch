@@ -2,7 +2,7 @@ import { Game } from './Game';
 import { ServerNet } from './ServerNet';
 import { Express } from 'express';
 import { Server as HttpServer } from 'http';
-import throttle from './throttle';
+import { throttle } from './commonUtil';
 const os = require('os');
 const fs = require('fs');
 const path = require('path');

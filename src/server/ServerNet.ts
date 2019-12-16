@@ -2,11 +2,10 @@ import {
 	server as WSServer,
 	connection as WSConnection,
 	request as WSRequest,
-	IMessage,
 } from 'websocket';
 import { Server as HttpServer } from 'http';
 import { Game } from './Game';
-const WebSocketServer = require('websocket').server;
+import { throttle } from './commonUtil';
 
 export interface NetPacket {
 	event: string;
@@ -38,10 +37,17 @@ export class ServerNet {
 	private wsServer: WSServer;
 	private connections: Connection[] = [];
 	private game: Game;
+	private throttles: {
+		[key: string]: {
+			timer?: NodeJS.Timeout;
+			func?: () => void;
+			nextTime: number;
+		};
+	} = {};
 
 	constructor(game: Game, server: HttpServer) {
 		this.setGame(game);
-		this.wsServer = new WebSocketServer({
+		this.wsServer = new WSServer({
 			httpServer: server,
 		});
 
@@ -102,6 +108,16 @@ export class ServerNet {
 		role: Role | '' = ''
 	) {
 		this.broadcast({ event: event, id: id, value: value }, role);
+	}
+
+	broadcastStateThrottled(
+		id: string,
+		value: any,
+		role: Role,
+		delay: number = 1000
+	) {
+		const packet = { event: 'state', id, value };
+		throttle('state.' + id, () => this.broadcast(packet, role), delay);
 	}
 
 	setGame(game: Game) {

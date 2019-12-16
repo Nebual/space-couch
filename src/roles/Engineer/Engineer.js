@@ -18,7 +18,15 @@ export default function Engineer() {
 				Main Power
 			</Typography>
 			<div className="card-block">
-				<RangeSlider syncId="power1" />
+				<div className="slider-gauge-wrapper">
+					<RadialGauge
+						syncId="powerBuffer:reactor"
+						suffix="%"
+						inverted
+						small
+					/>
+					<RangeSlider syncId="power1" />
+				</div>
 				<RangeSlider
 					syncId="power2"
 					initialValue={power2}
@@ -30,7 +38,15 @@ export default function Engineer() {
 					initialValue={power3}
 					onChange={setPower3}
 				/>
-				<RangeSlider syncId="power4" />
+				<div className="slider-gauge-wrapper">
+					<RadialGauge
+						syncId="powerBuffer:heatDetector"
+						suffix="%"
+						inverted
+						small
+					/>
+					<RangeSlider syncId="power4" />
+				</div>
 				<RadialGauge
 					style={{
 						position: 'absolute',
@@ -38,6 +54,7 @@ export default function Engineer() {
 						right: '1em',
 					}}
 					value={(power2 + power3 * 1.5) / 2.5}
+					suffix="°C"
 				/>
 			</div>
 		</>,

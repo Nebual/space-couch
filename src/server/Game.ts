@@ -1,17 +1,41 @@
 import fs from 'fs';
 import path from 'path';
-import { World } from 'ecsy';
+import { Entity, World } from 'ecsy';
 import { performance } from 'perf_hooks';
 
 import DSON from './dson2.js';
+import { objectMap } from './commonUtil';
 import { ServerNet, Connection, NetPacket } from './ServerNet';
 import { ShipNodes, RoomType } from './ship';
-import { Position, Velocity, Emission, EmissionDetector } from './Components';
+import {
+	Position,
+	Velocity,
+	Emission,
+	EmissionDetector,
+	PowerBuffer,
+	PowerConsumer,
+	ShipPosition,
+	PowerProducer,
+	SyncId,
+	serializeComponentValue,
+	deserializeCompValue,
+} from './Components';
 import {
 	EmissionDetectorSystem,
 	EmissionSystem,
 	MovableSystem,
+	PowerConsumptionSystem,
+	PowerFlowSystem,
+	PowerProductionSystem,
 } from './Systems';
+
+export class GameWorld extends World {
+	public getNet: () => ServerNet;
+	constructor(getNet: () => ServerNet) {
+		super();
+		this.getNet = getNet;
+	}
+}
 
 export class Game {
 	public lights_on = true;
@@ -19,6 +43,8 @@ export class Game {
 	private state = {
 		captain: {},
 		engineer: {
+			power1: 100,
+			power4: 50,
 			main_power_system: true,
 		},
 		navigator: {},
@@ -28,8 +54,9 @@ export class Game {
 	};
 	public ship: ShipNodes;
 	public net: ServerNet;
-	public world: World;
+	public world: GameWorld;
 	private worldTimer: NodeJS.Timeout;
+	private shipEntities: { [key: string]: Entity } = {};
 
 	constructor() {
 		this.registerWorld();
@@ -37,13 +64,16 @@ export class Game {
 	}
 
 	private registerWorld() {
-		this.world = new World()
+		this.world = new GameWorld(() => this.net)
 			.registerComponent(Position)
 			.registerComponent(Velocity)
 			.registerComponent(Emission)
 			.registerSystem(MovableSystem)
 			.registerSystem(EmissionSystem)
-			.registerSystem(EmissionDetectorSystem, { getNet: () => this.net });
+			.registerSystem(PowerProductionSystem)
+			.registerSystem(PowerFlowSystem)
+			.registerSystem(PowerConsumptionSystem)
+			.registerSystem(EmissionDetectorSystem);
 
 		let lastTime = performance.now() / 1000;
 		this.worldTimer = setInterval(() => {
@@ -53,6 +83,12 @@ export class Game {
 
 			// Run all the systems
 			this.world.execute(delta, time);
+
+			// dirty one-offs that should probably become systems one day
+			let reactor = this.shipEntities.reactor;
+			if (reactor.getComponent(PowerBuffer).current < 1) {
+				this.setPlayerLights(false);
+			}
 		}, 100);
 	}
 	public shutdown() {
@@ -70,10 +106,28 @@ export class Game {
 				strength: 70,
 			});
 
-		// parts of the ship
-		this.world
+		this.shipEntities.reactor = this.world
 			.createEntity()
-			.addComponent(Position)
+			.addComponent(ShipPosition, { x: 4, y: 4 })
+			.addComponent(SyncId, { value: 'reactor' })
+			.addComponent(PowerBuffer, {
+				rate: 0,
+				current: 1000,
+				max: 1000,
+			})
+			.addComponent(PowerProducer, { rate: 1000, maxRate: 1000 });
+		this.shipEntities.heatDetector = this.world
+			.createEntity()
+			.addComponent(Position) // todo: ship components shouldn't have a solar position
+			.addComponent(ShipPosition, { x: 7, y: 2 })
+			.addComponent(PowerBuffer, {
+				max: 100,
+				rate: 20,
+				maxRate: 40,
+				sources: [this.shipEntities.reactor],
+			})
+			.addComponent(SyncId, { value: 'heatDetector' })
+			.addComponent(PowerConsumer, { rate: 20 })
 			.addComponent(EmissionDetector, {
 				type: 'heat',
 			});
@@ -85,6 +139,17 @@ export class Game {
 			paused: this.paused,
 			state: this.state,
 			_ship: this.ship.toJSON(),
+			_shipEntities: objectMap(this.shipEntities, value =>
+				objectMap(value.getComponents(), component =>
+					Object.entries(component).reduce(
+						(savedProps, [key, value]) => {
+							savedProps[key] = serializeComponentValue(value);
+							return savedProps;
+						},
+						{}
+					)
+				)
+			),
 		};
 	}
 	public static fromJSON(obj): Game {
@@ -104,6 +169,28 @@ export class Game {
 		game.initShip(shipType);
 
 		if (obj._ship !== undefined) game.ship.applyJSON(obj._ship);
+		if (obj._shipEntities !== undefined) {
+			const savedShipEntities = obj._shipEntities as {
+				[entKey: string]: {
+					[compId: string]: { [propKey: string]: any };
+				};
+			};
+			Object.entries(savedShipEntities).forEach(([entKey, comps]) => {
+				const components = game.shipEntities[entKey].getComponents();
+				Object.entries(comps).forEach(([compId, compVals]) => {
+					const component = components[compId];
+					Object.entries(compVals).forEach(([propKey, propValue]) => {
+						if (!component.hasOwnProperty(propKey)) {
+							return;
+						}
+						component[propKey] = deserializeCompValue(
+							game.shipEntities,
+							propValue
+						);
+					});
+				});
+			});
+		}
 		return game;
 	}
 
@@ -148,7 +235,11 @@ export class Game {
 
 		switch (id) {
 			case 'main_power_system':
-				this.setPlayerLights(value);
+				this.lights_on = value;
+				this.net.broadcast({
+					event: 'lights_on',
+					value: this.lights_on,
+				});
 				break;
 			case 'flush_gravity':
 				this.net.broadcast({ event: 'vibrate', value: 300 });
@@ -163,20 +254,28 @@ export class Game {
 			case 'break_shields':
 				this.ship.startBreak(RoomType.Shields);
 				break;
+			case 'power1': {
+				const ent = this.shipEntities.reactor;
+				const powerProducer = ent.getMutableComponent(PowerProducer);
+				powerProducer.rate = (value / 100) * powerProducer.maxRate;
+				break;
+			}
 			case 'power2':
 				if (value > 90) {
 					this.setPlayerLights(false);
 				}
 				break;
+			case 'power4': {
+				const ent = this.shipEntities.heatDetector;
+				const powerBuffer = ent.getMutableComponent(PowerBuffer);
+				powerBuffer.rate = (value / 100) * powerBuffer.maxRate;
+				break;
+			}
 		}
 	}
 
 	private setPlayerLights(value) {
-		this.lights_on = value;
-		this.net.broadcast({
-			event: 'lights_on',
-			value: this.lights_on,
-		});
+		this.setRoleState('engineer', 'main_power_system', value);
 	}
 
 	public getRoleState(role, id) {

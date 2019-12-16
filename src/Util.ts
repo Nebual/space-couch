@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import throttle from './server/throttle';
+import { throttle } from './server/commonUtil';
 
 export { throttle };
 

@@ -99,3 +99,15 @@ $rim-size: 12px;
 		left: 17px;
 	}
 }
+
+.slider-gauge-wrapper {
+	height: 100%;
+	display: inline-block;
+	.range-slider-container {
+		height: calc(100% - (2.5rem + 0.625rem + 0.5rem));
+	}
+	.gauge-container--sm {
+		display: block;
+		margin: auto auto 0.5rem;
+	}
+}

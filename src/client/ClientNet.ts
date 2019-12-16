@@ -60,7 +60,7 @@ export class ClientNet {
 		};
 		this.sock.onmessage = e => {
 			let data = JSON.parse(e.data);
-			console.log('WS: received', data);
+			console.debug('WS: received', data);
 			this.callListeners(data);
 		};
 		this.sock.onclose = e => {
