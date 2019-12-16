@@ -3,6 +3,7 @@ import path from 'path';
 import { World } from 'ecsy';
 import { performance } from 'perf_hooks';
 
+import DSON from './dson2.js';
 import { ServerNet, Connection, NetPacket } from './ServerNet';
 import { ShipNodes, RoomType } from './ship';
 import { Position, Velocity, Emission, EmissionDetector } from './Components';
@@ -106,14 +107,14 @@ export class Game {
 		return game;
 	}
 
-	public save(saveName: string = 'last_save.json') {
+	public save(saveName: string = 'last_save.dson') {
 		const fileName = path.join('saves', saveName);
 		fs.mkdirSync('saves', { recursive: true });
-		fs.writeFileSync(fileName, JSON.stringify(this));
+		fs.writeFileSync(fileName, DSON.stringify(this, null, '  '));
 	}
 	public static load(saveName: string): Game {
 		const fileName = path.join('saves', saveName);
-		let json = JSON.parse(fs.readFileSync(fileName, 'utf8'));
+		let json = DSON.parse(fs.readFileSync(fileName, 'utf8'));
 		return Game.fromJSON(json);
 	}
 

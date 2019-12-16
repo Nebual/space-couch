@@ -72,13 +72,13 @@ function initHttpServer(expressServer: Express, port: number): HttpServer {
 
 function initGame(): Game {
 	try {
-		let saveName = argv['load-last'] ? 'last_save.json' : argv['load'];
+		let saveName = argv['load-last'] ? 'last_save.dson' : argv['load'];
 		if (saveName) {
 			console.log(`Loading save ${saveName}...`);
 			return Game.load(saveName);
 		}
 	} catch (e) {
-		console.log('Failed to load last_save.json\n  ', e.message);
+		console.log('Failed to load last_save.dson\n  ', e.message);
 	}
 
 	return Game.fromJSON({});
@@ -89,6 +89,7 @@ if (require.main === module) {
 	const httpServer = initHttpServer(server, PORT);
 	let game: Game = initGame();
 	const serverNet = new ServerNet(game, httpServer);
+	let replInstance;
 
 	const reloadServer = () => {
 		const gameState = JSON.stringify(game);
@@ -98,6 +99,9 @@ if (require.main === module) {
 			.forEach(key => delete require.cache[key]);
 		game = require('./Game').Game.fromJSON(JSON.parse(gameState));
 		serverNet.setGame(game);
+		if (replInstance) {
+			replInstance.context.game = game;
+		}
 	};
 	if (argv['watch']) {
 		const chokidar = require('chokidar');
@@ -109,16 +113,16 @@ if (require.main === module) {
 		});
 	}
 	const saveOnShutdown = e => {
-		console.log('Writing exit save to last_save.json');
+		console.log('Writing exit save to last_save.dson');
 		game.shutdown();
-		game.save('last_save.json');
+		game.save('last_save.dson');
 		process.exit(2);
 	};
 	process.on('SIGINT', saveOnShutdown);
 	process.on('SIGTERM', saveOnShutdown);
 
 	if (DEV && os.platform() !== 'win32') {
-		let replInstance = repl.start({ prompt: 'node> ' });
+		replInstance = repl.start({ prompt: 'node> ' });
 		replInstance.context.game = game;
 		replInstance.context.server = server;
 		replInstance.context.reload = reloadServer;
