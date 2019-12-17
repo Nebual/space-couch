@@ -1,5 +1,5 @@
 import React from 'react';
-import classNames from 'classnames'
+import classNames from 'classnames';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
@@ -28,7 +28,7 @@ export default function CircularIntegration({
 	targetTime = 500,
 	callBack,
 	children,
-	className
+	className,
 }) {
 	const classes = useStyles();
 	const [loading, setLoading] = React.useState(false);

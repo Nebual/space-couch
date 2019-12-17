@@ -29,7 +29,7 @@ export default function LobbyButton() {
 			{isRedirecting && <Redirect to="/" />}
 			{!hide ? (
 				<ConfirmButton
-					className='lobby-button'
+					className="lobby-button"
 					callBack={() => setIsRedirecting(true)}
 				>
 					<ArrowBackIcon />

@@ -125,6 +125,18 @@ yarn watch:server:express # Server runtime window
 	  * [X] Parallax stars background according to gyro movement
   * Swipe to switch to different views (different gun mount points)
   * The only Role to think of space as full 3d sphere space (most are just a 2d plane)
+  * Torpedo configuration minigame:
+    * configure seeking method (dumb, heat, EM, etc)
+    * delay before thrusting (for silent running)
+    * delay before seeking starts (so it doesn't target YOU)
+    * delay before triggering
+    * dial in heading + fire
+    * variable payload
+      * scientific probe
+      * comms probe (can be tightbeamed to, as a relay)
+      * crybaby
+      * boom
+    * variable payload "strength"
 * Shields (probably handled by Weapons)
   * Have an energy buffer, depletes over time, used up upon absorbing hits
   * Can be disengaged/enabled quite quickly while the buffer is full - slower the lower it is
