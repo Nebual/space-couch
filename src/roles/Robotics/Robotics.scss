@@ -40,6 +40,20 @@ $tile_size: 64px;
 	.robot {
 		@extend .tiled_entity;
 		background-image: url('/images/robot.png');
+		background-size: 256px 64px;
+		&.pose-up {
+			background-position-x: 0;
+		}
+		&.pose-right {
+			background-position-x: -64px;
+		}
+		&,
+		&.pose-down {
+			background-position-x: -128px;
+		}
+		&.pose-left {
+			background-position-x: -196px;
+		}
 		z-index: 10;
 		.fa-circle-o-notch {
 			font-size: 4em;

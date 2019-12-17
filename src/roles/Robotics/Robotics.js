@@ -174,15 +174,32 @@ function Robot({
 		}
 		let prevNode = path.shift(); // Pop off the current location
 		for (let node of path) {
+			let nodeDelta = [prevNode[0] - node[0], prevNode[1] - node[1]];
 			let distance = Math.sqrt(
-				Math.pow(prevNode[0] - node[0], 2) +
-					Math.pow(prevNode[1] - node[1], 2)
+				Math.pow(nodeDelta[0], 2) + Math.pow(nodeDelta[1], 2)
 			);
 			animationTimeline.to(robotRef.current, {
 				x: node[0] * NODE_SIZE,
 				y: node[1] * NODE_SIZE,
 				duration: 0.8 * distance,
 				ease: 'linear',
+				onStart: () => {
+					robotRef.current.classList.remove(
+						'pose-up',
+						'pose-right',
+						'pose-down',
+						'pose-left'
+					);
+					robotRef.current.classList.add(
+						nodeDelta[1] < 0
+							? 'pose-down'
+							: nodeDelta[1] > 0
+							? 'pose-up'
+							: nodeDelta[0] > 0
+							? 'pose-left'
+							: 'pose-right'
+					);
+				},
 			});
 			prevNode = node;
 		}
