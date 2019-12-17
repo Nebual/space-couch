@@ -19,10 +19,12 @@ import {
 	SyncId,
 	serializeComponentValue,
 	deserializeCompValue,
+	GravitationalMass,
 } from './Components';
 import {
 	EmissionDetectorSystem,
 	EmissionSystem,
+	GravitationSystem,
 	MovableSystem,
 	PowerConsumptionSystem,
 	PowerFlowSystem,
@@ -68,6 +70,7 @@ export class Game {
 			.registerComponent(Position)
 			.registerComponent(Velocity)
 			.registerComponent(Emission)
+			.registerSystem(GravitationSystem)
 			.registerSystem(MovableSystem)
 			.registerSystem(EmissionSystem)
 			.registerSystem(PowerProductionSystem)
@@ -104,7 +107,23 @@ export class Game {
 			.addComponent(Emission, {
 				type: 'heat',
 				strength: 70,
+				strengthRate: -1,
 			});
+
+		this.world
+			.createEntity() // a captured satellite
+			.addComponent(Position, { x: 100, y: 10 })
+			.addComponent(Velocity, { x: 6 })
+			.addComponent(Emission, {
+				type: 'heat',
+				strength: 50,
+				strengthRate: 0,
+			});
+
+		this.world
+			.createEntity() // a planet
+			.addComponent(Position, { x: 200, y: 50 })
+			.addComponent(GravitationalMass, { gravitons: 5000 });
 
 		this.shipEntities.reactor = this.world
 			.createEntity()

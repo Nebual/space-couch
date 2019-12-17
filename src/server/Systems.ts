@@ -3,6 +3,7 @@ import SimplexNoise from 'simplex-noise';
 import {
 	Emission,
 	EmissionDetector,
+	GravitationalMass,
 	Position,
 	PowerBuffer,
 	PowerConsumer,
@@ -27,6 +28,41 @@ export class MovableSystem extends GameSystem {
 MovableSystem.queries = {
 	moving: {
 		components: [Velocity, Position],
+	},
+};
+
+const minimumForceCutoff = 0.1;
+export class GravitationSystem extends GameSystem {
+	execute(delta, time) {
+		this.queries.gravitySources.results.forEach((planet: Entity) => {
+			const gravitons = planet.getComponent(GravitationalMass).gravitons;
+			const planetPosition = planet.getComponent(Position);
+
+			const cutoffDistance = Math.sqrt(gravitons / minimumForceCutoff);
+			this.queries.movable.results.forEach((satellite: Entity) => {
+				const satellitePosition = satellite.getComponent(Position);
+				const distance = distance2D(planetPosition, satellitePosition);
+				if (distance > cutoffDistance) {
+					return;
+				}
+				const force = gravitons / distance ** 2;
+				const velocity = satellite.getMutableComponent(Velocity);
+				const acceleration = toMagnitude2D(
+					sub2D(planetPosition, satellitePosition),
+					force * delta
+				);
+				velocity.x += acceleration.x;
+				velocity.y += acceleration.y;
+			});
+		});
+	}
+}
+GravitationSystem.queries = {
+	movable: {
+		components: [Velocity, Position],
+	},
+	gravitySources: {
+		components: [GravitationalMass, Position],
 	},
 };
 
@@ -125,6 +161,29 @@ function angle2D({ x: x1, y: y1 }, { x: x2, y: y2 }): number {
 function radsToCompass(angRads, resolution): number {
 	const angPercent = (angRads / (2 * Math.PI) + 0.75) % 1;
 	return Math.round(angPercent * resolution);
+}
+function length2D({ x, y }) {
+	return Math.sqrt(x * x + y * y);
+}
+function sub2D({ x, y }, { x: x2, y: y2 }) {
+	return {
+		x: x - x2,
+		y: y - y2,
+	};
+}
+function normalize2D({ x, y }) {
+	const length = length2D({ x, y });
+	return {
+		x: x / length,
+		y: y / length,
+	};
+}
+function toMagnitude2D({ x, y }, magnitude) {
+	const length = length2D({ x, y });
+	return {
+		x: (x / length) * magnitude,
+		y: (y / length) * magnitude,
+	};
 }
 
 export class PowerProductionSystem extends GameSystem {

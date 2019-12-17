@@ -28,7 +28,7 @@ export const Emission = createComponentClass<iEmission>(
 	{
 		type: { default: 'heat' },
 		strength: { default: 0 },
-		strengthRate: { default: -1 },
+		strengthRate: { default: 0 },
 		radius: { default: 0 },
 		radiusRate: { default: 1000 / 20 },
 	},
@@ -150,6 +150,16 @@ export const ModuleTemperature = createComponentClass<iModuleTemperature>(
 );
 interface iModuleTemperature {
 	temperature: number;
+}
+
+export const GravitationalMass = createComponentClass<iGravitationalMass>(
+	{
+		gravitons: { default: 1000 },
+	},
+	'GravitationalMass'
+);
+interface iGravitationalMass {
+	gravitons: number;
 }
 
 const safeTypes = {
