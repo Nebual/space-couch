@@ -332,6 +332,20 @@ export class Game {
 			case 'changeShip':
 				this.initShip(msg.value);
 				break;
+			case 'debugPositions':
+				connection.sendEvent(
+					'debugPositions',
+					(this.world as any).entityManager
+						.queryComponents([Position])
+						.entities.map(ent => ({
+							name: ent.getComponent(SyncId)?.value || ent.id,
+							position: ent.getComponent(Position),
+							velocity: ent.getComponent(Velocity),
+							gravitons: ent.getComponent(GravitationalMass)
+								?.gravitons,
+						}))
+				);
+				break;
 		}
 		this.ship.onMessage(msg);
 	}

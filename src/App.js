@@ -12,6 +12,7 @@ import Captain from './roles/Captain/Captain';
 import Engineer from './roles/Engineer/Engineer';
 import Robotics from './roles/Robotics/Robotics';
 import Weapons from './roles/Weapons/Weapons';
+import DebugRole from './roles/DebugRole/DebugRole';
 
 import './global.scss';
 import Radar from './roles/Radar/Radar';
@@ -61,6 +62,9 @@ function App() {
 					</Route>
 					<Route path="/weapons">
 						<Weapons />
+					</Route>
+					<Route path="/debug">
+						<DebugRole />
 					</Route>
 				</Switch>
 			</Router>

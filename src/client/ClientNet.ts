@@ -10,6 +10,7 @@ export class ClientNet {
 		setInterval(() => {
 			this.checkWebSocket();
 		}, 5000);
+		(window as any).ClientNet = this; // purely for console debugging
 	}
 	public sendRaw(obj): void {
 		this.sock.send(JSON.stringify(obj));
