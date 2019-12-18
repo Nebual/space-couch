@@ -59,8 +59,11 @@ export class Game {
 	public world: GameWorld;
 	private worldTimer: NodeJS.Timeout;
 	private shipEntities: { [key: string]: Entity } = {};
+	private lastTime: number;
+	private originTime: number;
 
-	constructor() {
+	constructor(originTime?: number) {
+		this.originTime = originTime || 0;
 		this.registerWorld();
 		this.addWorldTestEntities();
 	}
@@ -78,11 +81,11 @@ export class Game {
 			.registerSystem(PowerConsumptionSystem)
 			.registerSystem(EmissionDetectorSystem);
 
-		let lastTime = performance.now() / 1000;
+		this.lastTime = performance.now() / 1000 + this.originTime;
 		this.worldTimer = setInterval(() => {
-			let time = performance.now() / 1000;
-			let delta = time - lastTime;
-			lastTime = time;
+			let time = performance.now() / 1000 + this.originTime;
+			let delta = time - this.lastTime;
+			this.lastTime = time;
 
 			// Run all the systems
 			this.world.execute(delta, time);
@@ -111,7 +114,8 @@ export class Game {
 			});
 
 		this.world
-			.createEntity() // a captured satellite
+			.createEntity()
+			.addComponent(SyncId, { value: 'capturedSatellite' })
 			.addComponent(Position, { x: 100, y: 10 })
 			.addComponent(Velocity, { x: 6 })
 			.addComponent(Emission, {
@@ -121,7 +125,8 @@ export class Game {
 			});
 
 		this.world
-			.createEntity() // a planet
+			.createEntity()
+			.addComponent(SyncId, { value: 'planetA' })
 			.addComponent(Position, { x: 200, y: 50 })
 			.addComponent(GravitationalMass, { gravitons: 5000 });
 
@@ -154,6 +159,7 @@ export class Game {
 
 	public toJSON() {
 		return {
+			originTime: this.lastTime,
 			lights_on: this.lights_on,
 			paused: this.paused,
 			state: this.state,
@@ -172,7 +178,7 @@ export class Game {
 		};
 	}
 	public static fromJSON(obj): Game {
-		let game = new this();
+		let game = new this(obj.originTime);
 
 		for (let key in obj) {
 			if (game.hasOwnProperty(key)) {
