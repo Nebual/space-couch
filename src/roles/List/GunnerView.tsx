@@ -70,7 +70,11 @@ export default class Scene extends React.Component<SceneProps & React.HTMLAttrib
 		// (id, className, etc.)
 		let { width, height, ...rest } = this.props;
 
-		let opts: any = {width: 1000, height: 1000};
+		const windowHeight = window.innerHeight;
+		const windowWidth = window.innerWidth;
+		const DEFAULT_HEIGHT = windowHeight * 4;
+		const DEFAULT_WIDTH = windowWidth * 4;
+		let opts: any = {width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT};
 
 		if (width !== undefined && height !== undefined) {
 			// opts.width = width;
