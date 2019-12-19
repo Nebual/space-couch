@@ -4,7 +4,6 @@ import { useClientNet } from '../../client/ClientNet';
 import ConfirmButton from '../../components/ConfirmButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-let lobby_hold_timer;
 export default function LobbyButton() {
 	const clientNet = useClientNet();
 	const history = useHistory();

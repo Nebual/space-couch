@@ -4,6 +4,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
+import { useInterval } from '../Util';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -13,6 +14,9 @@ const useStyles = makeStyles(theme => ({
 	wrapper: {
 		margin: theme.spacing(1),
 		position: 'relative',
+	},
+	label: {
+		pointerEvents: 'none',
 	},
 	fabProgress: {
 		color: '#35a81d',
@@ -50,21 +54,14 @@ export default function CircularIntegration({
 		setLoading(false);
 	};
 
-	React.useEffect(() => {
-		function tick() {
-			if (loading) {
-				const timePassed = new Date() - start;
-				const newProgress = Math.round((timePassed / targetTime) * 100);
+	useInterval(() => {
+		if (loading) {
+			const timePassed = new Date() - start;
+			const newProgress = Math.round((timePassed / targetTime) * 100);
 
-				setProgress(() => (newProgress > 100 ? 100 : newProgress));
-			}
+			setProgress(() => (newProgress > 100 ? 100 : newProgress));
 		}
-
-		const timer = setInterval(tick, 20);
-		return () => {
-			clearInterval(timer);
-		};
-	}, [loading]);
+	}, 20);
 
 	return (
 		<div className={classNames(classes.root, className)}>
@@ -72,6 +69,7 @@ export default function CircularIntegration({
 				<Fab
 					aria-label="save"
 					color="primary"
+					classes={{ label: classes.label }}
 					onMouseDown={handleMouseDown}
 					onMouseUp={handleMouseUp}
 					onTouchStart={handleMouseDown}
