@@ -71,13 +71,12 @@ yarn watch:server:express # Server runtime window
   * [X] Repair
     * [X] With spare part - slower, consumes part
     * [X] With duct tape - faster, drops efficiency of system
-  * Improving
-    * Adding more power conduits (increases max that Engineer can set it to)
-  * Move sensors
-  * Move guns
+  * Rerouting power lines, changing power conduits
+  * Move sensors, shield emitters, guns, ammo storage, etc around the ship
   * Counter Intrusion
   * Has FTL styles sensors, if they're offline, only rooms with robots in them are viewable
   * Other roles have a 'check engine light', which can be a 3 second fix for the RE, or its just nothing
+  * ship design? https://opengameart.org/content/modular-spaceships
 * Pilot?
   * Has local area map (in maneuverability thruster mode)
   * ~~Has system map (in sublight mode)~~ 
@@ -85,6 +84,8 @@ yarn watch:server:express # Server runtime window
   * Has to set the heading for Jumps
   * Turns via spinning giant wooden steering wheel
   * Has giant throttle lever, or https://img1.etsystatic.com/000/0/6355253/il_fullxfull.340992455.jpg
+  * http://nebtown.info/ss/neb/2019_12_18_19-56-23.png
+  * http://nebtown.info/ss/neb/2019_12_18_19-56-41.png
 * Navigation
   * 3D gyroscoped panoramic parallax view of space, including constellations
   * Reuses Weapons's view - but while Weapons ignore the stars to focus on the foreground,
@@ -169,3 +170,7 @@ yarn watch:server:express # Server runtime window
     * Systems offline
     * New ship detected on radar
     * "Mission Complete"
+* Plot
+  * Red Line?
+  * The mission is a race (across a system, between planets, between 2-3 systems)
+  * There are pit stops for repairs/upgrades/component swaps

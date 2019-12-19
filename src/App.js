@@ -12,10 +12,11 @@ import Captain from './roles/Captain/Captain';
 import Engineer from './roles/Engineer/Engineer';
 import Robotics from './roles/Robotics/Robotics';
 import Weapons from './roles/Weapons/Weapons';
+import Radar from './roles/Radar/Radar';
+import Helm from './roles/Helm/Helm';
 import DebugRole from './roles/DebugRole/DebugRole';
 
 import './global.scss';
-import Radar from './roles/Radar/Radar';
 
 function App() {
 	const [isPaused, setIsPaused] = useState(false);
@@ -62,6 +63,9 @@ function App() {
 					</Route>
 					<Route path="/weapons">
 						<Weapons />
+					</Route>
+					<Route path="/helm">
+						<Helm />
 					</Route>
 					<Route path="/debug">
 						<DebugRole />

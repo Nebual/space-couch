@@ -38,7 +38,6 @@ export default function RoleList() {
 					Ensures smooth communication between crew.
 				</RoleCard>
 				<RoleCard to="engineer" title="Engineer">
-					{' '}
 					Manages power levels throughout the ship.
 				</RoleCard>
 				<RoleCard to="robotics" title="Robologistics">
@@ -50,7 +49,10 @@ export default function RoleList() {
 				</RoleCard>
 				<RoleCard to="radar" title="Radar">
 					The Eyes, Ears, and Nose of the Ship. Additionally, the
-					thermal probe, Tachyon detector, and EM tuner.{' '}
+					thermal probe, Tachyon detector, and EM tuner.
+				</RoleCard>
+				<RoleCard to="/helm" title="Helmsman">
+					Drives the boat, floors the accelerator
 				</RoleCard>
 				<RoleCard to="/" title="Navigator">
 					Figures out where we are, and where we're going.
