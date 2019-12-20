@@ -1,18 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Gyro from './gyro';
+//import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as BABYLON from 'babylonjs';
-
 import './Weapons.scss';
-import useAnimationFrame from './useAnimationFrame';
-import { throttle } from '../../Util';
-import RobotActionsMenu from '../Robotics/RobotActionsMenu';
-import StarCanvas from '../Robotics/StarCanvas';
 import GunnerView, { SceneEventArgs } from '../List/GunnerView';
-
-const windowHeight = window.innerHeight;
-const windowWidth = window.innerWidth;
-const DEFAULT_HEIGHT = windowHeight * 4;
-const DEFAULT_WIDTH = windowWidth * 4;
 
 // Warning: Gyro _requires_ HTTPS! Otherwise the event silently never fires.
 export default function Weapons() {
@@ -26,9 +16,6 @@ export default function Weapons() {
 			scene
 		);
 
-		// This targets the camera to scene origin
-		camera.setTarget(BABYLON.Vector3.Zero());
-
 		// This attaches the camera to the canvas
 		camera.attachControl(canvas, true);
 
@@ -40,7 +27,7 @@ export default function Weapons() {
 		);
 
 		// Default intensity is 1. Let's dim the light a small amount
-		light.intensity = 0.7;
+		light.intensity = 0.8;
 
 		// Our built-in 'sphere' shape. Params: name, subdivs, size, scene
 		var sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
@@ -48,8 +35,18 @@ export default function Weapons() {
 		// Move the sphere upward 1/2 its height
 		sphere.position.y = 1;
 
+		// This targets the camera to scene origin
+		camera.setTarget(BABYLON.Vector3.Zero());
+
 		// Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
-		var ground = BABYLON.Mesh.CreateGround('ground1', 6, 6, 2, scene);
+		var ground = BABYLON.Mesh.CreateGround('ground1', 6, -2, 2, scene);
+		var planarMaterial = new BABYLON.StandardMaterial(
+			'planarMaterial',
+			scene
+		);
+		planarMaterial.emissiveColor = new BABYLON.Color3(0.8, 0.8, 0.8);
+
+		ground.material = planarMaterial;
 
 		engine.runRenderLoop(() => {
 			if (scene) {
@@ -57,10 +54,23 @@ export default function Weapons() {
 			}
 		});
 	};
+	const containerRef = useRef(null);
+	// @ts-ignore
+	const containerY = containerRef.current?.innerHeight;
+	// @ts-ignore
+	const [arbitrary, setArbitrary] = useState(0);
+	useEffect(() => {
+		setArbitrary(1);
+	}, []);
 
 	return (
-		<div>
-			<GunnerView onSceneMount={onSceneMount} />
+		<div ref={containerRef} style={{ height: '100%' }}>
+			<GunnerView
+				onSceneMount={onSceneMount}
+				// @ts-ignore
+				width={640} //<<<hardcoded x and y
+				height={360}
+			/>
 		</div>
 	);
 }
