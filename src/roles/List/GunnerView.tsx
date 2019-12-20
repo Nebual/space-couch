@@ -68,23 +68,15 @@ export default class Scene extends React.Component<
 	};
 
 	render() {
-		// 'rest' can contain additional properties that you can flow through to canvas:
-		// (id, className, etc.)
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		let { width, height, ...rest } = this.props;
 
-		// console.log(windowWidth);
-		// console.log(windowHeight);
-		// const DEFAULT_HEIGHT = windowHeight * 4;
-		// const DEFAULT_WIDTH = windowWidth * 4;
-		let opts: any = { width, height };
-		console.log(opts);
-
-		if (width !== undefined && height !== undefined) {
-			// opts.width = width;
-			// opts.height = height;
-		}
-
-		return <canvas {...opts} ref={this.onCanvasLoaded} />;
+		return (
+			<canvas
+				{...rest}
+				width={width}
+				height={height}
+				ref={this.onCanvasLoaded}
+			/>
+		);
 	}
 }
