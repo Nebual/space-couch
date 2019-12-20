@@ -20,7 +20,6 @@ export default function ShipSelector() {
 		<div className="selector-container">
 			<InputLabel id="ship-select-label">Select Ship</InputLabel>
 			<NativeSelect
-				labelId="ship-select-label"
 				onChange={event => {
 					setShipType(event.target.value);
 					clientNet.send({

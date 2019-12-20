@@ -5,6 +5,7 @@ import StylesProvider from '@material-ui/styles/StylesProvider';
 
 import { useWebsocketMessage } from './client/ClientNet';
 import { vibrate } from './Util';
+import FullscreenButton from './roles/List/FullscreenButton';
 import Overview from './roles/Overview/Overview';
 import RoleList from './roles/List/RoleList';
 import LobbyButton from './roles/List/LobbyButton';
@@ -42,6 +43,7 @@ function App() {
 			</div>
 			<Router>
 				<LobbyButton />
+				<FullscreenButton />
 				<Switch>
 					<Route path="/overview">
 						<Overview />

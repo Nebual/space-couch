@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import { useInterval } from '../../Util';
+import useWindowSize from '../../components/useWindowSize';
 
 export default function FullscreenButton() {
 	const [isFullscreen, setIsFullscreen] = useState(false);
+	const isDesktop = useWindowSize().width > 1200;
 
 	useInterval(() => {
 		setIsFullscreen(
@@ -35,12 +37,18 @@ export default function FullscreenButton() {
 		}
 	};
 	return (
-		<Button
-			variant={isFullscreen ? 'text' : 'contained'}
-			onClick={toggleFullscreen}
-			style={{ marginLeft: 'auto', maxHeight: '3em' }}
-		>
-			Fullscreen
-		</Button>
+		!isFullscreen &&
+		!isDesktop && (
+			<div className="fullscreen-button-container">
+				<Button
+					variant={isFullscreen ? 'text' : 'contained'}
+					onClick={toggleFullscreen}
+					className="fullscreen-button"
+					size="large"
+				>
+					Fullscreen
+				</Button>
+			</div>
+		)
 	);
 }

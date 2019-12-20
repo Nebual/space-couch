@@ -5,7 +5,6 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
 import './RoleList.scss';
-import FullscreenButton from './FullscreenButton';
 import ShipSelector from './ShipSelector';
 
 function RoleCard({ to, title, children }) {
@@ -31,7 +30,6 @@ export default function RoleList() {
 					Space Couch
 				</Typography>
 				<ShipSelector />
-				<FullscreenButton />
 			</div>
 			<div className="card-tiles">
 				<RoleCard to="captain" title="Captain">
