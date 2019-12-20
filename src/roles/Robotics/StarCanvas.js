@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import './StarCanvas.scss';
-import useAnimationFrame from '../Weapons/useAnimationFrame';
-import useWindowSize from './useWindowSize';
+import useAnimationFrame from '../../components/useAnimationFrame';
+import useWindowSize from '../../components/useWindowSize';
 
 const numBgLayers = 12;
 const baseStartNum = 10;

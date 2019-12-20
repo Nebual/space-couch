@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Gyro from './gyro';
 
 import './Weapons.scss';
-import useAnimationFrame from './useAnimationFrame';
+import useAnimationFrame from '../../components/useAnimationFrame';
 import { throttle } from '../../Util';
 
 const reticleSize = 10;
