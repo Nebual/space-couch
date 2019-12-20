@@ -6,13 +6,27 @@
 		display: flex;
 		position: absolute;
 		bottom: -150px;
-		width: 100%;
+		width: calc(100% - 180px);
 	}
 	.helm-wheel {
 		width: 263px;
 		margin-left: auto;
 		margin-right: auto;
-		will-change: transform;
 		transition: transform 0.125s ease-out;
+	}
+	.helm-chadwell-container {
+		position: absolute;
+		bottom: -24px;
+		right: 0;
+	}
+	.helm-chadwell-base {
+		width: 180px;
+	}
+	.helm-chadwell-handle {
+		width: 52px;
+		position: absolute;
+		top: -69px;
+		left: 64.5px;
+		transform-origin: 50% 158px;
 	}
 }
