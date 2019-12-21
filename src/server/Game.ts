@@ -189,7 +189,7 @@ export class Game {
 				}
 			}
 		}
-		let shipType = 'ship1';
+		let shipType = 'ship2';
 		if (obj._ship && obj._ship.shipType) shipType = obj._ship.shipType;
 		game.initShip(shipType);
 

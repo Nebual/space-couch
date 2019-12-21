@@ -1,6 +1,8 @@
 import { NetPacket, Connection } from './ServerNet';
 import { Game } from './Game';
 import { AStarFinder, Grid } from 'pathfinding';
+const fs = require('fs');
+const path = require('path');
 const PF = require('pathfinding');
 
 export enum RoomType {
@@ -24,6 +26,7 @@ interface Node {
 	top: number;
 	left: number;
 
+	// (only used by old hardcoded model)
 	room: RoomType;
 
 	// Connections
@@ -66,11 +69,111 @@ export class ShipNodes {
 	private grid: Grid;
 	private finder: AStarFinder;
 	private partsRemaining: number = 0;
+	private shipTileData: any;
 
 	constructor(game: Game, layout: string) {
 		this.game = game;
 		this.shipType = layout;
 
+		const jsonFile = `public/images/ships/${layout}.json`;
+		if (fs.existsSync(jsonFile)) {
+			this.loadTiledCollisionsGrid(jsonFile);
+		} else {
+			this.initializeHardcodedGrid(layout);
+		}
+	}
+
+	private loadTiledCollisionsGrid(jsonFile) {
+		this.shipTileData = JSON.parse(fs.readFileSync(jsonFile));
+		const walkable = this.shipTileData.layers.find(
+			({ name }) => name === 'walkable'
+		);
+		const spawners = this.shipTileData.layers.find(
+			({ name }) => name === 'module-spawners'
+		);
+
+		// Create a matrix that's entirely unwalkable by default
+		// 2x as large as our grid size, so there's odd "wall" nodes between each even grid cell
+		this.grid = new PF.Grid(
+			Array(walkable.height * 2).fill(Array(walkable.width * 2).fill(1))
+		);
+		this.finder = new PF.AStarFinder({
+			allowDiagonal: true,
+			dontCrossCorners: true,
+		});
+
+		const cellIsWalkable = (x, y) =>
+			x > 0 && y > 0 && walkable.data[y * walkable.width + x] > 0;
+		for (let y = 0; y < walkable.height; y++) {
+			for (let x = 0; x < walkable.width; x++) {
+				if (!cellIsWalkable(x, y)) {
+					continue;
+				}
+				this.nodes[x + 'x' + y] = {
+					left: x,
+					top: y,
+				} as Node;
+				const subX = x * 2;
+				const subY = y * 2;
+				this.grid.setWalkableAt(subX, subY, true);
+				if (cellIsWalkable(x, y + 1)) {
+					this.grid.setWalkableAt(subX, subY + 1, true);
+				}
+				if (cellIsWalkable(x - 1, y)) {
+					this.grid.setWalkableAt(subX - 1, subY, true);
+				}
+
+				// Kinda a hack, but open up nodes in the middle of the room too
+				if (
+					cellIsWalkable(x, y - 1) &&
+					cellIsWalkable(x - 1, y) &&
+					this.grid.isWalkableAt(subX - 1, subY - 2)
+				) {
+					this.grid.setWalkableAt(subX - 1, subY - 1, true);
+				}
+				if (
+					cellIsWalkable(x, y + 1) &&
+					cellIsWalkable(x - 1, y) &&
+					this.grid.isWalkableAt(subX - 1, subY + 2)
+				) {
+					this.grid.setWalkableAt(subX - 1, subY + 1, true);
+				}
+			}
+		}
+
+		this.debug_grid();
+
+		const tileMetadata = {};
+		for (let { firstgid, source } of this.shipTileData.tilesets) {
+			const tileset = JSON.parse(
+				fs.readFileSync(path.join(jsonFile, '../', source))
+			);
+			for (let { id, type } of tileset.tiles) {
+				tileMetadata[firstgid + id] = { type };
+			}
+		}
+		spawners.data.forEach((tileId, index) => {
+			if (!tileId || !tileMetadata.hasOwnProperty(tileId)) {
+				return;
+			}
+			const x = index % spawners.width;
+			const y = Math.floor(index / spawners.width);
+			if (tileMetadata[tileId].type === 'robo-spawner') {
+				this.robots.push({
+					left: x,
+					top: y,
+					id: this.robots.length,
+				} as Robot);
+			} else if (tileMetadata[tileId].type === 'reactor') {
+			} else if (tileMetadata[tileId].type === 'shield-emitter') {
+			} else if (tileMetadata[tileId].type === 'thruster') {
+			} else if (tileMetadata[tileId].type === 'comms') {
+			} else if (tileMetadata[tileId].type === 'gun') {
+			}
+		});
+		this.partsRemaining = 3;
+	}
+	private initializeHardcodedGrid(layout) {
 		let shipType = ShipTypes[layout];
 		let nodes = shipType.nodes.map(
 			([left, top, room, openings]) =>
@@ -167,6 +270,7 @@ export class ShipNodes {
 	}
 
 	createRobots(num: number) {
+		// deprecated, not used in Tiled ships
 		for (let node of this.rooms[RoomType.Robotics].nodes) {
 			this.robots.push(<Robot>{
 				left: node.left,
@@ -295,6 +399,9 @@ export class ShipNodes {
 	}
 
 	public startFire(roomType: RoomType): boolean {
+		if (!this.rooms[roomType]) {
+			return false; // todo: new Tiled ships don't have rooms...
+		}
 		let nodes = this.rooms[roomType].nodes.slice();
 		while (nodes.length) {
 			let i = Math.floor(Math.random() * nodes.length);
@@ -338,6 +445,9 @@ export class ShipNodes {
 
 	public startBreak(roomType: RoomType): boolean {
 		let room = this.rooms[roomType];
+		if (!room) {
+			return false; // todo: new Tiled ships don't have rooms...
+		}
 		if (room.isBroken) return false; // Only one node can be broken in a room at a time
 		let nodes = room.nodes;
 		let i = Math.floor(Math.random() * nodes.length);
@@ -355,6 +465,9 @@ export class ShipNodes {
 
 	private repairNode(node: Node, withPart: boolean): boolean {
 		let room = this.rooms[node.room];
+		if (!room) {
+			return false; // todo: new Tiled ships don't have rooms...
+		}
 		if (withPart) {
 			if (!this.consumePart(node.room)) return false;
 			room.condition = 1;
@@ -406,50 +519,6 @@ const ShipTypes: { [shipId: string]: ShipType } = {
 			[11, 5, RoomType.Cockpit, 'new'],
 			[12, 4, RoomType.Cockpit, 'sw'],
 			[12, 5, RoomType.Cockpit, 'nw'],
-
-			// top
-			[7, 2, RoomType.Navigation, 'es'],
-			[7, 3, RoomType.Navigation, 'nes'],
-			[8, 2, RoomType.Navigation, 'sw'],
-			[8, 3, RoomType.Navigation, 'nsw'],
-			[9, 2, RoomType.Weapons, 'es'],
-			[9, 3, RoomType.Weapons, 'nes'],
-			[10, 2, RoomType.Weapons, 'sw'],
-			[10, 3, RoomType.Weapons, 'nsw'],
-
-			// bottom
-			[7, 6, RoomType.Shields, 'nes'],
-			[7, 7, RoomType.Shields, 'ne'],
-			[8, 6, RoomType.Shields, 'nsw'],
-			[8, 7, RoomType.Shields, 'nw'],
-			[9, 6, RoomType.Weapons, 'nes'],
-			[9, 7, RoomType.Weapons, 'ne'],
-			[10, 6, RoomType.Weapons, 'nsw'],
-			[10, 7, RoomType.Weapons, 'nw'],
-		],
-	}, ship2: {
-		numRobots: 2,
-		numParts: 2,
-		nodes: [
-			// middle
-			[3, 4, RoomType.Engine, 'es'],
-			[3, 5, RoomType.Engine, 'en'],
-			[4, 4, RoomType.Generator, 'esw'],
-			[4, 5, RoomType.Generator, 'enw'],
-			[5, 4, RoomType.Generator, 'esw'],
-			[5, 5, RoomType.Generator, 'enw'],
-			[6, 4, RoomType.None, 'esw'],
-			[6, 5, RoomType.None, 'enw'],
-			[7, 4, RoomType.Robotics, 'nesw'],
-			[7, 5, RoomType.Robotics, 'nesw'],
-			[8, 4, RoomType.Robotics, 'nesw'],
-			[8, 5, RoomType.Robotics, 'nesw'],
-			[9, 4, RoomType.None, 'nesw'],
-			[9, 5, RoomType.None, 'nesw'],
-			[10, 4, RoomType.None, 'nesw'],
-			[10, 5, RoomType.None, 'nesw'],
-			[11, 4, RoomType.Cockpit, 'esw'],
-			[11, 5, RoomType.Cockpit, 'new'],
 
 			// top
 			[7, 2, RoomType.Navigation, 'es'],
