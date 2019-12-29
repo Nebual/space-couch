@@ -123,8 +123,8 @@ export default function Robotics() {
 						onClick={e => {
 							if (selectedRobot === robot.id) {
 								setRobotActionsPosition({
-									left: e.nativeEvent.pageX - 24,
-									top: e.nativeEvent.pageY - 24,
+									left: e.nativeEvent.layerX - 24,
+									top: e.nativeEvent.layerY - 24,
 								});
 								setRobotActionsOpen(true);
 							} else {

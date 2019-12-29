@@ -59,8 +59,10 @@ yarn watch:server:express # Server runtime window
     * Protogen's Thor Sublight Thrusters have a 'T Inhibitor' (inverse max capacity) and a 'T Coefficient' (voltage) sliders,
     * Far Horizon's Calibrus Thrusters use a pair of 'T Cap A' and 'T Cap B' max capcity sliders, B must stay below A but are otherwise added together, along with a 'T Vlt' (voltage) slider
   * Has to manage temperature of the reactor core
-    * Also temperature of individual components - indicates how overworked they are
-    * Overall Ship temperature is reduced via deployed radiators, 
+    * Barotrauma has Fission Rate (control rods -> heat production) + Turbine Output (heat consumption -> energy output)
+    which must be balanced https://barotrauma.gamepedia.com/Nuclear_Reactor#Usage possibly with varying types of fuel rods
+  * Temperature of individual components - indicates how overworked they are
+  * Overall Ship temperature is reduced via deployed radiators,
     which can be damaged if mid-combat, must be retracted before jumping,
     and are more efficient with shields down
   * Life Support is a power lever - if left unpowered, vision blurs for everyone and/or ice crystals form
@@ -86,6 +88,14 @@ yarn watch:server:express # Server runtime window
   * Has giant throttle lever, or https://img1.etsystatic.com/000/0/6355253/il_fullxfull.340992455.jpg
   * http://nebtown.info/ss/neb/2019_12_18_19-56-23.png
   * http://nebtown.info/ss/neb/2019_12_18_19-56-41.png
+  * Top-down view (eg. Sunless Skies); 'drifting forward' at 100% speed (10km/s? 'legal speed'?), but can use
+  thrusters to accel faster/slower/left/right relative to other objects
+  (asteroids, debris fields, other ships) in the plane/route.
+    * steering wheel/throttle for controls
+    * top-down allows seeing and avoiding obstacles from all directions, which improves
+    positional damage (debris hitting right shields), unusual flight models (eg. primary thrusters are down, so move entirely via strafe)
+  * Alternatively Kart view: allows seeing further ahead, but means only "the front" of ship is interesting
+
 * Navigation
   * 3D gyroscoped panoramic parallax view of space, including constellations
   * Reuses Weapons's view - but while Weapons ignore the stars to focus on the foreground,
@@ -160,6 +170,7 @@ yarn watch:server:express # Server runtime window
   * Has inventory of spare parts
   * Red Alert button
   * Has the JUMP button
+  * Rubber stamp certain actions (eg. illegal weapons, overriding safeties) via popup prompts
 * Overview Screen (TV)
   * Shows vague stats about the ship, just a very high level "this system is unpowered/overpowered/damaged"
   * Mission countdown clock

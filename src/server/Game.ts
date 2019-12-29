@@ -4,21 +4,13 @@ import { Entity, World } from 'ecsy';
 import { performance } from 'perf_hooks';
 
 import DSON from './dson2.js';
-import { objectMap } from './commonUtil';
 import { ServerNet, Connection, NetPacket } from './ServerNet';
 import { ShipNodes, RoomType } from './ship';
 import {
 	Position,
 	Velocity,
 	Emission,
-	EmissionDetector,
-	PowerBuffer,
-	PowerConsumer,
-	ShipPosition,
-	PowerProducer,
 	SyncId,
-	serializeComponentValue,
-	deserializeCompValue,
 	GravitationalMass,
 } from './Components';
 import {
@@ -58,7 +50,6 @@ export class Game {
 	public net: ServerNet;
 	public world: GameWorld;
 	private worldTimer: NodeJS.Timeout;
-	private shipEntities: { [key: string]: Entity } = {};
 	private lastTime: number;
 	private originTime: number;
 
@@ -91,10 +82,7 @@ export class Game {
 			this.world.execute(delta, time);
 
 			// dirty one-offs that should probably become systems one day
-			let reactor = this.shipEntities.reactor;
-			if (reactor.getComponent(PowerBuffer).current < 1) {
-				this.setPlayerLights(false);
-			}
+			this.ship.update(delta, time);
 		}, 100);
 	}
 	public shutdown() {
@@ -129,32 +117,6 @@ export class Game {
 			.addComponent(SyncId, { value: 'planetA' })
 			.addComponent(Position, { x: 200, y: 50 })
 			.addComponent(GravitationalMass, { gravitons: 5000 });
-
-		this.shipEntities.reactor = this.world
-			.createEntity()
-			.addComponent(ShipPosition, { x: 4, y: 4 })
-			.addComponent(SyncId, { value: 'reactor' })
-			.addComponent(PowerBuffer, {
-				rate: 0,
-				current: 1000,
-				max: 1000,
-			})
-			.addComponent(PowerProducer, { rate: 1000, maxRate: 1000 });
-		this.shipEntities.heatDetector = this.world
-			.createEntity()
-			.addComponent(Position) // todo: ship components shouldn't have a solar position
-			.addComponent(ShipPosition, { x: 7, y: 2 })
-			.addComponent(PowerBuffer, {
-				max: 100,
-				rate: 20,
-				maxRate: 40,
-				sources: [this.shipEntities.reactor],
-			})
-			.addComponent(SyncId, { value: 'heatDetector' })
-			.addComponent(PowerConsumer, { rate: 20 })
-			.addComponent(EmissionDetector, {
-				type: 'heat',
-			});
 	}
 
 	public toJSON() {
@@ -164,17 +126,6 @@ export class Game {
 			paused: this.paused,
 			state: this.state,
 			_ship: this.ship.toJSON(),
-			_shipEntities: objectMap(this.shipEntities, value =>
-				objectMap(value.getComponents(), component =>
-					Object.entries(component).reduce(
-						(savedProps, [key, value]) => {
-							savedProps[key] = serializeComponentValue(value);
-							return savedProps;
-						},
-						{}
-					)
-				)
-			),
 		};
 	}
 	public static fromJSON(obj): Game {
@@ -194,28 +145,6 @@ export class Game {
 		game.initShip(shipType);
 
 		if (obj._ship !== undefined) game.ship.applyJSON(obj._ship);
-		if (obj._shipEntities !== undefined) {
-			const savedShipEntities = obj._shipEntities as {
-				[entKey: string]: {
-					[compId: string]: { [propKey: string]: any };
-				};
-			};
-			Object.entries(savedShipEntities).forEach(([entKey, comps]) => {
-				const components = game.shipEntities[entKey].getComponents();
-				Object.entries(comps).forEach(([compId, compVals]) => {
-					const component = components[compId];
-					Object.entries(compVals).forEach(([propKey, propValue]) => {
-						if (!component.hasOwnProperty(propKey)) {
-							return;
-						}
-						component[propKey] = deserializeCompValue(
-							game.shipEntities,
-							propValue
-						);
-					});
-				});
-			});
-		}
 		return game;
 	}
 
@@ -279,27 +208,21 @@ export class Game {
 			case 'break_shields':
 				this.ship.startBreak(RoomType.Shields);
 				break;
-			case 'power1': {
-				const ent = this.shipEntities.reactor;
-				const powerProducer = ent.getMutableComponent(PowerProducer);
-				powerProducer.rate = (value / 100) * powerProducer.maxRate;
+			case 'power1':
+				this.ship.setReactorRate(value / 100);
 				break;
-			}
 			case 'power2':
 				if (value > 90) {
 					this.setPlayerLights(false);
 				}
 				break;
-			case 'power4': {
-				const ent = this.shipEntities.heatDetector;
-				const powerBuffer = ent.getMutableComponent(PowerBuffer);
-				powerBuffer.rate = (value / 100) * powerBuffer.maxRate;
+			case 'power4':
+				this.ship.setBufferRate('heatDetector', value / 100);
 				break;
-			}
 		}
 	}
 
-	private setPlayerLights(value) {
+	public setPlayerLights(value) {
 		this.setRoleState('engineer', 'main_power_system', value);
 	}
 
@@ -312,6 +235,7 @@ export class Game {
 
 	public initShip(shipName: string) {
 		this.ship = new ShipNodes(this, shipName);
+		this.ship.loadDefaultComponents();
 	}
 
 	public onMessage(connection: Connection, msg: NetPacket) {

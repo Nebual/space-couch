@@ -1,6 +1,19 @@
 import { NetPacket, Connection } from './ServerNet';
 import { Game } from './Game';
 import { AStarFinder, Grid } from 'pathfinding';
+import { Entity } from 'ecsy';
+import {
+	deserializeCompValue,
+	EmissionDetector,
+	Position,
+	PowerBuffer,
+	PowerConsumer,
+	PowerProducer,
+	serializeComponentValue,
+	ShipPosition,
+	SyncId,
+} from './Components';
+import { objectMap } from './commonUtil';
 const fs = require('fs');
 const path = require('path');
 const PF = require('pathfinding');
@@ -14,6 +27,14 @@ export enum RoomType {
 	Shields,
 	Navigation,
 	Cockpit,
+}
+export enum TileSpawnerType {
+	Robot = 'robo-spawner',
+	Reactor = 'reactor',
+	ShieldEmitter = 'shield-emitter',
+	Thruster = 'thruster',
+	Comms = 'comms',
+	Gun = 'gun',
 }
 
 export interface Robot {
@@ -70,6 +91,8 @@ export class ShipNodes {
 	private finder: AStarFinder;
 	private partsRemaining: number = 0;
 	private shipTileData: any;
+	private spawnerTiles: { [type: string]: { x: number; y: number }[] };
+	public entities: { [key: string]: Entity } = {};
 
 	constructor(game: Game, layout: string) {
 		this.game = game;
@@ -87,9 +110,6 @@ export class ShipNodes {
 		this.shipTileData = JSON.parse(fs.readFileSync(jsonFile));
 		const walkable = this.shipTileData.layers.find(
 			({ name }) => name === 'walkable'
-		);
-		const spawners = this.shipTileData.layers.find(
-			({ name }) => name === 'module-spawners'
 		);
 
 		// Create a matrix that's entirely unwalkable by default
@@ -152,24 +172,21 @@ export class ShipNodes {
 				tileMetadata[firstgid + id] = { type };
 			}
 		}
-		spawners.data.forEach((tileId, index) => {
+		this.spawnerTiles = {};
+		const spawnerLayer = this.shipTileData.layers.find(
+			({ name }) => name === 'module-spawners'
+		);
+		spawnerLayer.data.forEach((tileId, index) => {
 			if (!tileId || !tileMetadata.hasOwnProperty(tileId)) {
 				return;
 			}
-			const x = index % spawners.width;
-			const y = Math.floor(index / spawners.width);
-			if (tileMetadata[tileId].type === 'robo-spawner') {
-				this.robots.push({
-					left: x,
-					top: y,
-					id: this.robots.length,
-				} as Robot);
-			} else if (tileMetadata[tileId].type === 'reactor') {
-			} else if (tileMetadata[tileId].type === 'shield-emitter') {
-			} else if (tileMetadata[tileId].type === 'thruster') {
-			} else if (tileMetadata[tileId].type === 'comms') {
-			} else if (tileMetadata[tileId].type === 'gun') {
+			const x = index % spawnerLayer.width;
+			const y = Math.floor(index / spawnerLayer.width);
+			const type = tileMetadata[tileId].type;
+			if (!this.spawnerTiles[type]) {
+				this.spawnerTiles[type] = [];
 			}
+			this.spawnerTiles[type].push({ x, y });
 		});
 		this.partsRemaining = 3;
 	}
@@ -239,6 +256,17 @@ export class ShipNodes {
 			shipType: this.shipType,
 			robots: this.robots,
 			rooms: this.rooms,
+			_entities: objectMap(this.entities, value =>
+				objectMap(value.getComponents(), component =>
+					Object.entries(component).reduce(
+						(savedProps, [key, value]) => {
+							savedProps[key] = serializeComponentValue(value);
+							return savedProps;
+						},
+						{}
+					)
+				)
+			),
 		};
 	}
 	public applyJSON(obj) {
@@ -250,6 +278,28 @@ export class ShipNodes {
 				}
 				this.rooms[room_id].applyJSON(obj.rooms[room_id]);
 			}
+		}
+		if (obj._entities !== undefined) {
+			const savedShipEntities = obj._entities as {
+				[entKey: string]: {
+					[compId: string]: { [propKey: string]: any };
+				};
+			};
+			Object.entries(savedShipEntities).forEach(([entKey, comps]) => {
+				const components = this.entities[entKey].getComponents();
+				Object.entries(comps).forEach(([compId, compVals]) => {
+					const component = components[compId];
+					Object.entries(compVals).forEach(([propKey, propValue]) => {
+						if (!component.hasOwnProperty(propKey)) {
+							return;
+						}
+						component[propKey] = deserializeCompValue(
+							this.entities,
+							propValue
+						);
+					});
+				});
+			});
 		}
 	}
 
@@ -267,6 +317,63 @@ export class ShipNodes {
 
 	public getNode(x: number, y: number): Node {
 		return this.nodes[`${x}x${y}`];
+	}
+
+	public loadDefaultComponents() {
+		(this.spawnerTiles[TileSpawnerType.Robot] || []).forEach(({ x, y }) => {
+			this.robots.push({
+				left: x,
+				top: y,
+				id: this.robots.length,
+			} as Robot);
+		});
+
+		const reactorPos = this.spawnerTiles[TileSpawnerType.Reactor][0];
+		this.entities.reactor = this.game.world
+			.createEntity()
+			.addComponent(ShipPosition, reactorPos)
+			.addComponent(SyncId, { value: 'reactor' })
+			.addComponent(PowerBuffer, {
+				rate: 0,
+				current: 1000,
+				max: 1000,
+			})
+			.addComponent(PowerProducer, { rate: 1000, maxRate: 1000 });
+
+		const detectorPos = this.spawnerTiles[TileSpawnerType.Comms][0];
+		this.entities.heatDetector = this.game.world
+			.createEntity()
+			.addComponent(Position) // todo: ship components shouldn't have a solar position
+			.addComponent(ShipPosition, detectorPos)
+			.addComponent(PowerBuffer, {
+				max: 100,
+				rate: 20,
+				maxRate: 40,
+				sources: [this.entities.reactor],
+			})
+			.addComponent(SyncId, { value: 'heatDetector' })
+			.addComponent(PowerConsumer, { rate: 20 })
+			.addComponent(EmissionDetector, {
+				type: 'heat',
+			});
+	}
+
+	update(delta: number, time: number) {
+		let reactor = this.entities.reactor;
+		if (reactor.getComponent(PowerBuffer).current < 1) {
+			this.game.setPlayerLights(false);
+		}
+	}
+
+	setReactorRate(rate: number) {
+		const ent = this.entities.reactor;
+		const powerProducer = ent.getMutableComponent(PowerProducer);
+		powerProducer.rate = rate * powerProducer.maxRate;
+	}
+	setBufferRate(syncId: string, rate: number) {
+		const ent = this.entities[syncId];
+		const powerBuffer = ent.getMutableComponent(PowerBuffer);
+		powerBuffer.rate = rate * powerBuffer.maxRate;
 	}
 
 	createRobots(num: number) {
