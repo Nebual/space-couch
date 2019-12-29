@@ -91,4 +91,9 @@ $tile_size: 64px;
 		background-image: url('/images/sparks.gif');
 		pointer-events: none;
 	}
+
+	.ship-subsystem {
+		@extend .tiled_entity;
+		pointer-events: none;
+	}
 }

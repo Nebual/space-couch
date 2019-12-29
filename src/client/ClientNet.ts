@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, createContext } from 'react';
+import { useEffect, useState, useContext, createContext, useRef } from 'react';
 import uniqueSlug from 'unique-slug';
 
 export class ClientNet {
@@ -96,12 +96,20 @@ export const useWebsocketMessage = callback => {
 	const clientNet = useClientNet();
 	const [hookId] = useState(() => uniqueSlug());
 
+	const savedCallback = useRef();
+	savedCallback.current = callback;
+
 	useEffect(() => {
-		clientNet.subscribeListener(hookId, callback);
+		clientNet.subscribeListener(hookId, (...args) => {
+			if (savedCallback.current) {
+				// @ts-ignore
+				savedCallback.current(...args);
+			}
+		});
 		return () => {
 			clientNet.unsubscribeListener(hookId);
 		};
-	}, [clientNet, callback, hookId]);
+	}, [clientNet, hookId]);
 };
 
 export const useWebsocketStateChange = (callback, id) => {

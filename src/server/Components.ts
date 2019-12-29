@@ -152,6 +152,16 @@ interface iModuleTemperature {
 	temperature: number;
 }
 
+export const RenderableInterior = createComponentClass<iRenderableInterior>(
+	{
+		image: { default: '' },
+	},
+	'RenderableInterior'
+);
+interface iRenderableInterior {
+	image: string;
+}
+
 export const GravitationalMass = createComponentClass<iGravitationalMass>(
 	{
 		gravitons: { default: 1000 },

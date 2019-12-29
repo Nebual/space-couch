@@ -17,6 +17,7 @@ export default function Robotics() {
 	const clientNet = useClientNet();
 	const [robots, setRobots] = useState([]);
 	const [nodes, setNodes] = useState([]);
+	const [subsystems, setSubsystems] = useState({});
 	const [selectedRobot, setSelectedRobot] = useState(null);
 	const [robotActionsOpen, setRobotActionsOpen] = useState(false);
 	const [robotActionsPosition, setRobotActionsPosition] = useState({});
@@ -27,7 +28,6 @@ export default function Robotics() {
 		setSelectedRobot(false);
 	}, []);
 
-	// if($(document).width() > 1200) ($('.main-container') as any).overscroll();
 	useWebsocketMessage(packet => {
 		switch (packet.event) {
 			case 'shipId':
@@ -71,6 +71,15 @@ export default function Robotics() {
 					]);
 				}
 				break;
+			case 'subsystemState':
+				setSubsystems({
+					...subsystems,
+					[packet.id]: {
+						...(subsystems[packet.id] || {}),
+						...packet.value,
+					},
+				});
+				break;
 			default:
 		}
 	});
@@ -110,6 +119,17 @@ export default function Robotics() {
 					className="ship-image"
 				/>
 				<StarCanvas />
+				{Object.values(subsystems).map(subsystem => (
+					<div
+						key={subsystem.id}
+						className="ship-subsystem"
+						style={{
+							backgroundImage: `url(${subsystem.image})`,
+							left: subsystem.position.x * NODE_SIZE,
+							top: subsystem.position.y * NODE_SIZE,
+						}}
+					/>
+				))}
 				{nodes.map(node => {
 					const styles = {
 						left: node.left * NODE_SIZE,

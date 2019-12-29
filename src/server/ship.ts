@@ -9,6 +9,7 @@ import {
 	PowerBuffer,
 	PowerConsumer,
 	PowerProducer,
+	RenderableInterior,
 	serializeComponentValue,
 	ShipPosition,
 	SyncId,
@@ -333,6 +334,7 @@ export class ShipNodes {
 			.createEntity()
 			.addComponent(ShipPosition, reactorPos)
 			.addComponent(SyncId, { value: 'reactor' })
+			.addComponent(RenderableInterior, { image: '/images/reactor.png' })
 			.addComponent(PowerBuffer, {
 				rate: 0,
 				current: 1000,
@@ -352,6 +354,7 @@ export class ShipNodes {
 				sources: [this.entities.reactor],
 			})
 			.addComponent(SyncId, { value: 'heatDetector' })
+			.addComponent(RenderableInterior, { image: '/images/reactor.png' }) // todo
 			.addComponent(PowerConsumer, { rate: 20 })
 			.addComponent(EmissionDetector, {
 				type: 'heat',
@@ -425,6 +428,27 @@ export class ShipNodes {
 								state: node.isBroken,
 							},
 						});
+				}
+				for (let ent of Object.values(this.entities)) {
+					const syncId = ent.getComponent(SyncId).value;
+					if (!syncId) {
+						continue;
+					}
+					connection.send({
+						event: 'subsystemState',
+						id: syncId,
+						value: {
+							id: syncId,
+							position: ent.getComponent(ShipPosition),
+							sources: ent
+								.getComponent(PowerBuffer)
+								?.sources.map(
+									sourceEnt =>
+										sourceEnt.getComponent(SyncId)?.value
+								),
+							image: ent.getComponent(RenderableInterior)?.image,
+						},
+					});
 				}
 				break;
 			}
