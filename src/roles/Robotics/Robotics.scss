@@ -70,6 +70,15 @@ $tile_size: 64px;
 			z-index: 20;
 			text-shadow: 0 0 2px black;
 		}
+		.robot__carrying {
+			position: absolute;
+			top: 32px;
+			left: 26px;
+			color: cyan;
+			pointer-events: none;
+			z-index: 20;
+			text-shadow: 0 0 2px black;
+		}
 		/* Debateably useful 'force GPU rendering' tricks */
 		-webkit-backface-visibility: hidden;
 		perspective: 1000;

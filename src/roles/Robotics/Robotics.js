@@ -167,6 +167,7 @@ function Robot({
 	id,
 	top: serverTop,
 	left: serverLeft,
+	carrying,
 	path,
 	className,
 	isSelectedRobot,
@@ -239,6 +240,7 @@ function Robot({
 		>
 			{isSelectedRobot && <i className="fa fa-circle-o-notch fa-spin" />}
 			{busy && <i className="fa fa-cog fa-spin robot__busy" />}
+			{carrying && <i className="fa fa-plus robot__carrying" />}
 		</div>
 	);
 }
