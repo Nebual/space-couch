@@ -33,11 +33,19 @@ export default function Engineer() {
 					onChange={setPower2}
 					syncDelay={125}
 				/>
-				<RangeSlider
-					syncId="power3"
-					initialValue={power3}
-					onChange={setPower3}
-				/>
+				<div className="slider-gauge-wrapper">
+					<RadialGauge
+						syncId="powerBuffer:thrusters"
+						suffix="%"
+						inverted
+						small
+					/>
+					<RangeSlider
+						syncId="powerBufferSlider:thrusters"
+						initialValue={power3}
+						onChange={setPower3}
+					/>
+				</div>
 				<div className="slider-gauge-wrapper">
 					<RadialGauge
 						syncId="powerBuffer:heatDetector"

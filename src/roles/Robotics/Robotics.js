@@ -124,7 +124,10 @@ export default function Robotics() {
 				{subsystemsList.map(subsystem => (
 					<div
 						key={subsystem.id}
-						className="ship-subsystem"
+						className={classNames(
+							'ship-subsystem',
+							subsystem.className
+						)}
 						style={{
 							backgroundImage: `url(${subsystem.image})`,
 							left: subsystem.position.x * NODE_SIZE,

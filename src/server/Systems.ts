@@ -9,6 +9,7 @@ import {
 	PowerConsumer,
 	PowerProducer,
 	SyncId,
+	ThrustSource,
 	Velocity,
 } from './Components';
 import { GameWorld } from './Game';
@@ -265,10 +266,25 @@ export class PowerFlowSystem extends GameSystem {
 					);
 			}
 		});
+		const thrusterBuffers = this.queries.thrusters.results.map(ent =>
+			ent.getComponent(PowerBuffer)
+		);
+		this.world
+			.getNet()
+			.broadcastStateThrottled(
+				'powerBuffer:thrusters',
+				thrusterBuffers.reduce((v, buf) => v + buf.current, 0) /
+					thrusterBuffers.reduce((v, buf) => v + buf.max, 0),
+				'engineer',
+				500
+			);
 	}
 }
 PowerFlowSystem.queries = {
 	buffers: {
 		components: [PowerBuffer],
+	},
+	thrusters: {
+		components: [ThrustSource],
 	},
 };

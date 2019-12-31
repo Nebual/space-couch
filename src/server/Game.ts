@@ -12,6 +12,8 @@ import {
 	Emission,
 	SyncId,
 	GravitationalMass,
+	PowerBuffer,
+	ThrustSource,
 } from './Components';
 import {
 	EmissionDetectorSystem,
@@ -38,6 +40,7 @@ export class Game {
 		captain: {},
 		engineer: {
 			power1: 100,
+			'powerBufferSlider:thrusters': 50,
 			power4: 50,
 			main_power_system: true,
 		},
@@ -215,6 +218,17 @@ export class Game {
 				if (value > 90) {
 					this.setPlayerLights(false);
 				}
+				break;
+			case 'powerBufferSlider:thrusters':
+				const rate = value / 100;
+				(this.world as any).entityManager
+					.queryComponents([ThrustSource])
+					.entities.forEach(ent => {
+						const powerBuffer = ent.getMutableComponent(
+							PowerBuffer
+						);
+						powerBuffer.rate = rate * powerBuffer.maxRate;
+					});
 				break;
 			case 'power4':
 				this.ship.setBufferRate('heatDetector', value / 100);

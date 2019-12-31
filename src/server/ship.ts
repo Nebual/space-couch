@@ -13,6 +13,7 @@ import {
 	serializeComponentValue,
 	ShipPosition,
 	SyncId,
+	ThrustSource,
 } from './Components';
 import { objectMap } from './commonUtil';
 const fs = require('fs');
@@ -361,6 +362,26 @@ export class ShipNodes {
 			.addComponent(EmissionDetector, {
 				type: 'heat',
 			});
+
+		this.spawnerTiles[TileSpawnerType.Thruster].forEach((pos, index) => {
+			const syncId = 'thruster_' + index;
+			this.entities[syncId] = this.game.world
+				.createEntity()
+				.addComponent(ShipPosition, pos)
+				.addComponent(PowerBuffer, {
+					max: 200,
+					rate: 40,
+					maxRate: 80,
+					sources: [this.entities.reactor],
+				})
+				.addComponent(SyncId, { value: syncId })
+				.addComponent(RenderableInterior, {
+					image: '/images/thruster.png',
+					className: 'thruster',
+				})
+				.addComponent(PowerConsumer, { rate: 20 })
+				.addComponent(ThrustSource);
+		});
 	}
 
 	update(delta: number, time: number) {
@@ -445,22 +466,21 @@ export class ShipNodes {
 			return;
 		}
 
-		const installed = ent.getComponent(PowerBuffer)?.installed;
+		const buffer = ent.getComponent(PowerBuffer);
+		const renderable = ent.getComponent(RenderableInterior);
 		const packet = {
 			event: 'subsystemState',
 			id: syncId,
 			value: {
 				id: syncId,
 				position: ent.getComponent(ShipPosition),
-				sources: ent
-					.getComponent(PowerBuffer)
-					?.sources.map(
-						sourceEnt => sourceEnt.getComponent(SyncId)?.value
-					),
-				image:
-					installed === false // null implies has no Consumer, eg. reactor
-						? ''
-						: ent.getComponent(RenderableInterior)?.image,
+				sources: buffer?.sources.map(
+					sourceEnt => sourceEnt.getComponent(SyncId)?.value
+				),
+				image: renderable?.image,
+				className: `${renderable?.className} ${
+					buffer?.installed === false ? 'hidden' : '' // null implies has no Consumer, eg. reactor
+				}`,
 			},
 		};
 		if (connection) {

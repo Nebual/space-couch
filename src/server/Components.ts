@@ -157,11 +157,13 @@ interface iModuleTemperature {
 export const RenderableInterior = createComponentClass<iRenderableInterior>(
 	{
 		image: { default: '' },
+		className: { default: '' },
 	},
 	'RenderableInterior'
 );
 interface iRenderableInterior {
 	image: string;
+	className: string;
 }
 
 export const GravitationalMass = createComponentClass<iGravitationalMass>(
@@ -172,6 +174,16 @@ export const GravitationalMass = createComponentClass<iGravitationalMass>(
 );
 interface iGravitationalMass {
 	gravitons: number;
+}
+
+export const ThrustSource = createComponentClass<iThrustSource>(
+	{
+		force: { default: 100 },
+	},
+	'ThrustSource'
+);
+interface iThrustSource {
+	force: number;
 }
 
 const safeTypes = {
