@@ -56,6 +56,12 @@
 		&.disabled {
 			opacity: 0.5;
 		}
+		&.connect {
+			background-color: yellowgreen;
+		}
+		&.install {
+			background-color: #cda432;
+		}
 	}
 
 	&.active {

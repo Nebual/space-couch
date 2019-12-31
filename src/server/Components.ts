@@ -100,6 +100,7 @@ export const PowerBuffer = createComponentClass<iPowerBuffer>(
 		max: { default: 0 },
 		rate: { default: 10 },
 		maxRate: { default: 100 },
+		installed: { default: true },
 		sinks: { default: [] },
 		sources: { default: [] },
 	},
@@ -110,6 +111,7 @@ interface iPowerBuffer {
 	max: number;
 	rate: number;
 	maxRate: number;
+	installed: boolean;
 	sinks: number[];
 	sources: Entity[];
 }
@@ -133,7 +135,6 @@ export const PowerConsumer = createComponentClass<iPowerConsumer>(
 		rate: { default: 10 },
 		on: { default: true },
 		powered: { default: true },
-		installed: { default: true },
 	},
 	'PowerConsumer'
 );
@@ -141,7 +142,6 @@ interface iPowerConsumer {
 	rate: number;
 	on: boolean;
 	powered: boolean;
-	installed: boolean;
 }
 
 export const ModuleTemperature = createComponentClass<iModuleTemperature>(

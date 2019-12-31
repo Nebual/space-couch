@@ -16,6 +16,15 @@ export default function RobotActionsMenu({
 	const subsystem = subsystemsList.find(
 		({ position: { x, y } }) => x === actionX && y === actionY
 	);
+	const connectIcon = (() => {
+		if (robot.connecting && robot.connecting === subsystem?.id) {
+			return 'fa-trash';
+		}
+		if (robot.connecting) {
+			return subsystem ? 'fa-venus' : 'fa-close';
+		}
+		return 'fa-mars';
+	})();
 	return (
 		<>
 			<div
@@ -51,22 +60,29 @@ export default function RobotActionsMenu({
 				<RobotAction selectedRobot={robot.id} syncId="improve">
 					<i className="fa fa-3x fa-wrench" />
 				</RobotAction>
-				<RobotAction selectedRobot={robot.id}>
-					<i className="fa fa-3x fa-asl-interpreting" />
+				<RobotAction
+					selectedRobot={robot.id}
+					disabled={!(subsystem || robot.connecting)}
+					syncId="connect"
+					className="connect"
+				>
+					<i className={classNames('fa fa-3x', connectIcon)} />
 				</RobotAction>
 				{!robot.carrying ? (
 					<RobotAction
 						selectedRobot={robot.id}
 						disabled={!subsystem}
 						syncId="pickup"
+						className="install"
 					>
 						<i className="fa fa-3x fa-upload" />
 					</RobotAction>
 				) : (
 					<RobotAction
 						selectedRobot={robot.id}
-						disabled={subsystem}
+						disabled={!!subsystem}
 						syncId="install"
+						className="install"
 					>
 						<i className="fa fa-3x fa-download" />
 					</RobotAction>
@@ -76,7 +92,7 @@ export default function RobotActionsMenu({
 	);
 }
 
-function RobotAction({ syncId, selectedRobot, children, disabled }) {
+function RobotAction({ syncId, selectedRobot, children, disabled, className }) {
 	const clientNet = useClientNet();
 	return (
 		<li
@@ -90,7 +106,7 @@ function RobotAction({ syncId, selectedRobot, children, disabled }) {
 					value: syncId,
 				});
 			}}
-			className={classNames({ disabled })}
+			className={classNames({ disabled }, className)}
 		>
 			{children}
 		</li>

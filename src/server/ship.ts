@@ -43,6 +43,7 @@ export interface Robot {
 	left: number;
 	top: number;
 	carrying: string | null;
+	connecting: string | null;
 }
 
 interface Node {
@@ -444,7 +445,7 @@ export class ShipNodes {
 			return;
 		}
 
-		const installed = ent.getComponent(PowerConsumer)?.installed;
+		const installed = ent.getComponent(PowerBuffer)?.installed;
 		const packet = {
 			event: 'subsystemState',
 			id: syncId,
@@ -467,6 +468,16 @@ export class ShipNodes {
 		} else {
 			this.game.net.broadcast(packet, 'robotics');
 		}
+	}
+
+	public sendRobotsState() {
+		this.game.net.broadcast(
+			{
+				event: 'robots',
+				value: this.robots,
+			},
+			'robotics'
+		);
 	}
 
 	public moveRobot(id: number, coord) {
@@ -502,6 +513,10 @@ export class ShipNodes {
 	private robotAction(robot_id: number, action: string) {
 		let robot = this.robots[robot_id];
 		let node = this.nodes[robot.left + 'x' + robot.top];
+		const matchesRoboPos = ent => {
+			const pos = ent.getComponent(ShipPosition);
+			return pos.x === robot.left && pos.y === robot.top;
+		};
 		switch (action) {
 			case 'extinguish':
 				if (!node.onFire) break;
@@ -541,36 +556,25 @@ export class ShipNodes {
 				);
 				break;
 			case 'pickup': {
-				const ent = Object.values(this.entities).find(ent => {
-					const pos = ent.getComponent(ShipPosition);
-					return pos.x === robot.left && pos.y === robot.top;
-				});
-				if (!ent) {
+				const ent = Object.values(this.entities).find(matchesRoboPos);
+				if (!ent || !ent.hasComponent(PowerBuffer)) {
 					console.warn(
 						'Robot Pickup failed: nothing in',
 						robot.left,
-						robot.top
+						robot.top,
+						ent?.getComponent(SyncId)?.value
 					);
 					return;
 				}
-				ent.getMutableComponent(PowerConsumer).installed = false;
+				ent.getMutableComponent(PowerBuffer).installed = false;
 				ent.getMutableComponent(ShipPosition).x = -1;
 				robot.carrying = ent.getComponent(SyncId).value;
-				this.game.net.broadcast(
-					{
-						event: 'robots',
-						value: this.robots,
-					},
-					'robotics'
-				);
+				this.sendRobotsState();
 				this.sendSubsystemState(ent);
 				break;
 			}
 			case 'install': {
-				const ent = Object.values(this.entities).find(ent => {
-					const pos = ent.getComponent(ShipPosition);
-					return pos.x === robot.left && pos.y === robot.top;
-				});
+				const ent = Object.values(this.entities).find(matchesRoboPos);
 				if (ent) {
 					console.warn(
 						'Robot install failed: ent in',
@@ -585,21 +589,59 @@ export class ShipNodes {
 					return;
 				}
 				carriedSubsystem.getMutableComponent(
-					PowerConsumer
+					PowerBuffer
 				).installed = true;
 				const pos = carriedSubsystem.getMutableComponent(ShipPosition);
 				pos.x = robot.left;
 				pos.y = robot.top;
 				robot.carrying = null;
-				this.game.net.broadcast(
-					{
-						event: 'robots',
-						value: this.robots,
-					},
-					'robotics'
-				);
+				this.sendRobotsState();
 				this.sendSubsystemState(carriedSubsystem);
 				break;
+			}
+			case 'connect': {
+				const ent = Object.values(this.entities).find(matchesRoboPos);
+				this.handleWiringConnect(robot, ent);
+				break;
+			}
+		}
+	}
+
+	handleWiringConnect(robot, ent: Entity | undefined) {
+		if (!robot.connecting && ent && ent.hasComponent(PowerBuffer)) {
+			// start connecting
+			robot.connecting = ent.getComponent(SyncId).value;
+			this.sendRobotsState();
+		} else if (robot.connecting) {
+			const entStart = this.entities[robot.connecting];
+			robot.connecting = null;
+			this.sendRobotsState();
+
+			if (ent === entStart) {
+				// connect to self = unplug
+				ent.getMutableComponent(PowerBuffer).sources = [];
+				this.sendSubsystemState(ent);
+				return;
+			}
+			if (ent && entStart && ent.hasComponent(PowerBuffer)) {
+				let sink = entStart; // typically, plug device -> wall
+				let source = ent;
+				if (entStart.hasComponent(PowerConsumer)) {
+					// device -> socket
+					sink = entStart;
+					source = ent;
+				} else if (ent.hasComponent(PowerConsumer)) {
+					// socket -> device (flip around)
+					sink = ent;
+					source = entStart;
+				} else if (entStart.hasComponent(PowerProducer)) {
+					sink = ent;
+					source = entStart;
+				} else {
+					// socket -> upstream socket or reactor
+				}
+				sink.getMutableComponent(PowerBuffer).sources = [source];
+				this.sendSubsystemState(sink);
 			}
 		}
 	}
