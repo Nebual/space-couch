@@ -110,4 +110,15 @@ $tile_size: 64px;
 			filter: drop-shadow(0px 1px 1px rgba(244, 247, 249, 0.75));
 		}
 	}
+
+	.toggle-wiring-layer {
+		position: fixed;
+		right: 1em;
+		top: 0;
+		color: white;
+		text-shadow: 0.05em 0 0.05em black, 0 0.05em 0.05em black,
+			-0.05em 0 0.05em black, 0 -0.05em 0.05em black,
+			-0.05em -0.05em 0.05em black, -0.05em 0.05em 0.05em black,
+			0.05em -0.05em 0.05em black, 0.05em 0.05em 0.05em black;
+	}
 }

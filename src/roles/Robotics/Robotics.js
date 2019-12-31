@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import gsap from 'gsap';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 
 import './Robotics.scss';
 import {
@@ -10,11 +12,14 @@ import {
 } from '../../client/ClientNet';
 import RobotActionsMenu from './RobotActionsMenu';
 import StarCanvas from './StarCanvas';
+import WiringLayer from './WiringLayer';
 
 export const NODE_SIZE = 64;
 
 export default function Robotics() {
 	const clientNet = useClientNet();
+	const shipRef = useRef();
+
 	const [robots, setRobots] = useState([]);
 	const [nodes, setNodes] = useState([]);
 	const [subsystems, setSubsystems] = useState({});
@@ -23,6 +28,9 @@ export default function Robotics() {
 	const [robotActionsOpen, setRobotActionsOpen] = useState(false);
 	const [robotActionsPosition, setRobotActionsPosition] = useState({});
 	const [shipId, setShipId] = useState('');
+	const [showWires, setShowWires] = useState(false);
+
+	const shipSize = shipRef.current?.getBoundingClientRect();
 
 	const closeRobotActions = useCallback(() => {
 		setRobotActionsOpen(false);
@@ -117,6 +125,7 @@ export default function Robotics() {
 			>
 				<img
 					src={shipId ? `/images/ships/${shipId}.png` : ''}
+					ref={shipRef}
 					alt="Ship Frame"
 					className="ship-image"
 				/>
@@ -135,6 +144,13 @@ export default function Robotics() {
 						}}
 					/>
 				))}
+				{showWires && (
+					<WiringLayer
+						subsystems={subsystems}
+						width={shipSize?.width}
+						height={shipSize?.height}
+					/>
+				)}
 				{nodes.map(node => {
 					const styles = {
 						left: node.left * NODE_SIZE,
@@ -162,6 +178,19 @@ export default function Robotics() {
 					/>
 				))}
 			</div>
+			<FormControlLabel
+				control={
+					<Switch
+						checked={showWires}
+						onChange={() => setShowWires(!showWires)}
+						value="1"
+						color="primary"
+					/>
+				}
+				label="Show Wires"
+				labelPlacement="start"
+				className="toggle-wiring-layer"
+			/>
 		</div>
 	);
 }
