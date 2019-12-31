@@ -133,6 +133,7 @@ export const PowerConsumer = createComponentClass<iPowerConsumer>(
 		rate: { default: 10 },
 		on: { default: true },
 		powered: { default: true },
+		installed: { default: true },
 	},
 	'PowerConsumer'
 );
@@ -140,6 +141,7 @@ interface iPowerConsumer {
 	rate: number;
 	on: boolean;
 	powered: boolean;
+	installed: boolean;
 }
 
 export const ModuleTemperature = createComponentClass<iModuleTemperature>(

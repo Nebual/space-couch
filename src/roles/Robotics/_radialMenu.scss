@@ -52,6 +52,10 @@
 
 		@include transition(all 0.6s);
 		transform: scale(0, 0);
+
+		&.disabled {
+			opacity: 0.5;
+		}
 	}
 
 	&.active {

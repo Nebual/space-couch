@@ -11,13 +11,14 @@ import {
 import RobotActionsMenu from './RobotActionsMenu';
 import StarCanvas from './StarCanvas';
 
-const NODE_SIZE = 64;
+export const NODE_SIZE = 64;
 
 export default function Robotics() {
 	const clientNet = useClientNet();
 	const [robots, setRobots] = useState([]);
 	const [nodes, setNodes] = useState([]);
 	const [subsystems, setSubsystems] = useState({});
+	const subsystemsList = Object.values(subsystems);
 	const [selectedRobot, setSelectedRobot] = useState(null);
 	const [robotActionsOpen, setRobotActionsOpen] = useState(false);
 	const [robotActionsPosition, setRobotActionsPosition] = useState({});
@@ -90,7 +91,8 @@ export default function Robotics() {
 				robotActionsOpen={robotActionsOpen}
 				closeRobotActions={closeRobotActions}
 				robotActionsPosition={robotActionsPosition}
-				selectedRobot={selectedRobot}
+				robot={robots.find(robot => robot.id === selectedRobot) || {}}
+				subsystemsList={subsystemsList}
 			/>
 			<div
 				className="ship"
@@ -119,7 +121,7 @@ export default function Robotics() {
 					className="ship-image"
 				/>
 				<StarCanvas />
-				{Object.values(subsystems).map(subsystem => (
+				{subsystemsList.map(subsystem => (
 					<div
 						key={subsystem.id}
 						className="ship-subsystem"

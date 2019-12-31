@@ -212,6 +212,9 @@ export class PowerConsumptionSystem extends GameSystem {
 	execute(delta, time) {
 		this.queries.consumers.results.forEach((entity: Entity) => {
 			const consumer = entity.getMutableComponent(PowerConsumer);
+			if (!consumer.installed) {
+				consumer.on = false;
+			}
 			if (!consumer.on) {
 				return;
 			}

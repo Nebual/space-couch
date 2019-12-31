@@ -42,6 +42,7 @@ export interface Robot {
 	id: number;
 	left: number;
 	top: number;
+	carrying: string | null;
 }
 
 interface Node {
@@ -430,28 +431,41 @@ export class ShipNodes {
 						});
 				}
 				for (let ent of Object.values(this.entities)) {
-					const syncId = ent.getComponent(SyncId).value;
-					if (!syncId) {
-						continue;
-					}
-					connection.send({
-						event: 'subsystemState',
-						id: syncId,
-						value: {
-							id: syncId,
-							position: ent.getComponent(ShipPosition),
-							sources: ent
-								.getComponent(PowerBuffer)
-								?.sources.map(
-									sourceEnt =>
-										sourceEnt.getComponent(SyncId)?.value
-								),
-							image: ent.getComponent(RenderableInterior)?.image,
-						},
-					});
+					this.sendSubsystemState(ent, connection);
 				}
 				break;
 			}
+		}
+	}
+
+	public sendSubsystemState(ent: Entity, connection?: Connection) {
+		const syncId = ent.getComponent(SyncId).value;
+		if (!syncId) {
+			return;
+		}
+
+		const installed = ent.getComponent(PowerConsumer)?.installed;
+		const packet = {
+			event: 'subsystemState',
+			id: syncId,
+			value: {
+				id: syncId,
+				position: ent.getComponent(ShipPosition),
+				sources: ent
+					.getComponent(PowerBuffer)
+					?.sources.map(
+						sourceEnt => sourceEnt.getComponent(SyncId)?.value
+					),
+				image:
+					installed === false // null implies has no Consumer, eg. reactor
+						? ''
+						: ent.getComponent(RenderableInterior)?.image,
+			},
+		};
+		if (connection) {
+			connection.send(packet);
+		} else {
+			this.game.net.broadcast(packet, 'robotics');
 		}
 	}
 
@@ -526,6 +540,67 @@ export class ShipNodes {
 					action === 'repair' ? 5000 : 15000
 				);
 				break;
+			case 'pickup': {
+				const ent = Object.values(this.entities).find(ent => {
+					const pos = ent.getComponent(ShipPosition);
+					return pos.x === robot.left && pos.y === robot.top;
+				});
+				if (!ent) {
+					console.warn(
+						'Robot Pickup failed: nothing in',
+						robot.left,
+						robot.top
+					);
+					return;
+				}
+				ent.getMutableComponent(PowerConsumer).installed = false;
+				ent.getMutableComponent(ShipPosition).x = -1;
+				robot.carrying = ent.getComponent(SyncId).value;
+				this.game.net.broadcast(
+					{
+						event: 'robots',
+						value: this.robots,
+					},
+					'robotics'
+				);
+				this.sendSubsystemState(ent);
+				break;
+			}
+			case 'install': {
+				const ent = Object.values(this.entities).find(ent => {
+					const pos = ent.getComponent(ShipPosition);
+					return pos.x === robot.left && pos.y === robot.top;
+				});
+				if (ent) {
+					console.warn(
+						'Robot install failed: ent in',
+						robot.left,
+						robot.top,
+						ent.getComponent(SyncId).value
+					);
+					return;
+				}
+				const carriedSubsystem = this.entities[robot.carrying || ''];
+				if (!carriedSubsystem) {
+					return;
+				}
+				carriedSubsystem.getMutableComponent(
+					PowerConsumer
+				).installed = true;
+				const pos = carriedSubsystem.getMutableComponent(ShipPosition);
+				pos.x = robot.left;
+				pos.y = robot.top;
+				robot.carrying = null;
+				this.game.net.broadcast(
+					{
+						event: 'robots',
+						value: this.robots,
+					},
+					'robotics'
+				);
+				this.sendSubsystemState(carriedSubsystem);
+				break;
+			}
 		}
 	}
 
