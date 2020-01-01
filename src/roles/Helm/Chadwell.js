@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import useTouchHandler from '../../components/useTouchHandler';
 
 export default function Chadwell({ setThrottle }) {
-	const [rotation, setRotation] = useState(0);
+	const [rotation, setRotation] = useState(278);
 	const [smooth, setSmooth] = useState(false);
 	const baseRef = useRef(null);
 

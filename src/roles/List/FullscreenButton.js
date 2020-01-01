@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import { useInterval } from '../../Util';
 import useWindowSize from '../../components/useWindowSize';
+import { useHistory } from 'react-router-dom';
 
 export default function FullscreenButton() {
 	const [isFullscreen, setIsFullscreen] = useState(false);
 	const isDesktop = useWindowSize().width > 1200;
+	const history = useHistory();
+	const allowPortrait = history.location.pathname === '/helm';
 
 	useInterval(() => {
 		setIsFullscreen(
@@ -26,7 +29,9 @@ export default function FullscreenButton() {
 					window.screen.orientation.lock.bind(
 						window.screen.orientation
 					);
-				await window.screen.lockOrientationUniversal('landscape');
+				if (!allowPortrait) {
+					await window.screen.lockOrientationUniversal('landscape');
+				}
 			} else {
 				if (document.exitFullscreen) {
 					document.exitFullscreen();

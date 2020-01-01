@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import './StarCanvas.scss';
 import useAnimationFrame from '../../components/useAnimationFrame';
-import useWindowSize from '../../components/useWindowSize';
+import { useViewSize } from '../../App';
 
 const numBgLayers = 12;
 const baseStartNum = 10;
@@ -10,15 +10,14 @@ const starLayerMultiplier = 5;
 const CIRCLE_THRESHOLD = 1.12;
 const baseStarRadius = 1.2;
 const parallaxStrength = 1 / 2;
-const panSpeed = -0.3;
 
-export default function StarCanvas() {
+export default function StarCanvas({ panSpeed = 0.3 }) {
 	const canvasRef = useRef();
 	const camXRef = useRef(0);
 	const getCtx = () => canvasRef.current.getContext('2d');
 	const [bgLayers, setBgLayers] = useState([]);
 
-	const { width: canvasWidth, height: canvasHeight } = useWindowSize();
+	const { width: canvasWidth, height: canvasHeight } = useViewSize();
 
 	const init = () => {
 		let newBgLayers = [];
@@ -49,7 +48,7 @@ export default function StarCanvas() {
 
 		clearScreen(ctx);
 
-		camXRef.current += panSpeed;
+		camXRef.current += -panSpeed;
 		const camX = camXRef.current;
 		const camY = 0;
 
@@ -71,7 +70,7 @@ export default function StarCanvas() {
 				}
 			});
 		});
-	}, [bgLayers, canvasHeight, canvasWidth]);
+	}, [bgLayers, canvasHeight, canvasWidth, panSpeed]);
 	useAnimationFrame(render);
 
 	return (

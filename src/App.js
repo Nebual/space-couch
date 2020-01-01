@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import StylesProvider from '@material-ui/styles/StylesProvider';
@@ -18,6 +18,11 @@ import Helm from './roles/Helm/Helm';
 import DebugRole from './roles/DebugRole/DebugRole';
 
 import './global.scss';
+import { SizeMe } from 'react-sizeme';
+
+const defaultSize = { width: 640, height: 360 };
+const ViewSizeContext = React.createContext(defaultSize);
+export const useViewSize = () => useContext(ViewSizeContext);
 
 function App() {
 	const [isPaused, setIsPaused] = useState(false);
@@ -81,7 +86,15 @@ function App() {
 export default function() {
 	return (
 		<StylesProvider injectFirst>
-			<App />
+			<SizeMe monitorHeight refreshRate={32} noPlaceholder>
+				{({ size }) => (
+					<ViewSizeContext.Provider
+						value={size.width ? size : defaultSize}
+					>
+						<App />
+					</ViewSizeContext.Provider>
+				)}
+			</SizeMe>
 		</StylesProvider>
 	);
 }

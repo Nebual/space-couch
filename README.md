@@ -52,7 +52,7 @@ yarn watch:server:express # Server runtime window
     * [X] Gauges
     * [ ] Dials
     * [ ] Knobs
-    * [ ] Buttons
+    * [X] Buttons
   * Max Watts (capacity) sliders for subsystems
   * Max Volts (strength) sliders for subsystems
   * Everything is poorly labeled - can vary according to the Model # of the module (which changes when upgraded, and each game start will have different default models)
@@ -73,8 +73,8 @@ yarn watch:server:express # Server runtime window
   * [X] Repair
     * [X] With spare part - slower, consumes part
     * [X] With duct tape - faster, drops efficiency of system
-  * Rerouting power lines, changing power conduits
-  * Move sensors, shield emitters, guns, ammo storage, etc around the ship
+  * [X] Rerouting power lines, changing power conduits
+  * [X] Move sensors, shield emitters, guns, ammo storage, etc around the ship
   * Counter Intrusion
   * Has FTL styles sensors, if they're offline, only rooms with robots in them are viewable
   * Other roles have a 'check engine light', which can be a 3 second fix for the RE, or its just nothing

@@ -2,6 +2,8 @@
 	position: relative;
 	height: 100%;
 	overflow: hidden;
+	z-index: 0;
+	color: white;
 	.helm-wheel-container {
 		display: flex;
 		position: absolute;
@@ -28,5 +30,22 @@
 		top: -69px;
 		left: 64.5px;
 		transform-origin: 50% 158px;
+	}
+
+	.button--thrust {
+		position: absolute;
+		left: 0;
+		top: calc(50% - 2em);
+		color: white;
+		background-color: rgba(224, 224, 224, 0.31);
+		border-radius: 0 2em 2em 0;
+		padding: 1.25em 1em;
+	}
+
+	.StarCanvas,
+	.helm-canvas {
+		position: absolute;
+		left: 0;
+		top: 0;
 	}
 }
