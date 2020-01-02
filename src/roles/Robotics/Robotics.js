@@ -18,7 +18,6 @@ export const NODE_SIZE = 64;
 
 export default function Robotics() {
 	const clientNet = useClientNet();
-	const shipRef = useRef();
 
 	const [robots, setRobots] = useState([]);
 	const [nodes, setNodes] = useState([]);
@@ -29,8 +28,7 @@ export default function Robotics() {
 	const [robotActionsPosition, setRobotActionsPosition] = useState({});
 	const [shipId, setShipId] = useState('');
 	const [showWires, setShowWires] = useState(false);
-
-	const shipSize = shipRef.current?.getBoundingClientRect();
+	const [shipSize, setShipSize] = useState({});
 
 	const closeRobotActions = useCallback(() => {
 		setRobotActionsOpen(false);
@@ -125,11 +123,11 @@ export default function Robotics() {
 			>
 				<img
 					src={shipId ? `/images/ships/${shipId}.png` : ''}
-					ref={shipRef}
+					onLoad={e => setShipSize(e.target.getBoundingClientRect())}
 					alt="Ship Frame"
 					className="ship-image"
 				/>
-				<StarCanvas />
+				<StarCanvas size={shipSize} />
 				{subsystemsList.map(subsystem => (
 					<div
 						key={subsystem.id}

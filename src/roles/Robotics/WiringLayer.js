@@ -38,7 +38,11 @@ export default function WiringLayer({ subsystems, width, height }) {
 			</defs>
 			{Object.values(subsystems).map(subsystem => {
 				const source = subsystems[subsystem.sources[0]];
-				if (!source) {
+				if (
+					!source ||
+					subsystem.className.includes('hidden') ||
+					source.className.includes('hidden')
+				) {
 					return null;
 				}
 				const from = {

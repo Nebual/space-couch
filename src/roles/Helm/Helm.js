@@ -42,7 +42,10 @@ export default function Helm() {
 			<Typography variant="body2" className="text-center">
 				{throttle}
 			</Typography>
-			<StarCanvas panSpeed={0.075 + THROTTLE_MULTIPLIERS[throttle]} />
+			<StarCanvas
+				panSpeed={0.075 + THROTTLE_MULTIPLIERS[throttle]}
+				size={viewSize}
+			/>
 			<Stage
 				className="helm-canvas"
 				options={{ transparent: true }}
