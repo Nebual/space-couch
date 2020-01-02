@@ -14,6 +14,7 @@ import {
 	GravitationalMass,
 	PowerBuffer,
 	ThrustSource,
+	ShieldSource,
 } from './Components';
 import {
 	EmissionDetectorSystem,
@@ -27,9 +28,11 @@ import {
 
 export class GameWorld extends World {
 	public getNet: () => ServerNet;
-	constructor(getNet: () => ServerNet) {
+	public getShip: () => ShipNodes;
+	constructor(getNet: () => ServerNet, getShip: () => ShipNodes) {
 		super();
 		this.getNet = getNet;
+		this.getShip = getShip;
 	}
 }
 
@@ -40,6 +43,7 @@ export class Game {
 		captain: {},
 		engineer: {
 			power1: 100,
+			'powerBufferSlider:shields': 50,
 			'powerBufferSlider:thrusters': 50,
 			power4: 50,
 			main_power_system: true,
@@ -63,7 +67,10 @@ export class Game {
 	}
 
 	private registerWorld() {
-		this.world = new GameWorld(() => this.net)
+		this.world = new GameWorld(
+			() => this.net,
+			() => this.ship
+		)
 			.registerComponent(Position)
 			.registerComponent(Velocity)
 			.registerComponent(Emission)
@@ -214,11 +221,18 @@ export class Game {
 			case 'power1':
 				this.ship.setReactorRate(value / 100);
 				break;
-			case 'power2':
-				if (value > 90) {
-					this.setPlayerLights(false);
-				}
+			case 'powerBufferSlider:shields': {
+				const rate = value / 100;
+				(this.world as any).entityManager
+					.queryComponents([ShieldSource])
+					.entities.forEach(ent => {
+						const powerBuffer = ent.getMutableComponent(
+							PowerBuffer
+						);
+						powerBuffer.rate = rate * powerBuffer.maxRate;
+					});
 				break;
+			}
 			case 'powerBufferSlider:thrusters':
 				const rate = value / 100;
 				(this.world as any).entityManager

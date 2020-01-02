@@ -30,7 +30,22 @@ $tile_size: 64px;
 		width: $tile_size;
 		height: $tile_size;
 		position: absolute;
-		background: center center/100% 100% no-repeat;
+		&.on {
+			background-position-x: -64px;
+		}
+	}
+
+	.image--64x128 {
+		height: 128px;
+		transform: translateY(-64px);
+	}
+	.image--128x128 {
+		width: 128px;
+		height: 128px;
+		transform: translateY(-64px);
+	}
+	.image--64x64--scale {
+		background-size: 100% 100%;
 	}
 
 	.fa-spin {

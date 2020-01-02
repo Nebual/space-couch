@@ -9,7 +9,6 @@ import CardDeck from './CardDeck';
 import Typography from '@material-ui/core/Typography';
 
 export default function Engineer() {
-	const [power2, setPower2] = useState(0);
 	const [power3, setPower3] = useState(20);
 
 	const cards = [
@@ -27,12 +26,15 @@ export default function Engineer() {
 					/>
 					<RangeSlider syncId="power1" />
 				</div>
-				<RangeSlider
-					syncId="power2"
-					initialValue={power2}
-					onChange={setPower2}
-					syncDelay={125}
-				/>
+				<div className="slider-gauge-wrapper">
+					<RadialGauge
+						syncId="powerBuffer:shields"
+						suffix="%"
+						inverted
+						small
+					/>
+					<RangeSlider syncId="powerBufferSlider:shields" />
+				</div>
 				<div className="slider-gauge-wrapper">
 					<RadialGauge
 						syncId="powerBuffer:thrusters"
@@ -61,7 +63,7 @@ export default function Engineer() {
 						top: '1em',
 						right: '1em',
 					}}
-					value={(power2 + power3 * 1.5) / 2.5}
+					value={(power3 * 1.5) / 2.5}
 					suffix="°C"
 				/>
 			</div>

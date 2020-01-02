@@ -8,6 +8,7 @@ import {
 	PowerBuffer,
 	PowerConsumer,
 	PowerProducer,
+	ShieldSource,
 	SyncId,
 	ThrustSource,
 	Velocity,
@@ -212,27 +213,36 @@ PowerProductionSystem.queries = {
 export class PowerConsumptionSystem extends GameSystem {
 	execute(delta, time) {
 		this.queries.consumers.results.forEach((entity: Entity) => {
-			const consumer = entity.getMutableComponent(PowerConsumer);
+			const consumer = entity.getComponent(PowerConsumer);
 			if (!consumer.on) {
 				return;
 			}
 			const buffer = entity.getMutableComponent(PowerBuffer);
 			if (!buffer.installed) {
-				consumer.powered = false;
+				entity.getMutableComponent(PowerConsumer).powered = false;
 				return;
 			}
 
 			const subtracted = consumer.rate * delta;
-			consumer.powered = buffer.current > subtracted;
-			if (consumer.powered) {
+			const isPowered = buffer.current > subtracted;
+			if (isPowered !== consumer.powered) {
+				entity.getMutableComponent(PowerConsumer).powered = isPowered;
+			}
+			if (isPowered) {
 				buffer.current -= subtracted;
 			}
+		});
+		this.queries.consumers.changed?.forEach((entity: Entity) => {
+			this.world.getShip().sendSubsystemState(entity);
 		});
 	}
 }
 PowerConsumptionSystem.queries = {
 	consumers: {
 		components: [PowerConsumer, PowerBuffer],
+		listen: {
+			changed: [PowerConsumer],
+		},
 	},
 };
 
@@ -266,18 +276,12 @@ export class PowerFlowSystem extends GameSystem {
 					);
 			}
 		});
-		const thrusterBuffers = this.queries.thrusters.results.map(ent =>
-			ent.getComponent(PowerBuffer)
+		broadcastPowerBuffers(
+			this,
+			this.queries.thrusters.changed,
+			'thrusters'
 		);
-		this.world
-			.getNet()
-			.broadcastStateThrottled(
-				'powerBuffer:thrusters',
-				thrusterBuffers.reduce((v, buf) => v + buf.current, 0) /
-					thrusterBuffers.reduce((v, buf) => v + buf.max, 0),
-				'engineer',
-				500
-			);
+		broadcastPowerBuffers(this, this.queries.shields.changed, 'shields');
 	}
 }
 PowerFlowSystem.queries = {
@@ -285,6 +289,30 @@ PowerFlowSystem.queries = {
 		components: [PowerBuffer],
 	},
 	thrusters: {
-		components: [ThrustSource],
+		components: [PowerBuffer, ThrustSource],
+		listen: {
+			changed: [PowerBuffer],
+		},
+	},
+	shields: {
+		components: [PowerBuffer, ShieldSource],
+		listen: {
+			changed: [PowerBuffer],
+		},
 	},
 };
+function broadcastPowerBuffers(system: GameSystem, ents, id: string) {
+	const buffers = ents?.map(ent => ent.getComponent(PowerBuffer));
+	if (!buffers || !buffers.length) {
+		return;
+	}
+	system.world
+		.getNet()
+		.broadcastStateThrottled(
+			'powerBuffer:' + id,
+			buffers.reduce((v, buf) => v + buf.current, 0) /
+				buffers.reduce((v, buf) => v + buf.max, 0),
+			'engineer',
+			500
+		);
+}

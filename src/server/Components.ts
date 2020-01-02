@@ -186,6 +186,16 @@ interface iThrustSource {
 	force: number;
 }
 
+export const ShieldSource = createComponentClass<iShield>(
+	{
+		strength: { default: 100 },
+	},
+	'Shield'
+);
+interface iShield {
+	strength: number;
+}
+
 const safeTypes = {
 	number: true,
 	boolean: true,

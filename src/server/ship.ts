@@ -11,11 +11,13 @@ import {
 	PowerProducer,
 	RenderableInterior,
 	serializeComponentValue,
+	ShieldSource,
 	ShipPosition,
 	SyncId,
 	ThrustSource,
 } from './Components';
 import { objectMap } from './commonUtil';
+
 const fs = require('fs');
 const path = require('path');
 const PF = require('pathfinding');
@@ -337,7 +339,10 @@ export class ShipNodes {
 			.createEntity()
 			.addComponent(ShipPosition, reactorPos)
 			.addComponent(SyncId, { value: 'reactor' })
-			.addComponent(RenderableInterior, { image: '/images/reactor.png' })
+			.addComponent(RenderableInterior, {
+				image: '/images/reactor.png',
+				className: 'image--64x64--scale',
+			})
 			.addComponent(PowerBuffer, {
 				rate: 0,
 				current: 1000,
@@ -357,7 +362,10 @@ export class ShipNodes {
 				sources: [this.entities.reactor],
 			})
 			.addComponent(SyncId, { value: 'heatDetector' })
-			.addComponent(RenderableInterior, { image: '/images/reactor.png' }) // todo
+			.addComponent(RenderableInterior, {
+				image: '/images/comms_tower.png',
+				className: 'image--64x128',
+			})
 			.addComponent(PowerConsumer, { rate: 20 })
 			.addComponent(EmissionDetector, {
 				type: 'heat',
@@ -382,6 +390,28 @@ export class ShipNodes {
 				.addComponent(PowerConsumer, { rate: 20 })
 				.addComponent(ThrustSource);
 		});
+
+		this.spawnerTiles[TileSpawnerType.ShieldEmitter].forEach(
+			(pos, index) => {
+				const syncId = 'shieldemitter_' + index;
+				this.entities[syncId] = this.game.world
+					.createEntity()
+					.addComponent(ShipPosition, pos)
+					.addComponent(PowerBuffer, {
+						max: 200,
+						rate: 40,
+						maxRate: 80,
+						sources: [this.entities.reactor],
+					})
+					.addComponent(SyncId, { value: syncId })
+					.addComponent(RenderableInterior, {
+						image: '/images/shield_emitter.png',
+						className: 'shield_emitter',
+					})
+					.addComponent(PowerConsumer, { rate: 20 })
+					.addComponent(ShieldSource);
+			}
+		);
 	}
 
 	update(delta: number, time: number) {
@@ -460,7 +490,10 @@ export class ShipNodes {
 		}
 	}
 
-	public sendSubsystemState(ent: Entity, connection?: Connection) {
+	public sendSubsystemState(
+		ent: Entity,
+		connection: Connection | Role = 'robotics'
+	) {
 		const syncId = ent.getComponent(SyncId).value;
 		if (!syncId) {
 			return;
@@ -468,6 +501,7 @@ export class ShipNodes {
 
 		const buffer = ent.getComponent(PowerBuffer);
 		const renderable = ent.getComponent(RenderableInterior);
+		const consumer = ent.getComponent(PowerConsumer);
 		const packet = {
 			event: 'subsystemState',
 			id: syncId,
@@ -480,13 +514,13 @@ export class ShipNodes {
 				image: renderable?.image,
 				className: `${renderable?.className} ${
 					buffer?.installed === false ? 'hidden' : '' // null implies has no Consumer, eg. reactor
-				}`,
+				} ${consumer?.on && consumer?.powered && 'on'}`,
 			},
 		};
-		if (connection) {
-			connection.send(packet);
+		if (typeof connection === 'string') {
+			this.game.net.broadcast(packet, connection);
 		} else {
-			this.game.net.broadcast(packet, 'robotics');
+			connection.send(packet);
 		}
 	}
 
